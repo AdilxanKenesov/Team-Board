@@ -1,0 +1,1 @@
+/* task-detail — keyingi bosqichda */

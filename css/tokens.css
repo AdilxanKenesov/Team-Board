@@ -1,0 +1,73 @@
+/* "Samarqand" palitrasi: lojuvard (Registon gumbazlari) + oltin urg'u.
+   Uch holat: tizim (prefers-color-scheme), majburiy yorug' [data-theme=light], majburiy qorong'i [data-theme=dark]. */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f3f5fa;
+  --lane: #eef1f8;
+  --ink: #151b2d;
+  --ink-2: #2b3349;
+  --muted: #636b80;
+  --faint: #9aa1b3;
+  --line: #e3e6ee;
+  --line-strong: #cfd4e0;
+  --hover: #eef1f8;
+  --primary: #1e3a8a;
+  --primary-hover: #172e6e;
+  --primary-soft: #e8edfb;
+  --primary-ink: #1e3a8a;
+  --on-primary: #ffffff;
+  --gold: #c8962e;
+  --gold-soft: #f8efd9;
+  --gold-ink: #8a6418;
+  --side-top: #16286a;
+  --side-bottom: #0f1c48;
+  --side-ink: #ffffff;
+  --side-muted: #c3cdee;
+  --side-hover: rgba(255, 255, 255, .08);
+  --new: #3b82f6;
+  --doing: #f59e0b;
+  --done: #22c55e;
+  --new-soft: #e8f0fe;
+  --doing-soft: #fef3e2;
+  --done-soft: #e7f8ee;
+  --error: #dc2626;
+  --error-soft: #fef2f2;
+  --ok: #15803d;
+  --ok-soft: #e7f8ee;
+  --warn: #b45309;
+  --warn-soft: #fef3e2;
+  --shadow-sm: 0 1px 2px rgba(21, 27, 45, .06);
+  --shadow: 0 12px 32px rgba(21, 27, 45, .16);
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+
+/* Qorong'i qiymatlar — bir marta yoziladi, ikki selektorga qo'llanadi */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1022; --surface: #131b35; --surface-2: #18213f; --lane: #10172e; --ink: #eef1fb; --ink-2: #d5dbef;
+    --muted: #a3abc6; --faint: #6f789a; --line: #253050; --line-strong: #35416a; --hover: #1b2546;
+    --primary: #93acff; --primary-hover: #b5c6ff; --primary-soft: #1b295a; --primary-ink: #b5c6ff; --on-primary: #0b1022;
+    --gold: #e2b75a; --gold-soft: #3a2e14; --gold-ink: #f0cf86;
+    --side-top: #0e1840; --side-bottom: #070d26;
+    --new-soft: #14244a; --doing-soft: #33260f; --done-soft: #12301f;
+    --error: #f87171; --error-soft: #2a1215; --ok: #4ade80; --ok-soft: #12301f; --warn: #fbbf24; --warn-soft: #33260f;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3); --shadow: 0 16px 40px rgba(0, 0, 0, .55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1022; --surface: #131b35; --surface-2: #18213f; --lane: #10172e; --ink: #eef1fb; --ink-2: #d5dbef;
+  --muted: #a3abc6; --faint: #6f789a; --line: #253050; --line-strong: #35416a; --hover: #1b2546;
+  --primary: #93acff; --primary-hover: #b5c6ff; --primary-soft: #1b295a; --primary-ink: #b5c6ff; --on-primary: #0b1022;
+  --gold: #e2b75a; --gold-soft: #3a2e14; --gold-ink: #f0cf86;
+  --side-top: #0e1840; --side-bottom: #070d26;
+  --new-soft: #14244a; --doing-soft: #33260f; --done-soft: #12301f;
+  --error: #f87171; --error-soft: #2a1215; --ok: #4ade80; --ok-soft: #12301f; --warn: #fbbf24; --warn-soft: #33260f;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3); --shadow: 0 16px 40px rgba(0, 0, 0, .55);
+  color-scheme: dark;
+}

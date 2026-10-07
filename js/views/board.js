@@ -1,0 +1,1 @@
+/* board — keyingi bosqichda */

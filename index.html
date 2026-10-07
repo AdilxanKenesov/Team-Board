@@ -3,262 +3,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#16286a">
   <title>Jamoa taxtasi</title>
-  <meta name="description" content="Jamoa vazifalarini Yangi, Bajarilmoqda va Tugagan ustunlarida kuzatish (Bilet 010).">
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Jamoa vazifalarini boshqarish tizimi: administrator vazifa beradi, xodimlar o‘z ishini kuzatadi.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2316286a'/%3E%3Crect x='4' y='5' width='4' height='14' rx='1' fill='%233b82f6'/%3E%3Crect x='10' y='5' width='4' height='9' rx='1' fill='%23f59e0b'/%3E%3Crect x='16' y='5' width='4' height='5' rx='1' fill='%2322c55e'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/views.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
-  <a class="skip" href="#taxta">Taxtaga o‘tish</a>
+  <a class="skip" href="#view">Asosiy qismga o‘tish</a>
+  <div id="app" class="app"></div>
+  <noscript><p style="padding:24px">Ilova ishlashi uchun JavaScript yoqilgan bo‘lishi kerak.</p></noscript>
 
-  <div class="app">
-    <!-- Chap menyu -->
-    <aside class="side">
-      <a class="brand" href="#taxta">
-        <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="2" y="3" width="5.5" height="18" rx="1.5" class="m1"/>
-          <rect x="9.25" y="3" width="5.5" height="12" rx="1.5" class="m2"/>
-          <rect x="16.5" y="3" width="5.5" height="7" rx="1.5" class="m3"/>
-        </svg>
-        Jamoa taxtasi
-      </a>
-
-      <nav class="nav" aria-label="Asosiy menyu">
-        <ul>
-          <li><a href="#taxta" aria-current="true">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="4" height="14" rx="1"/><rect x="8" y="3" width="4" height="9" rx="1"/><rect x="13" y="3" width="4" height="6" rx="1"/></svg>
-            Taxta</a></li>
-          <li><a href="#tarix">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
-            Tarix</a></li>
-          <li><a href="#haqida">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 9v5M10 6.5v.01"/></svg>
-            Haqida</a></li>
-        </ul>
-      </nav>
-
-      <div class="side__foot">
-        <button type="button" id="report-open" class="side-btn">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h7l3 3v11H5z"/><path d="M8 10h5M8 13h5"/></svg>
-          Hisobot</button>
-        <button type="button" id="reset" class="side-btn">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2M6 6l.8 10h6.4L14 6"/></svg>
-          Tozalash</button>
-      </div>
-    </aside>
-
-    <div class="main">
-      <!-- Yuqori panel -->
-      <header class="topbar">
-        <h1 id="board-title">Vazifalar taxtasi</h1>
-
-        <div class="search">
-          <label for="f-q" class="sr-only">Qidirish</label>
-          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4"/></svg>
-          <input id="f-q" type="search" autocomplete="off" placeholder="Qidirish" title="Qidirish (/)">
-        </div>
-
-        <div class="filter-wrap">
-          <button type="button" id="filter-btn" class="btn" aria-expanded="false" aria-controls="filter-pop">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>
-            Filtr <span id="filter-count" class="count-badge" hidden></span>
-          </button>
-          <div id="filter-pop" class="pop" hidden>
-            <div class="field">
-              <label for="f-who" class="field-label">Mas’ul</label>
-              <select id="f-who"><option value="">Hammasi</option></select>
-            </div>
-            <div class="field">
-              <label for="f-pr" class="field-label">Muhimlik</label>
-              <select id="f-pr">
-                <option value="">Hammasi</option>
-                <option value="yuqori">Yuqori</option>
-                <option value="orta">O‘rta</option>
-                <option value="past">Past</option>
-              </select>
-            </div>
-            <button type="button" id="f-clear" class="btn btn--sm" hidden>Filtrni tozalash</button>
-          </div>
-        </div>
-
-        <button type="button" id="add-open" class="btn btn--primary add-btn" title="Yangi vazifa (N)">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>
-          <span>Vazifa</span>
-        </button>
-      </header>
-
-      <main class="content">
-        <section id="taxta" class="board" aria-labelledby="board-title">
-          <div class="statusbar">
-            <div class="progress__bar" aria-hidden="true">
-              <span id="seg-new" class="seg seg--new"></span>
-              <span id="seg-doing" class="seg seg--doing"></span>
-              <span id="seg-done" class="seg seg--done"></span>
-            </div>
-            <span id="progress-text" class="progress-text">—</span>
-            <span id="late-chip" class="late-chip" hidden></span>
-            <span id="f-result" class="f-result" aria-live="polite"></span>
-          </div>
-
-          <div id="sample-note" class="banner" hidden>
-            <span>Namuna ma’lumotlar ko‘rsatilmoqda.</span>
-            <button type="button" id="sample-clear" class="link-btn">Namunalarni o‘chirish</button>
-          </div>
-          <p id="storage-warning" class="banner banner--error" hidden>Brauzer xotirasi ishlamayapti — o‘zgarishlar saqlanmaydi.</p>
-
-          <div class="tabs" role="tablist" aria-label="Ustunlar">
-            <button type="button" role="tab" id="tab-new" class="tab" data-tab="new" aria-controls="col-new">Yangi <span id="tc-new">0</span></button>
-            <button type="button" role="tab" id="tab-doing" class="tab" data-tab="doing" aria-controls="col-doing">Bajarilmoqda <span id="tc-doing">0</span></button>
-            <button type="button" role="tab" id="tab-done" class="tab" data-tab="done" aria-controls="col-done">Tugagan <span id="tc-done">0</span></button>
-          </div>
-
-          <div class="columns" id="columns" data-tab="new">
-            <section class="col col--new" id="col-new" aria-labelledby="h-new" data-status="new">
-              <header class="col__head">
-                <h2 id="h-new"><span class="dot" aria-hidden="true"></span>Yangi</h2>
-                <span class="col__count" id="count-new" aria-label="Yangi ustunidagi vazifalar soni">0</span>
-              </header>
-              <ul class="list" id="list-new"></ul>
-            </section>
-            <section class="col col--doing" id="col-doing" aria-labelledby="h-doing" data-status="doing">
-              <header class="col__head">
-                <h2 id="h-doing"><span class="dot" aria-hidden="true"></span>Bajarilmoqda</h2>
-                <span class="col__count" id="count-doing" aria-label="Bajarilmoqda ustunidagi vazifalar soni">0</span>
-              </header>
-              <ul class="list" id="list-doing"></ul>
-            </section>
-            <section class="col col--done" id="col-done" aria-labelledby="h-done" data-status="done">
-              <header class="col__head">
-                <h2 id="h-done"><span class="dot" aria-hidden="true"></span>Tugagan</h2>
-                <span class="col__count" id="count-done" aria-label="Tugagan ustunidagi vazifalar soni">0</span>
-              </header>
-              <ul class="list" id="list-done"></ul>
-            </section>
-          </div>
-        </section>
-
-        <section id="tarix" class="section" aria-labelledby="history-title">
-          <h2 id="history-title" class="section__title">Tarix</h2>
-          <ol id="history-list" class="history"></ol>
-        </section>
-
-        <section id="haqida" class="section" aria-labelledby="about-title">
-          <h2 id="about-title" class="section__title">Haqida</h2>
-          <p class="about__lead">Jamoa taxtasi kim nima qilayotganini va nima kechikayotganini bir qarashda ko‘rsatadi.</p>
-          <ul class="about">
-            <li><span class="about__icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></svg></span>Vazifa qo‘shing, mas’ul va muddat belgilang</li>
-            <li><span class="about__icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M4 10h11M11 6l4 4-4 4"/></svg></span>Tugma yoki sudrash bilan keyingi ustunga o‘tkazing</li>
-            <li><span class="about__icon" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="M5 3h7l3 3v11H5z"/><path d="M8 10h5M8 13h5"/></svg></span>Yig‘ilish uchun hisobotni bir tugma bilan oling</li>
-          </ul>
-          <p class="shortcuts">Tezkor tugmalar: <kbd>N</kbd> yangi vazifa · <kbd>/</kbd> qidirish · <kbd>Esc</kbd> yopish</p>
-          <p class="footnote">Ma’lumotlar faqat shu brauzerda saqlanadi · Bilet 010</p>
-        </section>
-      </main>
-    </div>
-  </div>
-
-  <!-- Qo'shish / tahrirlash paneli -->
-  <div id="drawer" class="drawer" hidden>
-    <div class="drawer__backdrop" data-close></div>
-    <aside class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-      <div class="drawer__head">
-        <h2 id="drawer-title">Yangi vazifa</h2>
-        <button type="button" class="icon-btn" data-close aria-label="Yopish">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
-        </button>
-      </div>
-      <form id="add-form" class="form" novalidate>
-        <div class="field">
-          <label for="title" class="field-label">Nom</label>
-          <input id="title" name="title" type="text" autocomplete="off" maxlength="120"
-                 placeholder="Masalan: Hisobotni tayyorlash" aria-describedby="title-error">
-          <p id="title-error" class="error" role="alert"></p>
-        </div>
-        <div class="field">
-          <label for="assignee" class="field-label">Mas’ul <span class="opt">ixtiyoriy</span></label>
-          <input id="assignee" type="text" list="assignee-list" autocomplete="off" maxlength="40" aria-describedby="assignee-error">
-          <p id="assignee-error" class="error" role="alert"></p>
-        </div>
-        <div class="form__row">
-          <div class="field">
-            <label for="priority" class="field-label">Muhimlik</label>
-            <select id="priority">
-              <option value="yuqori">Yuqori</option>
-              <option value="orta" selected>O‘rta</option>
-              <option value="past">Past</option>
-            </select>
-          </div>
-          <div class="field date-field">
-            <span id="due-label" class="field-label">Muddat <span class="opt">ixtiyoriy</span></span>
-            <input id="due" type="hidden">
-            <div class="date-row">
-              <button type="button" id="due-btn" class="date-btn" aria-haspopup="dialog" aria-expanded="false"
-                      aria-controls="due-pop" aria-labelledby="due-label due-btn-text" aria-describedby="due-error">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 3v3M13 3v3"/></svg>
-                <span id="due-btn-text">Sana tanlang</span>
-              </button>
-              <button type="button" id="due-clear" class="icon-btn" aria-label="Muddatni olib tashlash" hidden>
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8"/></svg>
-              </button>
-            </div>
-            <div id="due-pop" class="cal" role="dialog" aria-label="Muddatni tanlash" hidden></div>
-            <p id="due-error" class="error" role="alert"></p>
-          </div>
-        </div>
-        <datalist id="assignee-list"></datalist>
-        <div class="form__actions">
-          <button type="submit" id="drawer-submit" class="btn btn--primary">Qo‘shish</button>
-          <button type="button" class="btn" data-close>Bekor qilish</button>
-        </div>
-      </form>
-    </aside>
-  </div>
-
-  <!-- Hisobot oynasi -->
-  <div id="report" class="modal" hidden>
-    <div class="modal__box modal__box--report" role="dialog" aria-modal="true" aria-labelledby="report-title">
-      <div class="modal__head">
-        <h2 id="report-title">Yig‘ilish uchun hisobot</h2>
-        <button type="button" id="report-close" class="icon-btn" aria-label="Yopish">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
-        </button>
-      </div>
-      <article id="report-view" class="report" aria-label="Hisobot"></article>
-      <label for="report-text" class="sr-only">Hisobot matni</label>
-      <textarea id="report-text" class="sr-only" readonly tabindex="-1"></textarea>
-      <div class="modal__actions">
-        <button type="button" id="report-pdf" class="btn btn--primary">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9M6 8l4 4 4-4M4 15h12"/></svg>
-          PDF saqlash</button>
-        <button type="button" id="report-copy" class="btn">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="1.5"/><path d="M4 13V4.5A1.5 1.5 0 0 1 5.5 3H12"/></svg>
-          Matnni nusxalash</button>
-        <span id="report-msg" class="muted" role="status" aria-live="polite"></span>
-      </div>
-      <p class="report-hint">PDF: chop etish oynasida “PDF sifatida saqlash”ni tanlang.</p>
-    </div>
-  </div>
-
-  <!-- Tozalash tasdig'i -->
-  <div id="reset-confirm" class="modal" hidden>
-    <div class="modal__box modal__box--sm" role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-desc">
-      <div class="danger-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M7 7l1 12h8l1-12M10 11v5M14 11v5"/></svg>
-      </div>
-      <h2 id="reset-title">Taxtani tozalash</h2>
-      <p id="reset-desc">Barcha vazifalar o‘chiriladi.</p>
-      <div class="modal__actions modal__actions--end">
-        <button type="button" id="reset-no" class="btn">Bekor qilish</button>
-        <button type="button" id="reset-yes" class="btn btn--danger">O‘chirish</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
-    <span id="toast-text"></span>
-    <button type="button" id="toast-undo" class="toast__btn">Bekor qilish</button>
-  </div>
-
-  <script src="logic.js"></script>
-  <script src="script.js"></script>
+  <!-- yadro -->
+  <script src="js/core/sha256.js"></script>
+  <script src="js/core/logic.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/i18n-ru.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/ui.js"></script>
+  <script src="js/core/router.js"></script>
+  <!-- sahifalar -->
+  <script src="js/views/auth.js"></script>
+  <script src="js/views/task-detail.js"></script>
+  <script src="js/views/board.js"></script>
+  <script src="js/views/tasks-table.js"></script>
+  <script src="js/views/calendar.js"></script>
+  <script src="js/views/projects.js"></script>
+  <script src="js/views/users.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/member.js"></script>
+  <script src="js/views/notifications.js"></script>
+  <script src="js/views/reports.js"></script>
+  <script src="js/views/activity.js"></script>
+  <script src="js/views/settings.js"></script>
+  <script src="js/views/palette.js"></script>
+  <!-- ishga tushirish -->
+  <script src="js/app.js"></script>
+  <script>App.boot();</script>
 </body>
 </html>
