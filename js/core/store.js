@@ -485,7 +485,7 @@
     });
 
     var P = {};
-    [['forum', 'Yoshlar forumi', '#1e3a8a', 'Viloyat yoshlar forumini tashkil etish: joy, dastur, ishtirokchilar.'],
+    [['forum', 'Yoshlar forumi', '#6d28d9', 'Viloyat yoshlar forumini tashkil etish: joy, dastur, ishtirokchilar.'],
      ['sayt', 'Veb-sayt yangilash', '#0f766e', 'Markaz veb-saytining yangi versiyasi va kontent.'],
      ['oqitish', 'Ichki o‘qitish', '#b45309', 'Xodimlar uchun oylik seminarlar.']].forEach(function (p) {
       P[p[0]] = { id: 'p_' + p[0], name: p[1], color: p[2], description: p[3], archived: false, createdAt: t - 13 * day };
@@ -521,12 +521,13 @@
     ];
     rows.forEach(function (r, i) {
       var updated = t - r[8] * hour;
-      var created = Math.min(updated, t - (8 + (i % 6)) * day) ;
+      var doneAt = r[9] === null ? null : Math.min(t - r[9] * day - (i % 5) * hour, t - min);
+      // Yaratilish sanalari oxirgi 2 haftaga yoyiladi (dinamika grafigi uchun)
+      var created = Math.min(updated, doneAt || updated, t - ((i * 5) % 14) * day - (i % 4 + 1) * hour) - hour;
       var task = { id: 't_' + (i + 1), title: r[0], description: '', status: r[1], projectId: r[2] ? 'p_' + r[2] : null,
         assigneeId: r[3] ? 'u_' + r[3] : null, createdBy: 'u_admin', priority: r[4], due: r[5] === null ? null : L.addDays(today, r[5]),
         tags: r[6], checklist: r[7].map(function (txt, k) { return { id: 'c_' + i + '_' + k, text: txt, done: r[1] === 'done' || (r[1] === 'doing' && k < Math.ceil(r[7].length / 2)) }; }),
-        createdAt: created, updatedAt: updated, completedAt: r[9] === null ? null : t - r[9] * day - (i % 5) * hour, sample: true };
-      if (task.completedAt && task.completedAt > t) task.completedAt = t - min;
+        createdAt: created, updatedAt: updated, completedAt: doneAt, sample: true };
       db.tasks.push(task);
       db.activity.push({ id: 'a_c' + i, at: created, userId: 'u_admin', type: 'create', taskId: task.id, title: task.title, detail: {} });
       if (r[1] !== 'new') db.activity.push({ id: 'a_m' + i, at: Math.min(updated, task.completedAt || updated) - hour, userId: task.assigneeId || 'u_admin', type: 'move', taskId: task.id, title: task.title, detail: { from: 'new', to: 'doing' } });

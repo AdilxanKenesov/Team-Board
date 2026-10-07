@@ -15,8 +15,20 @@
              ['bell', 'Izohlar, bildirishnomalar, muddat eslatmalari'], ['report', 'Analitika, PDF va CSV hisobotlar']].map(function (p) {
               return h('li', null, U.icon(p[0]), t(p[1]));
             })),
-          aside || null)),
+          aside || preview())),
       h('section', { class: 'auth__main' }, h('div', { class: 'auth__card' }, content)));
+  }
+
+  // Bezak: kichik Kanban ko'rinishi va "bajarilish" kartochkasi (ekran o'quvchidan yashirin)
+  function preview() {
+    function card(col) { return h('span', { class: 'auth-preview__card' }, h('s'), h('s'), h('u', null, h('em'), h('i', { style: { background: col } }))); }
+    var cols = [['Yangi', 'var(--new)', ['#8b5cf6', '#f472b6']], ['Jarayonda', 'var(--doing)', ['#38bdf8', '#34d399']], ['Tugagan', 'var(--done)', ['#fbbf24']]];
+    return h('div', { class: 'auth-preview', 'aria-hidden': 'true' },
+      h('div', { class: 'auth-preview__win' }, h('div', { class: 'auth-preview__dots' }, h('i'), h('i'), h('i')),
+        h('div', { class: 'auth-preview__cols' }, cols.map(function (c) {
+          return h('div', { class: 'auth-preview__col' }, h('b', null, h('i', { style: { background: c[1] } }), t(c[0])), c[2].map(card));
+        }))),
+      h('div', { class: 'auth-preview__stat' }, U.icon('check'), h('span', null, h('b', null, '+8'), h('small', null, t('shu hafta tugatildi')))));
   }
 
   function langSwitch() {

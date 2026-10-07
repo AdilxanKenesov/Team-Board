@@ -147,11 +147,116 @@ await test('parol tiklangandan keyin birinchi kirishda almashtirish so‘raladi'
     App.Auth.logout(); return App.Auth.login('jasur','yangi123').ok && !App.Store.user('u_jasur').mustChange;`);
 });
 
+/* ================= analitika, hisobot, faollik, buyruqlar, sozlamalar ================= */
+await test('dashboard: KPI, donut, dinamika 7→14 kun, jadval ko‘rinishi', async () => {
+  await open('#/admin', 'admin');
+  return js(`
+    const c=App.Logic.counts(App.Store.db.tasks, App.today());
+    const kpiOk=${$('#kpi-open')}.textContent===String(c.new+c.doing) && ${$('#kpi-done')}.textContent===c.donePercent+'%' && ${$('#kpi-late')}.textContent===String(c.overdue);
+    const segs=document.querySelectorAll('.donut__seg').length;
+    const h7=document.querySelectorAll('.cols__svg .hit').length;
+    ${$('#dyn-14')}.click(); ${W}
+    const h14=document.querySelectorAll('.cols__svg .hit').length;
+    ${$('#tbl-status')}.click(); ${W}
+    const rows=document.querySelectorAll('.chart-table tbody tr').length;
+    return kpiOk && segs===3 && h7===7 && h14===14 && rows===3 ? true : {kpiOk,segs,h7,h14,rows};`);
+});
+await test('dashboard: tooltip va "Muddati o‘tgan" KPI jadvalni filtrlaydi', async () => js(`
+  const hit=document.querySelector('.cols__svg .hit'); const r=hit.getBoundingClientRect();
+  hit.dispatchEvent(new MouseEvent('mousemove',{clientX:r.left+5,clientY:r.top+20,bubbles:true}));
+  const tip=document.querySelector('.chart-tip'); const tipOk=tip && !tip.hidden && /Yaratildi/.test(tip.textContent);
+  hit.dispatchEvent(new MouseEvent('mouseleave'));
+  ${$('a[data-key="kpi-kpi-late"]')}.click(); ${W}${W}
+  const n=document.querySelectorAll('tbody tr').length;
+  App.getTaskFilter('table').onlyOverdue=false;
+  return tipOk && location.hash==='#/admin/tasks' && n===App.Store.db.tasks.filter(t=>App.Logic.isOverdue(t,App.today())).length ? true : {tipOk,n};`));
+await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
+  await open('#/admin/reports', 'admin');
+  return js(`
+    const all=App.reportTasks().length;
+    const sel=${$('#rp-project')}; sel.value='p_sayt'; sel.dispatchEvent(new Event('change')); ${W}
+    const sayt=App.reportTasks().length, inSheet=document.querySelectorAll('.rep-table tbody tr').length;
+    const per=${$('#rp-period')}; per.value='7'; per.dispatchEvent(new Event('change')); ${W}
+    const week=App.reportTasks().every(t=>t.projectId==='p_sayt' && (t.status!=='done' || t.completedAt>=Date.now()-8*864e5));
+    const printCss=[...document.styleSheets].some(s=>s.media && s.media.mediaText==='print' && s.cssRules.length>5);
+    let csv=null; const orig=App.UI.download; App.UI.download=(n,c)=>{csv={n,c}}; ${$('#rp-csv')}.click(); App.UI.download=orig;
+    sel.value=''; sel.dispatchEvent(new Event('change')); per.value='30'; per.dispatchEvent(new Event('change'));
+    return all===24 && sayt===7 && inSheet===7 && week && printCss && csv && /\\.csv$/.test(csv.n) && csv.c.split('\\r\\n').length===App.Store.db.tasks.filter(t=>t.projectId==='p_sayt' && (t.status!=='done'||t.completedAt>=Date.now()-8*864e5)).length+1 ? true : {all,sayt,inSheet,week,printCss,csv:csv&&csv.n};`);
+});
+await test('faollik jurnali: xodim va qidiruv filtri', async () => {
+  await open('#/admin/activity', 'admin');
+  return js(`
+    const n0=document.querySelectorAll('.act-row').length;
+    const u=${$('#act-user')}; u.value='u_jasur'; u.dispatchEvent(new Event('change')); ${W}
+    const onlyJ=[...document.querySelectorAll('.act-row__text b')].every(b=>b.textContent==='Jasur Toshmatov');
+    const q=${$('#act-q')}; q.value='maqola'; q.dispatchEvent(new Event('input')); ${W}
+    const n2=document.querySelectorAll('.act-row').length;
+    ${$('#act-clear')}.click(); ${W}
+    return n0>10 && onlyJ && n2>0 && n2<n0 && document.querySelectorAll('.act-row').length===n0 ? true : {n0,onlyJ,n2};`);
+});
+await test('buyruqlar paneli: Ctrl+K, qidirish, Enter vazifani ochadi', async () => js(`
+  document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true})); ${W}
+  const q=${$('#pal-q')}; if(!q) return 'panel ochilmadi';
+  q.value='byudjet'; q.dispatchEvent(new Event('input'));
+  const first=document.querySelector('.pal__item[aria-selected="true"]').textContent;
+  q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); ${W}${W}
+  const dr=document.querySelector('.drawer');
+  return /Forum byudjeti/.test(first) && !document.getElementById('pal-q') && dr && /Forum byudjeti/.test(dr.textContent) ? true : {first,dr:!!dr};`));
+await test('buyruqlar paneli: o‘qlar bilan tanlash, sahifaga o‘tish, bo‘sh natija', async () => {
+  await open('#/admin', 'admin');
+  return js(`
+    App.openPalette(); ${W}
+    const q=${$('#pal-q')}; q.value='zzzqqq'; q.dispatchEvent(new Event('input'));
+    const empty=!!document.querySelector('.pal__empty');
+    q.value='faollik'; q.dispatchEvent(new Event('input'));
+    q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); ${W}${W}
+    return empty && location.hash==='#/admin/activity' ? true : {empty,h:location.hash};`);
+});
+await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
+  await open('#/settings', 'malika');
+  return js(`
+    ${$('#st-name')}.value='Malika Yusupova-Ali'; ${$('#profile-form')}.requestSubmit(); ${W}
+    const nameOk=App.Store.user('u_malika').name==='Malika Yusupova-Ali' && /Malika Yusupova-Ali/.test(${$('.side__who b')}.textContent);
+    ${$('#st-cur')}.value='demo123'; ${$('#st-new')}.value='yangi123'; ${$('#st-new2')}.value='boshqa123'; ${$('#password-form')}.requestSubmit(); ${W}
+    const mism=${$('#st-new2')}.getAttribute('aria-invalid')==='true';
+    ${$('#st-cur')}.value='xato'; ${$('#st-new2')}.value='yangi123'; ${$('#password-form')}.requestSubmit(); ${W}
+    const wrongCur=${$('#st-cur')}.getAttribute('aria-invalid')==='true';
+    ${$('#st-theme-dark')}.click(); ${W}
+    const dark=document.documentElement.getAttribute('data-theme')==='dark' && App.Store.settingsFor('u_malika').theme==='dark';
+    ${$('#st-lang-ru')}.click(); ${W}
+    const ru=App.I18n.lang==='ru'; ${$('#st-lang-uz')}.click(); ${$('#st-theme-system')}.click(); ${W}
+    return nameOk && mism && wrongCur && dark && ru && !document.documentElement.hasAttribute('data-theme') && !document.getElementById('st-export') ? true : {nameOk,mism,wrongCur,dark,ru};`);
+});
+await test('sozlamalar (admin): zaxira eksport/import, namunalarni o‘chirish + bekor qilish', async () => {
+  await open('#/settings', 'admin');
+  return js(`
+    let file=null; const orig=App.UI.download; App.UI.download=(n,c)=>{file={n,c}}; ${$('#st-export')}.click(); App.UI.download=orig;
+    const parsed=JSON.parse(file.c); const expOk=parsed.tasks.length===24 && /\\.json$/.test(file.n);
+    ${$('#st-clear-samples')}.click(); ${W}
+    document.querySelector('.modal .btn--danger').click(); ${W}${W}
+    const cleared=App.Store.db.tasks.length===0;
+    ${$('#toast-undo')}.click(); ${W}
+    const back=App.Store.db.tasks.length===24;
+    const bad=App.Store.importJSON(App.me(), '{bu json emas'); const noAdmin=App.Store.importJSON(App.me(), JSON.stringify({users:[],tasks:[]}));
+    parsed.tasks=parsed.tasks.slice(0,5); const good=App.Store.importJSON(App.me(), JSON.stringify(parsed));
+    return expOk && cleared && back && !bad.ok && !noAdmin.ok && good.ok && App.Store.db.tasks.length===5 ? true : {expOk,cleared,back,bad:bad.ok,good:good.ok};`);
+});
+await test('sozlamalar (admin): hammasini o‘chirish → Xush kelibsiz', async () => js(`
+  ${$('#st-wipe')}.click(); ${W}
+  document.querySelector('.modal .btn--danger').click(); ${W}${W}
+  return location.hash==='#/welcome' && !localStorage.getItem('tbpro.db.v1') && !!document.getElementById('start-demo');`));
+
 /* ================= telefon ================= */
 await test('telefon 390px: yonga surish yo‘q, pastki menyu, tablar', async () => {
   await width(390); await open('#/me/board', 'malika');
   return js(`return document.documentElement.scrollWidth<=390 && getComputedStyle(${$('.bottom-nav')}).display!=='none' && getComputedStyle(${$('.tabs')}).display!=='none' ? true : document.documentElement.scrollWidth;`);
 });
+for (const [hash, user] of [['#/admin', 'admin'], ['#/admin/reports', 'admin'], ['#/admin/activity', 'admin'], ['#/settings', 'admin'], ['#/settings', 'malika']]) {
+  await test('telefon 390px: ' + hash + ' (' + user + ') yonga surilmaydi', async () => {
+    await open(hash, user);
+    return js(`return document.documentElement.scrollWidth<=390 ? true : document.documentElement.scrollWidth;`);
+  });
+}
 await width(1440);
 
 await test('sahifa xatolari yo‘q', async () => pageErrors.length === 0 ? true : pageErrors.slice(0, 3));

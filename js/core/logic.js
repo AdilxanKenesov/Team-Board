@@ -17,7 +17,7 @@
   L.MOVES = { new: ['doing'], doing: ['new', 'done'], done: ['doing'] };
   L.LIMITS = { title: [2, 120], description: 2000, comment: [1, 1000], tag: [1, 24], tags: 6, checklist: 30, checkItem: [1, 120],
     name: [2, 40], login: [3, 30], password: 6, project: [2, 40], position: 40 };
-  L.COLORS = ['#1e3a8a', '#0f766e', '#b45309', '#7c3aed', '#be123c', '#0369a1', '#4d7c0f', '#c2410c', '#475569', '#a21caf'];
+  L.COLORS = ['#6d28d9', '#0f766e', '#b45309', '#1d4ed8', '#be123c', '#0369a1', '#4d7c0f', '#c2410c', '#475569', '#a21caf'];
 
   /* ---------------- yordamchilar ---------------- */
   function clean(s) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); }

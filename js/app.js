@@ -234,6 +234,8 @@
     updateBadges();
   }
   App.refresh = function () { renderView(false); };
+  // Profil (ism, rang) o'zgarganda menyu va yuqori panel ham yangilanadi
+  App.rebuildShell = function () { var me = App.me(); if (me) { App.applyPrefs(me); buildShell(me); renderView(false); } };
 
   function renderGuest(r) {
     var app = U.$('app');
@@ -252,7 +254,8 @@
     if (change.label === 'wipe') { R.go('#/welcome', true); return; }
     var me = App.me();
     if (!me) { if (App.state.route && App.state.route.route && App.state.route.route.def.role !== 'guest') R.go('#/login', true); return; }
-    if (App.state.shellLang !== I.lang || App.state.shellRole !== me.role) { App.applyPrefs(me); buildShell(me); renderView(true); return; }
+    App.applyPrefs(me);   // mavzu/til sozlamasi o'zgargan bo'lishi mumkin
+    if (App.state.shellLang !== I.lang || App.state.shellRole !== me.role || App.state.shellUser !== me.id) { buildShell(me); renderView(true); return; }
     renderView(false);
   });
   // Boshqa oynada o'zgarsa
