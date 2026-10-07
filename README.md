@@ -3,7 +3,9 @@
 **Bosqich:** tuman · **Ishtirokchi kodi:** KOD · **Bilet:** 010 (B daraja, manbadagi 089) · **Yo‘nalish:** Jamoa va ishni tashkil etish
 **Repo:** https://github.com/AdilxanKenesov/Team-Board
 
-Jamoaga vazifalar bajarilishini kuzatishga yordam beradigan bitta sahifali veb-sayt. Vazifa qo‘shiladi va tugmalar (yoki sichqoncha bilan sudrash) orqali **Yangi → Bajarilmoqda → Tugagan** ustunlari bo‘ylab o‘tkaziladi. Har ustunda son, umumiy holat chizig‘i, mas’ul va muddatlar ko‘rinadi.
+Jamoaga vazifalar bajarilishini kuzatishga yordam beradigan veb-ilova. Vazifa qo‘shiladi va tugmalar (yoki sichqoncha bilan sudrash) orqali **Yangi → Bajarilmoqda → Tugagan** ustunlari bo‘ylab o‘tkaziladi.
+
+**Ko‘rinish:** ilova uslubi — chapda menyu (Taxta, Tarix, Haqida), tepada qidiruv, filtr va “+ Vazifa”; qo‘shish va tahrir o‘ngdan chiqadigan panelda; kartada faqat nom, mas’ul, muddat va muhimlik belgisi. Oq minimal uslub, tungi rejim, telefonda tablar va suzuvchi tugma.
 
 ## Ishga tushirish
 `index.html` ni Chrome yoki Edge’da oching (ikki marta bosish yetarli). Internet, server, o‘rnatish kerak emas.
@@ -19,27 +21,28 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 | Sinov | Yangi → Bajarilmoqda: Yangi −1, Bajarilmoqda +1 | Tugma va sudrash bilan tekshirildi | ✅ |
 
 ## Qo‘shimcha imkoniyatlar (asosiy talablar bajarilgandan keyin)
-- **Mas’ul, muhimlik, muddat** — “Batafsil” qismida; muddati o‘tgan vazifa qizil belgi bilan.
+- **Mas’ul, muhimlik, muddat** — “+ Vazifa” panelida; muddati o‘tgan vazifa qizil sana bilan.
 - **Tahrirlash va o‘chirish**; har amaldan keyin **6 soniya “Bekor qilish”**.
 - **Qidiruv va filtr** (mas’ul, muhimlik); o‘zbekcha apostroflar (‘ ' ʻ) farqlanmaydi.
 - **Sudrab o‘tkazish** — faqat ruxsat etilgan ustunga; tugmalar asosiy yo‘l bo‘lib qoladi.
-- **Telefonda tablar** — uch ustun o‘rniga “Yangi / Bajarilmoqda / Tugagan” tablari.
-- **Tarix** — oxirgi 20 o‘zgarish vaqti bilan.
+- **Telefonda tablar** — uch ustun o‘rniga “Yangi / Bajarilmoqda / Tugagan” tablari; “+ Vazifa” — suzuvchi tugma.
+- **Namuna banneri** — namuna vazifalarni bir bosishda o‘chirish (o‘zingiz qo‘shganlari qoladi).
+- **Tarix** — oxirgi 10 o‘zgarish vaqti bilan (saqlanadi 50 tagacha).
 - **Yig‘ilish uchun hisobot** — bir tugma bilan matnli hisobot, nusxalash.
 
 ## Fayllar
 | Fayl | Vazifasi |
 |---|---|
-| `index.html` | Sahifa: Taxta, Tarix, Qanday ishlaydi, Jamoa uchun |
+| `index.html` | Sahifa: menyu, yuqori panel, Taxta, Tarix, Haqida, qo‘shish/tahrir paneli |
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
 | `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
 | `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
-| `test.js`, `tests/` | 20 unit + 42 brauzer tekshiruvi |
+| `test.js`, `tests/` | 20 unit + 49 brauzer tekshiruvi |
 | `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
-| `dalillar/` | 5 ta skrinshot |
+| `dalillar/` | 6 ta skrinshot |
 
 ## Sinovlar
-To‘liq jadval — `TESTLAR.md`. Qisqacha: bilet sinovi, bo‘sh/qisqa/uzun/takror nom, noto‘g‘ri va o‘tgan muddat, ikki marta bosish, ruxsat etilmagan sudrash, bekor qilish, filtr, yangilash, buzilgan va eski formatdagi ma’lumot, 390/768/1366 px, klaviatura — hammasi ✅. Topilgan 7 ta kamchilik tuzatilgan (commitlar bilan).
+To‘liq jadval — `TESTLAR.md`. Qisqacha: bilet sinovi, bo‘sh/qisqa/uzun/takror nom, noto‘g‘ri va o‘tgan muddat, ikki marta bosish, ruxsat etilmagan sudrash, bekor qilish, filtr, yangilash, buzilgan va eski formatdagi ma’lumot, 390/768/1366 px, klaviatura — hammasi ✅. Topilgan 10 ta kamchilik tuzatilgan (commitlar bilan).
 
 ## Cheklovlar
 - Ma’lumot faqat shu brauzerda saqlanadi — jamoa a’zolari o‘rtasida avtomatik ulashilmaydi (buning uchun server kerak).

@@ -1,6 +1,6 @@
 # TESTLAR — Bilet 010 “Jamoa taxtasi”
 
-Jami: **20 unit test** (`node test.js`) + **42 brauzer tekshiruvi** (`tests/`). Hammasi o‘tadi.
+Jami: **20 unit test** (`node test.js`) + **49 brauzer tekshiruvi** (`tests/`: 26 + 23). Hammasi o‘tadi.
 
 ## Qanday ishga tushiriladi
 ```
@@ -23,7 +23,7 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | Bo‘sh nom / faqat probel | “Vazifa nomini yozing.” | ✅ |
 | 1 belgi / 81 belgi | “kamida 2…” / “80 tadan oshmasin (hozir 81 ta)” | ✅ |
 | Takror nom (katta-kichik harf, probel farqi bilan) | “Bunday vazifa allaqachon bor…” | ✅ |
-| Mas’ul 1 belgi | “Mas’ul ismi 2–30 ta belgi bo‘lsin.”, “Batafsil” o‘zi ochiladi | ✅ |
+| Mas’ul 1 belgi | “Mas’ul ismi 2–30 ta belgi bo‘lsin.”, panel ochiq qoladi | ✅ |
 | Muddat o‘tgan sana | “Muddat bugundan oldin bo‘lmasin.” | ✅ |
 | Muddat `2026-02-30` | “Muddat noto‘g‘ri sana.” | ✅ (unit) |
 | Tahrirda boshqa vazifa nomi | rad etiladi; o‘z nomini qayta saqlash mumkin | ✅ |
@@ -34,7 +34,10 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 |---|---|---|
 | Ko‘chirish → “Bekor qilish” | sonlar oldingi holatga qaytadi | ✅ |
 | O‘chirish → “Bekor qilish” | vazifa qaytadi | ✅ |
-| Tahrir, Esc | o‘zgarish saqlanmaydi | ✅ |
+| Tahrir paneli, Esc | o‘zgarish saqlanmaydi, panel yopiladi | ✅ |
+| Filtr paneli | ochiladi, faol filtrlar soni ko‘rinadi, Esc yopadi | ✅ |
+| “Namunalarni o‘chirish” | faqat namuna vazifalar o‘chadi, banner yo‘qoladi | ✅ |
+| Panel yopilganda fokus | “+ Vazifa” tugmasiga qaytadi | ✅ |
 | Yangi → Tugagan sudrash | rad, “Bu ustunga o‘tkazib bo‘lmaydi” | ✅ |
 | Qidiruv `ROʻYXAT` (boshqa apostrof) | “ro‘yxat” topiladi; “1 / 5 ta vazifa” | ✅ |
 | Filtrda | ustun sonlari umumiy; bo‘sh ustunda “Filtrga mos vazifa yo‘q” | ✅ |
@@ -49,7 +52,7 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | Sinov | Kutilgan | Natija |
 |---|---|---|
 | 390 / 768 / 1366 px | yonga surish yo‘q | ✅ |
-| 390 px | ustunlar tablarga bo‘linadi, ← → bilan tab almashadi | ✅ |
+| 390 px | ustunlar tablarga bo‘linadi, ← → bilan tab almashadi; “+ Vazifa” suzuvchi tugma | ✅ |
 | Ko‘chirish / tahrir / o‘chirishdan keyin fokus | mantiqiy joyda, `body`da emas | ✅ |
 | Kunduzgi va tungi rejim | ikkalasi ham o‘qiladi | ✅ (skrinshot) |
 
@@ -63,5 +66,8 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | 5 | Telefonda “Bajarilmoqda 1” tabi 2 qatorga bo‘linardi | bir qatorga sig‘diriladi | `478080c` |
 | 6 | Tahrir shaklida bo‘sh xato qatorlari bo‘shliq qoldirardi | bo‘sh xato joy olmaydi | `478080c` |
 | 7 | Tungi rejimda “Bekor qilish” tugmasi kontrasti past | matn rangi + ramka | `478080c` |
+| 8 | v3: qidiruv ikonkasi placeholder ustiga tushardi | maydon ichki chegarasi tuzatildi | `febeae3` |
+| 9 | v3: telefonda yuqori menyu ekran balandligigacha cho‘zilardi | grid qatorlari `auto 1fr` | `febeae3` |
+| 10 | v3: 768 px da “Tugatish” tugmasi kartadan chiqib ketardi | karta pastki qatori o‘raladi | `febeae3` |
 
 Sinov jarayonidagi o‘z xatom: test skriptida Esc kartaga yuborilgan edi (shaklga yetmagan) — test tuzatildi, sayt to‘g‘ri ishlagan.

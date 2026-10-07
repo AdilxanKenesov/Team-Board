@@ -6,8 +6,8 @@
 - **Yechim:** uch ustunli taxta — har vazifaning bosqichi, egasi va muddati bir qarashda; “Jamoa holati” chizig‘i va yig‘ilish uchun tayyor hisobot.
 
 ## 2. Namoyish — 5 daqiqa (shu tartibda)
-1. Bo‘sh nom bilan “Qo‘shish” → xato xabari (**noto‘g‘ri kiritish**).
-2. “Hisobot tayyorlash”, mas’ul “Sardor”, muhimlik “Yuqori” → qo‘shiladi.
+1. “+ Vazifa” → panel ochiladi; bo‘sh nom bilan “Qo‘shish” → xato xabari (**noto‘g‘ri kiritish**).
+2. “Hisobot tayyorlash”, mas’ul “Sardor”, muhimlik “Yuqori” → qo‘shiladi, panel yopiladi.
 3. “Boshlash →” → **Yangi −1, Bajarilmoqda +1** (bilet sinovi). Sonlarni ko‘rsating.
 4. “Bekor qilish” → qaytadi; yana “Boshlash →”.
 5. Sichqoncha bilan Tugaganga sudrash; Yangi → Tugagan sudrab bo‘lmasligini ko‘rsatish.
@@ -20,13 +20,13 @@
 Vazifa qo‘shadi, ish boshlanganda va tugaganda uni keyingi ustunga o‘tkazadi, kim nima qilayotganini va nima kechikkanini ko‘radi.
 
 **Nega shu vosita?**
-Claude Code fayllarni o‘zi yozadi, testlarni ishga tushiradi va brauzerda tekshiradi — 90 daqiqada reja, kod, 62 ta sinov va hujjatni bir joyda qilish mumkin bo‘ldi. Natija oddiy HTML/CSS/JS — internetsiz, o‘rnatishsiz ochiladi.
+Claude Code fayllarni o‘zi yozadi, testlarni ishga tushiradi va brauzerda tekshiradi — reja, kod, 69 ta sinov va hujjatni bir joyda qilish mumkin bo‘ldi. Natija oddiy HTML/CSS/JS — internetsiz, o‘rnatishsiz ochiladi.
 
 **AI natijasida nima o‘zgartirildi?**
-Qo‘shimchalarni o‘zim tanladim; bosqichlarni commitlarga bo‘ldim. Sinovda 7 ta kamchilik topilib tuzatildi: masalan, telefonda vazifa boshqa tabga o‘tganda fokus yo‘qolardi; hisobot oynasi yopilganda fokus noto‘g‘ri joyga qaytardi; tungi rejimda tugma kontrasti past edi. Bir marta commit test natijasini kutmay o‘tib ketdi — shundan keyin commit faqat hamma test o‘tsa bajariladigan qilindi.
+Qo‘shimchalarni va dizayn yo‘nalishini o‘zim tanladim: birinchi dizaynda matn juda ko‘p edi — ilova ko‘rinishiga o‘tkazib, matnni qisqartirdim (qo‘shish/tahrir alohida panelda, kartada faqat kerakli ma’lumot). Bosqichlarni commitlarga bo‘ldim. Sinovda 10 ta kamchilik topilib tuzatildi: masalan, telefonda vazifa boshqa tabga o‘tganda fokus yo‘qolardi; hisobot oynasi yopilganda fokus noto‘g‘ri joyga qaytardi; tungi rejimda tugma kontrasti past edi. Bir marta commit test natijasini kutmay o‘tib ketdi — shundan keyin commit faqat hamma test o‘tsa bajariladigan qilindi.
 
 **Qaysi xato qanday tekshirildi?**
-`node test.js` (20 test) va `tests/` dagi brauzer testlari (42 tekshiruv). Misol: hisobot oynasi Esc bilan yopilganda fokus qayerga tushishi avtomatik tekshirildi, xato topildi, tuzatildi, qayta tekshirildi (`7dadcee`).
+`node test.js` (20 test) va `tests/` dagi brauzer testlari (49 tekshiruv). Misol: hisobot oynasi Esc bilan yopilganda fokus qayerga tushishi avtomatik tekshirildi, xato topildi, tuzatildi, qayta tekshirildi (`7dadcee`).
 
 **Cheklovlar?**
 Ma’lumot faqat shu brauzerda — jamoa bilan ulashish uchun server kerak. “Bekor qilish” faqat oxirgi amalga. Sudrash faqat sichqonchada (telefonda tugmalar).

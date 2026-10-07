@@ -73,11 +73,31 @@ README v2, PROMPTS.md, HIMOYA.md; maxfiy kalit tekshiruvi; papka nomi tuman_<KOD
 Yangi funksiya qo'shma.
 ```
 
+## v3 — qayta dizayn
+Ishtirokchi fikri: “dizayn yoqmadi, matn juda ko‘p, hammasi bir joyga yig‘ilgan”. Variantlar ko‘rsatildi (ASCII maket bilan), ishtirokchi tanladi: **ilova ko‘rinishi** + **oq minimal uslub**.
+
+### P8 — Qayta dizayn
+```
+Redesign layout and visual layer. Do NOT change logic.js. Keep every element id used by script.js and tests.
+Layout: app shell — left sidebar (Taxta, Tarix, Haqida; Hisobot, Tozalash at bottom),
+top bar (search with icon, Filtr popover with active-count badge, "+ Vazifa" primary).
+Add/edit in one right-side drawer (focus trap, Esc closes, focus returns to opener).
+Cut text: no helper paragraphs; card = title + assignee avatar + due date + flag only if high priority;
+created time only in title attribute and history; sample data = one banner with "remove samples".
+"Qanday ishlaydi" + "Jamoa uchun" → one short "Haqida" (1 sentence + 3 lines).
+Style: white minimal (Linear/Notion), neutral lanes, colour only for status dots, overdue, primary action.
+Tokens: bg #fff, side #f7f7f8, line #e6e6e9, ink #18181b, muted #71717a, primary #4f46e5; dark mode.
+Mobile ≤640: sidebar → compact top header, column tabs, floating "+ Vazifa".
+Update e2e tests for the drawer (no fewer checks), run all, screenshot 1366/768/390/dark, fix issues.
+```
+Natija: 49/49 brauzer tekshiruvi, 3 ta ko‘rinish xatosi topilib tuzatildi (TESTLAR.md, 8–10).
+
 ## AI natijasida kiritilgan muhim tuzatishlar
-- Sinovda topilgan 7 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
+- Sinovda topilgan 10 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
 - Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.
 
 ## Ishtirokchi qarorlari
 - Qo'shimchalar ro'yxati va har bosqich commit qilinishi — ishtirokchi tanlovi.
 - Repo nomi: Team-Board.
+- Dizayn yo‘nalishi: ilova ko‘rinishi + oq minimal (3 variantdan tanlandi).
 - <o'zingiz kiritgan boshqa o'zgarishlar>
