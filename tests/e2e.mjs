@@ -55,7 +55,7 @@ await test('login: noto‘g‘ri parol, keyin admin bilan kirish', async () => j
   ${$('#li-login')}.value='admin'; ${$('#li-pass')}.value='xato12'; ${$('#login-form')}.requestSubmit(); ${W}
   const err=${$('#login-error')}.textContent;
   ${$('.demo-acc[data-login="admin"]')}.click(); ${W}${W}
-  return /noto‘g‘ri/.test(err) && location.hash==='#/admin' && document.querySelectorAll('.nav a').length===8;`));
+  return /noto‘g‘ri/.test(err) && location.hash==='#/admin' && document.querySelectorAll('.nav a').length===4;`));
 await test('xodim admin sahifasiga o‘ta olmaydi', async () => {
   await open('#/admin/users', 'malika');
   return js(`return location.hash==='#/me' || location.hash==='#/me/board' ? true : location.hash;`);
@@ -76,37 +76,8 @@ await test('vazifa yaratish → xodimga bildirishnoma', async () => js(`
   return /yozing/.test(err) && !document.getElementById('task-form') && App.Store.unreadCount('u_bekzod')===before+1;`));
 
 /* ================= jadval ================= */
-await test('jadval: saralash, tanlash, ommaviy holat, CSV tugmasi', async () => {
-  await open('#/admin/tasks', 'admin');
-  return js(`const rows=()=>document.querySelectorAll('.table--tasks tbody tr').length;
-    const r0=rows(); ${$('#sort-due')}.click(); ${W}
-    ${$('#sel-all')}.click(); ${W} const bar=!!document.querySelector('.bulkbar');
-    const sel=${$('#bulk-status')}; sel.value='done'; sel.dispatchEvent(new Event('change')); ${W}
-    const doneAll=[...document.querySelectorAll('.table--tasks tbody tr .pill')].every(p=>p.classList.contains('pill--done'));
-    return r0===12 && bar && doneAll && !!document.getElementById('export-csv') && !!document.getElementById('page-next');`);
-});
-
 /* ================= kalendar ================= */
-await test('kalendar: oy to‘ri, kechikkanlar, oy almashtirish', async () => {
-  await open('#/admin/calendar', 'admin');
-  return js(`const chips=document.querySelectorAll('.mcal .cal-chip').length; const t0=${$('.cal-nav__title')}.textContent;
-    ${$('#cal-next')}.click(); ${W} const t1=${$('.cal-nav__title')}.textContent;
-    return chips>5 && t0!==t1 && document.querySelectorAll('.cal-side .cal-chip.is-late').length>=1 ? true : {chips,t0,t1};`);
-});
-await test('kalendar: bo‘sh kunga bosish → shu sana bilan forma', async () => js(`
-  ${$('#cal-today')}.click(); ${W}
-  const b=[...document.querySelectorAll('.mcal__add')].pop(); const d=b.closest('.mcal__day').dataset.date; b.click(); ${W}
-  const ok=!!document.getElementById('task-form') && document.getElementById('tf-due').value===d;
-  document.querySelector('.modal .icon-btn').click(); return ok;`));
-
 /* ================= loyihalar va xodimlar ================= */
-await test('loyihalar: 3 karta, yangi loyiha, takror nom xatosi', async () => {
-  await open('#/admin/projects', 'admin');
-  return js(`const n0=document.querySelectorAll('.proj-card').length;
-    ${$('#add-project')}.click(); ${W} ${$('#pf-name')}.value='Yoshlar forumi'; ${$('#pf-submit')}.click(); ${W}
-    const dup=${$('#pf-name-error')}.textContent; ${$('#pf-name')}.value='Sport musobaqasi'; ${$('#pf-submit')}.click(); ${W}
-    return n0===3 && /bor/.test(dup) && document.querySelectorAll('.proj-card').length===4;`);
-});
 await test('xodimlar: qo‘shish → yangi login bilan kirish mumkin', async () => {
   await open('#/admin/users', 'admin');
   return js(`${$('#add-user')}.click(); ${W}
@@ -148,28 +119,34 @@ await test('parol tiklangandan keyin birinchi kirishda almashtirish so‘raladi'
 });
 
 /* ================= analitika, hisobot, faollik, buyruqlar, sozlamalar ================= */
-await test('dashboard: KPI, donut, dinamika 7→14 kun, jadval ko‘rinishi', async () => {
+await test('dashboard: KPI raqamlar, diqqat ro‘yxati, menyu soddalashgan', async () => {
   await open('#/admin', 'admin');
   return js(`
     const c=App.Logic.counts(App.Store.db.tasks, App.today());
     const kpiOk=${$('#kpi-open')}.textContent===String(c.new+c.doing) && ${$('#kpi-done')}.textContent===c.donePercent+'%' && ${$('#kpi-late')}.textContent===String(c.overdue);
-    const segs=document.querySelectorAll('.donut__seg').length;
-    const h7=document.querySelectorAll('.cols__svg .hit').length;
-    ${$('#dyn-14')}.click(); ${W}
-    const h14=document.querySelectorAll('.cols__svg .hit').length;
-    ${$('#tbl-status')}.click(); ${W}
-    const rows=document.querySelectorAll('.chart-table tbody tr').length;
-    return kpiOk && segs===3 && h7===7 && h14===14 && rows===3 ? true : {kpiOk,segs,h7,h14,rows};`);
+    const noCharts=!document.querySelector('.donut, .cols__svg, #search-trigger');
+    const att=document.querySelectorAll('.trows .trow').length;
+    const navs=[...document.querySelectorAll('.nav a')].map(a=>a.getAttribute('href')).join(',');
+    location.hash='#/admin/calendar'; ${W}${W}
+    const gone=/topilmadi/.test(document.getElementById('view').textContent);
+    return kpiOk && noCharts && att>0 && navs==='#/admin,#/admin/board,#/admin/users,#/admin/reports' && gone ? true : {kpiOk,noCharts,att,navs,gone};`);
 });
-await test('dashboard: tooltip va "Muddati o‘tgan" KPI jadvalni filtrlaydi', async () => js(`
-  const hit=document.querySelector('.cols__svg .hit'); const r=hit.getBoundingClientRect();
-  hit.dispatchEvent(new MouseEvent('mousemove',{clientX:r.left+5,clientY:r.top+20,bubbles:true}));
-  const tip=document.querySelector('.chart-tip'); const tipOk=tip && !tip.hidden && /Yaratildi/.test(tip.textContent);
-  hit.dispatchEvent(new MouseEvent('mouseleave'));
+await test('dashboard: "Muddati o‘tgan" KPI taxtani kechikkanlar bilan ochadi', async () => js(`
+  location.hash='#/admin'; ${W}${W}
   ${$('a[data-key="kpi-kpi-late"]')}.click(); ${W}${W}
-  const n=document.querySelectorAll('tbody tr').length;
-  App.getTaskFilter('table').onlyOverdue=false;
-  return tipOk && location.hash==='#/admin/tasks' && n===App.Store.db.tasks.filter(t=>App.Logic.isOverdue(t,App.today())).length ? true : {tipOk,n};`));
+  const n=document.querySelectorAll('.kcard').length, on=${$('#admin-late')}.getAttribute('aria-pressed');
+  App.getTaskFilter('admin').onlyOverdue=false;
+  return location.hash==='#/admin/board' && on==='true' && n===App.Store.db.tasks.filter(t=>App.Logic.isOverdue(t,App.today())).length ? true : {n,on};`));
+await test('xodim menyusi: 3 bo‘lim, vazifa yaratish tugmasi yo‘q', async () => {
+  await open('#/me/board', 'malika');
+  return js(`
+    const navs=document.querySelectorAll('.nav a').length;
+    const noAdd=!document.getElementById('add-task') && !document.getElementById('quick-add');
+    document.dispatchEvent(new KeyboardEvent('keydown',{key:'n',bubbles:true})); ${W}
+    const noForm=!document.getElementById('tf-title');
+    const r=App.Store.createTask(App.me(), {title:'Xodim yaratmoqchi', status:'new', priority:'orta'});
+    return navs===3 && noAdd && noForm && !r.ok ? true : {navs,noAdd,noForm,r:r.ok};`);
+});
 await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
   await open('#/admin/reports', 'admin');
   return js(`
@@ -182,35 +159,6 @@ await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
     let csv=null; const orig=App.UI.download; App.UI.download=(n,c)=>{csv={n,c}}; ${$('#rp-csv')}.click(); App.UI.download=orig;
     sel.value=''; sel.dispatchEvent(new Event('change')); per.value='30'; per.dispatchEvent(new Event('change'));
     return all===24 && sayt===7 && inSheet===7 && week && printCss && csv && /\\.csv$/.test(csv.n) && csv.c.split('\\r\\n').length===App.Store.db.tasks.filter(t=>t.projectId==='p_sayt' && (t.status!=='done'||t.completedAt>=Date.now()-8*864e5)).length+1 ? true : {all,sayt,inSheet,week,printCss,csv:csv&&csv.n};`);
-});
-await test('faollik jurnali: xodim va qidiruv filtri', async () => {
-  await open('#/admin/activity', 'admin');
-  return js(`
-    const n0=document.querySelectorAll('.act-row').length;
-    const u=${$('#act-user')}; u.value='u_jasur'; u.dispatchEvent(new Event('change')); ${W}
-    const onlyJ=[...document.querySelectorAll('.act-row__text b')].every(b=>b.textContent==='Jasur Toshmatov');
-    const q=${$('#act-q')}; q.value='maqola'; q.dispatchEvent(new Event('input')); ${W}
-    const n2=document.querySelectorAll('.act-row').length;
-    ${$('#act-clear')}.click(); ${W}
-    return n0>10 && onlyJ && n2>0 && n2<n0 && document.querySelectorAll('.act-row').length===n0 ? true : {n0,onlyJ,n2};`);
-});
-await test('buyruqlar paneli: Ctrl+K, qidirish, Enter vazifani ochadi', async () => js(`
-  document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true})); ${W}
-  const q=${$('#pal-q')}; if(!q) return 'panel ochilmadi';
-  q.value='byudjet'; q.dispatchEvent(new Event('input'));
-  const first=document.querySelector('.pal__item[aria-selected="true"]').textContent;
-  q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); ${W}${W}
-  const dr=document.querySelector('.drawer');
-  return /Forum byudjeti/.test(first) && !document.getElementById('pal-q') && dr && /Forum byudjeti/.test(dr.textContent) ? true : {first,dr:!!dr};`));
-await test('buyruqlar paneli: o‘qlar bilan tanlash, sahifaga o‘tish, bo‘sh natija', async () => {
-  await open('#/admin', 'admin');
-  return js(`
-    App.openPalette(); ${W}
-    const q=${$('#pal-q')}; q.value='zzzqqq'; q.dispatchEvent(new Event('input'));
-    const empty=!!document.querySelector('.pal__empty');
-    q.value='faollik'; q.dispatchEvent(new Event('input'));
-    q.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true})); ${W}${W}
-    return empty && location.hash==='#/admin/activity' ? true : {empty,h:location.hash};`);
 });
 await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
   await open('#/settings', 'malika');
@@ -252,7 +200,7 @@ await test('telefon 390px: yonga surish yo‘q, pastki menyu, tablar', async () 
   await width(390); await open('#/me/board', 'malika');
   return js(`return document.documentElement.scrollWidth<=390 && getComputedStyle(${$('.bottom-nav')}).display!=='none' && getComputedStyle(${$('.tabs')}).display!=='none' ? true : document.documentElement.scrollWidth;`);
 });
-for (const [hash, user] of [['#/admin', 'admin'], ['#/admin/reports', 'admin'], ['#/admin/activity', 'admin'], ['#/settings', 'admin'], ['#/settings', 'malika']]) {
+for (const [hash, user] of [['#/admin', 'admin'], ['#/admin/reports', 'admin'], ['#/settings', 'admin'], ['#/settings', 'malika']]) {
   await test('telefon 390px: ' + hash + ' (' + user + ') yonga surilmaydi', async () => {
     await open(hash, user);
     return js(`return document.documentElement.scrollWidth<=390 ? true : document.documentElement.scrollWidth;`);

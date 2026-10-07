@@ -44,7 +44,7 @@ h1, h2, h3, h4, .card__title, .kpi__val, .auth__title, .auth__headline, .hero__t
 .nav a[aria-current="page"] .ico { color: var(--side-accent); }
 .side__me { border: 1px solid rgba(255, 255, 255, .06); }
 .topbar { background: color-mix(in srgb, var(--bg) 82%, transparent) !important; }
-.search-trigger { border-radius: 11px !important; box-shadow: var(--shadow-sm); }
+.topbar__tools { margin-left: auto; }
 
 /* ---------- Boshqaruv paneli: hero ---------- */
 .dash-hero {

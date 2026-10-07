@@ -27,17 +27,12 @@
     admin: [
       ['dashboard', '#/admin', 'Boshqaruv paneli', 'dashboard', 'Panel'],
       ['board', '#/admin/board', 'Taxta', 'board', 'Taxta'],
-      ['tasks', '#/admin/tasks', 'Vazifalar', 'list', 'Ro‘yxat'],
-      ['calendar', '#/admin/calendar', 'Kalendar', 'calendar', 'Kalendar'],
-      ['projects', '#/admin/projects', 'Loyihalar', 'folder'],
-      ['users', '#/admin/users', 'Xodimlar', 'users'],
-      ['reports', '#/admin/reports', 'Hisobotlar', 'report'],
-      ['activity', '#/admin/activity', 'Faollik', 'activity']
+      ['users', '#/admin/users', 'Xodimlar', 'users', 'Xodimlar'],
+      ['reports', '#/admin/reports', 'Hisobotlar', 'report', 'Hisobot']
     ],
     member: [
       ['home', '#/me', 'Mening kunim', 'home', 'Bugun'],
       ['myboard', '#/me/board', 'Mening taxtam', 'board', 'Taxta'],
-      ['mycalendar', '#/me/calendar', 'Kalendar', 'calendar', 'Kalendar'],
       ['notifications', '#/me/notifications', 'Bildirishnomalar', 'bell', 'Xabarlar']
     ]
   };
@@ -74,8 +69,6 @@
         h('a', { class: 'side__link', href: '#/settings', dataset: { nav: 'settings' } }, U.icon('settings'), h('span', null, t('Sozlamalar'))),
         meCard));
 
-    var search = h('button', { type: 'button', class: 'search-trigger', id: 'search-trigger', 'aria-label': t('Qidirish (Ctrl+K)'), onClick: function () { App.openPalette && App.openPalette(); } },
-      U.icon('search'), h('span', null, t('Qidirish…')), h('kbd', null, 'Ctrl K'));
     var bell = h('button', { type: 'button', class: 'icon-btn icon-btn--lg bell', id: 'bell', 'aria-label': t('Bildirishnomalar'), 'aria-haspopup': 'menu', 'aria-expanded': 'false', onClick: function (e) { openBell(e.currentTarget); } },
       U.icon('bell'), h('span', { class: 'bell__badge', id: 'bell-badge', hidden: true }));
     var theme = h('button', { type: 'button', class: 'icon-btn icon-btn--lg', id: 'theme-toggle', 'aria-label': t('Mavzuni almashtirish'), onClick: toggleTheme }, U.icon('moon'));
@@ -84,7 +77,7 @@
     var topbar = h('header', { class: 'topbar' },
       h('button', { type: 'button', class: 'icon-btn icon-btn--lg topbar__menu', 'aria-label': t('Menyu'), onClick: function () { document.body.classList.toggle('side-open'); } }, U.icon('menu')),
       h('div', { class: 'topbar__title' }, h('h1', { id: 'page-title' }, ''), h('p', { id: 'page-sub', class: 'topbar__sub' }, '')),
-      search, h('div', { class: 'topbar__tools' }, theme, bell, userBtn));
+      h('div', { class: 'topbar__tools' }, theme, bell, userBtn));
 
     var main = h('div', { class: 'main' }, topbar, h('main', { id: 'view', class: 'view', tabindex: '-1' }));
     var bottom = h('nav', { class: 'bottom-nav', 'aria-label': t('Pastki menyu') }, items.slice(0, 4).map(function (it) {
@@ -265,7 +258,7 @@
 
   /* ---------------- tezkor tugmalar ---------------- */
   App.showShortcuts = function () {
-    var rows = [['Ctrl + K', t('Qidirish va buyruqlar')], ['N', t('Yangi vazifa (administrator)')], ['G, B', t('Taxtaga o‘tish')],
+    var rows = [['N', t('Yangi vazifa (administrator)')], ['G, B', t('Taxtaga o‘tish')],
       ['G, D', t('Bosh sahifaga o‘tish')], ['Esc', t('Oynani yopish')], ['?', t('Shu ro‘yxat')]];
     U.modal({ title: t('Tezkor tugmalar'), size: 'sm', body: h('dl', { class: 'kbd-list' }, rows.map(function (r) { return h('div', null, h('dt', null, h('kbd', null, r[0])), h('dd', null, r[1])); })) });
   };
@@ -273,7 +266,6 @@
   document.addEventListener('keydown', function (e) {
     var me = App.me();
     if (!me || e.defaultPrevented) return;
-    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if (App.openPalette) App.openPalette(); return; }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var tg = e.target;
     if (tg && (tg.isContentEditable || /^(INPUT|SELECT|TEXTAREA)$/.test(tg.tagName))) return;

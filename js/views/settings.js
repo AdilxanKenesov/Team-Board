@@ -115,7 +115,7 @@
     grid.appendChild(section('st-h-about', 'sparkle', t('Tizim haqida'), null, h('div', { class: 'set-about' },
       h('p', null, h('b', null, 'Jamoa taxtasi Pro'), ' · ', t('kutubxonasiz HTML, CSS va JavaScript; internet va server talab qilinmaydi.')),
       h('div', { class: 'alert alert--info' }, U.icon('lock'), h('span', null, t('Parollar SHA-256 + tuz bilan xeshlanadi va 5 marta xato kiritilganda kirish 30 soniyaga bloklanadi. Lekin bu namoyish darajasidagi himoya: ma’lumotlar shu brauzerda saqlanadi, haqiqiy tizimda server kerak.'))),
-      h('p', { class: 'muted' }, t('Yorliqlar: Ctrl+K — qidirish, N — yangi vazifa, ? — barcha yorliqlar.'))), 'set-card--wide'));
+      h('p', { class: 'muted' }, t('Yorliqlar: N — yangi vazifa, G B — taxta, ? — barcha yorliqlar.'))), 'set-card--wide'));
 
     view.appendChild(grid);
   } });
