@@ -38,15 +38,42 @@
             <h1 id="board-title">Vazifalar taxtasi</h1>
             <p class="lead">Vazifani qo‘shing, ish boshlanganda va tugaganda tugma bilan keyingi ustunga o‘tkazing.</p>
           </div>
+
           <form id="add-form" class="add" novalidate>
-            <label for="title" class="add__label">Yangi vazifa nomi</label>
+            <label for="title" class="field-label">Yangi vazifa nomi</label>
             <div class="add__row">
               <input id="title" name="title" type="text" autocomplete="off" maxlength="120"
                      placeholder="Masalan: Hisobotni tayyorlash" aria-describedby="title-error title-hint">
               <button type="submit" class="btn btn--primary">Qo‘shish</button>
             </div>
-            <p id="title-hint" class="add__hint">2–80 ta belgi. Bir xil nomli vazifa ikki marta qo‘shilmaydi.</p>
+            <p id="title-hint" class="hint">2–80 ta belgi. Bir xil nomli vazifa ikki marta qo‘shilmaydi.</p>
             <p id="title-error" class="error" role="alert"></p>
+
+            <details class="more" id="more">
+              <summary>Batafsil: mas’ul, muhimlik, muddat</summary>
+              <div class="more__grid">
+                <div class="field">
+                  <label for="assignee" class="field-label">Mas’ul</label>
+                  <input id="assignee" type="text" list="assignee-list" autocomplete="off" maxlength="40"
+                         placeholder="Ixtiyoriy" aria-describedby="assignee-error">
+                  <p id="assignee-error" class="error" role="alert"></p>
+                </div>
+                <div class="field">
+                  <label for="priority" class="field-label">Muhimlik</label>
+                  <select id="priority">
+                    <option value="yuqori">Yuqori</option>
+                    <option value="orta" selected>O‘rta</option>
+                    <option value="past">Past</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="due" class="field-label">Muddat</label>
+                  <input id="due" type="date" aria-describedby="due-error">
+                  <p id="due-error" class="error" role="alert"></p>
+                </div>
+              </div>
+            </details>
+            <datalist id="assignee-list"></datalist>
           </form>
         </div>
 
@@ -62,22 +89,44 @@
           </div>
         </div>
 
+        <div class="filters" role="search" aria-label="Vazifalarni filtrlash">
+          <div class="field field--grow">
+            <label for="f-q" class="field-label">Qidirish</label>
+            <input id="f-q" type="search" autocomplete="off" placeholder="Nom yoki mas’ul bo‘yicha">
+          </div>
+          <div class="field">
+            <label for="f-who" class="field-label">Mas’ul</label>
+            <select id="f-who"><option value="">Hammasi</option></select>
+          </div>
+          <div class="field">
+            <label for="f-pr" class="field-label">Muhimlik</label>
+            <select id="f-pr">
+              <option value="">Hammasi</option>
+              <option value="yuqori">Yuqori</option>
+              <option value="orta">O‘rta</option>
+              <option value="past">Past</option>
+            </select>
+          </div>
+          <button type="button" id="f-clear" class="btn btn--ghost btn--sm" hidden>Filtrni tozalash</button>
+          <p id="f-result" class="filters__result" aria-live="polite"></p>
+        </div>
+
         <div class="columns">
-          <section class="col col--new" aria-labelledby="h-new">
+          <section class="col col--new" aria-labelledby="h-new" data-status="new">
             <header class="col__head">
               <h2 id="h-new"><span class="dot" aria-hidden="true"></span>Yangi</h2>
               <span class="col__count" id="count-new" aria-label="Yangi ustunidagi vazifalar soni">0</span>
             </header>
             <ul class="list" id="list-new"></ul>
           </section>
-          <section class="col col--doing" aria-labelledby="h-doing">
+          <section class="col col--doing" aria-labelledby="h-doing" data-status="doing">
             <header class="col__head">
               <h2 id="h-doing"><span class="dot" aria-hidden="true"></span>Bajarilmoqda</h2>
               <span class="col__count" id="count-doing" aria-label="Bajarilmoqda ustunidagi vazifalar soni">0</span>
             </header>
             <ul class="list" id="list-doing"></ul>
           </section>
-          <section class="col col--done" aria-labelledby="h-done">
+          <section class="col col--done" aria-labelledby="h-done" data-status="done">
             <header class="col__head">
               <h2 id="h-done"><span class="dot" aria-hidden="true"></span>Tugagan</h2>
               <span class="col__count" id="count-done" aria-label="Tugagan ustunidagi vazifalar soni">0</span>
@@ -86,10 +135,8 @@
           </section>
         </div>
 
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-
         <div class="tools">
-          <p id="sample-note" class="sample-note" hidden>“Namuna” belgili vazifalar — sinov uchun namunaviy ma’lumot.</p>
+          <p id="sample-note" class="hint" hidden>“Namuna” belgili vazifalar — sinov uchun namunaviy ma’lumot.</p>
           <div class="reset">
             <button type="button" id="reset" class="btn btn--ghost">Taxtani tozalash</button>
             <span id="reset-confirm" class="reset__confirm" hidden>
@@ -107,10 +154,11 @@
       <div class="wrap">
         <h2 id="how-title" class="h2">Qanday ishlaydi</h2>
         <ol class="steps">
-          <li><b>Qo‘shing.</b> Vazifa nomini yozib, “Qo‘shish”ni yoki <kbd>Enter</kbd>ni bosing. U “Yangi” ustuniga tushadi.</li>
-          <li><b>Boshlang.</b> Ish boshlanganda “Boshlash” tugmasi vazifani “Bajarilmoqda”ga o‘tkazadi.</li>
+          <li><b>Qo‘shing.</b> Vazifa nomini yozib, “Qo‘shish”ni yoki <kbd>Enter</kbd>ni bosing. Kerak bo‘lsa, “Batafsil”da mas’ul, muhimlik va muddatni belgilang.</li>
+          <li><b>Boshlang.</b> “Boshlash” tugmasi vazifani “Bajarilmoqda”ga o‘tkazadi.</li>
           <li><b>Tugating.</b> “Tugatish” vazifani “Tugagan”ga o‘tkazadi. Adashsangiz, orqaga qaytarish tugmasi bor.</li>
-          <li><b>Kuzating.</b> Ustunlardagi sonlar va “Jamoa holati” chizig‘i darhol yangilanadi. Hammasi shu brauzerda saqlanadi.</li>
+          <li><b>Tuzating.</b> Qalam belgisi — tahrirlash, savat belgisi — o‘chirish. Har bir amaldan keyin 6 soniya ichida “Bekor qilish” mumkin.</li>
+          <li><b>Kuzating.</b> Ustunlardagi sonlar, “Jamoa holati” chizig‘i va muddati o‘tgan vazifalar belgisi darhol yangilanadi.</li>
         </ol>
       </div>
     </section>
@@ -125,11 +173,11 @@
           </article>
           <article class="info">
             <h3>Qanday muammo</h3>
-            <p>Vazifalar chat va daftarlarda yo‘qolib ketadi, nima tugagani noaniq qoladi. Taxta har bir ishning qaysi bosqichda ekanini ko‘rsatadi.</p>
+            <p>Vazifalar chat va daftarlarda yo‘qolib ketadi, kim mas’ul va nima kechikkani noaniq qoladi. Taxta har ishning bosqichini, egasini va muddatini ko‘rsatadi.</p>
           </article>
           <article class="info">
             <h3>Nima beradi</h3>
-            <p>Uchta aniq holat, har ustundagi son va tugaganlar foizi — yig‘ilishda “qayerdamiz?” degan savolga darhol javob.</p>
+            <p>Uchta aniq holat, har ustundagi son, tugaganlar foizi va muddati o‘tganlar ro‘yxati — yig‘ilishda “qayerdamiz?” degan savolga darhol javob.</p>
           </article>
         </div>
       </div>
@@ -139,6 +187,11 @@
   <footer class="footer">
     <div class="wrap">Bilet 010 · “Vazifalar taxtasi” · ma’lumotlar faqat shu brauzerda saqlanadi</div>
   </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+    <span id="toast-text"></span>
+    <button type="button" id="toast-undo" class="toast__btn">Bekor qilish</button>
+  </div>
 
   <script src="logic.js"></script>
   <script src="script.js"></script>
