@@ -179,6 +179,35 @@ h1 { font-size: clamp(1.5rem, 3.2vw, 2rem); line-height: 1.2; margin: 0 0 6px; l
 .toast__btn { flex: none; font: inherit; font-weight: 800; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; background: transparent; color: var(--p-mid); }
 .toast__btn:hover { background: rgba(255, 255, 255, .12); }
 
+/* ---------- v2: sudrash, tablar, tarix, hisobot ---------- */
+.task[draggable="true"] { cursor: grab; }
+.task.is-dragging { opacity: .45; }
+.dragging-on .col { transition: box-shadow .15s ease, background .15s ease; }
+.col.drop-ok { box-shadow: 0 0 0 3px var(--primary); }
+.col.drop-no { box-shadow: 0 0 0 3px var(--error); position: relative; }
+.col.drop-no::after {
+  content: "Bu ustunga o‘tkazib bo‘lmaydi"; position: absolute; inset: auto 12px 12px; text-align: center;
+  background: var(--error); color: #fff; font-weight: 700; font-size: .85rem; padding: 6px 10px; border-radius: 8px;
+}
+
+.tabs { display: none; }
+
+.history-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 8px; }
+.history-head .h2 { margin: 0; }
+.history-head .hint { margin: 0; }
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 760px; }
+.history__item { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.history__time { color: var(--muted); font-size: .88rem; font-variant-numeric: tabular-nums; padding-top: 1px; }
+.history .empty { text-align: left; }
+
+.modal { position: fixed; inset: 0; z-index: 50; background: rgba(10, 14, 12, .55); display: grid; place-items: center; padding: 16px; }
+.modal__box { background: var(--surface); color: var(--ink); border-radius: 14px; width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 18px; display: grid; gap: 10px; box-shadow: 0 20px 60px rgba(0, 0, 0, .3); }
+.modal__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.modal__head h2 { margin: 0; font-size: 1.2rem; }
+.modal textarea { width: 100%; font: .92rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); resize: vertical; }
+.modal__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.modal__actions .hint { margin: 0; }
+
 /* Qanday ishlaydi / Jamoa uchun */
 .steps { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 70ch; }
 kbd { font: inherit; font-size: .85em; font-weight: 600; padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--bg); }
@@ -205,6 +234,14 @@ kbd { font: inherit; font-size: .85em; font-weight: 600; padding: 1px 6px; borde
 /* Telefon */
 @media (max-width: 640px) {
   .columns { grid-template-columns: 1fr; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; position: sticky; top: 100px; z-index: 5; }
+  .tab { font: inherit; font-weight: 700; font-size: .88rem; padding: 9px 4px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
+  .tab span { font-variant-numeric: tabular-nums; margin-left: 2px; }
+  .tab[aria-selected="true"] { background: var(--primary); color: var(--on-primary); }
+  .columns[data-tab="new"] .col:not(.col--new),
+  .columns[data-tab="doing"] .col:not(.col--doing),
+  .columns[data-tab="done"] .col:not(.col--done) { display: none; }
+  .history__item { grid-template-columns: 1fr; gap: 0; }
   .cards3 { grid-template-columns: 1fr; }
   .topbar__inner { padding-top: 6px; padding-bottom: 6px; }
   .nav a { padding: 6px 8px; font-size: .94rem; }

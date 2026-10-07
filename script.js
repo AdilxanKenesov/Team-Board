@@ -14,6 +14,8 @@
 
   var filter = { q: '', assignee: '', priority: '' };
   var editingId = null;
+  var dragId = null, dragFrom = null;
+  var TAB_KEY = 'taxta010.tab';
   var undoSnapshot = null, undoTimer = null;
 
   // Har ustundagi o'tkazish tugmalari: [qayerga, matn, turi]
@@ -137,6 +139,18 @@
     li.appendChild(meta);
     li.appendChild(when);
     li.appendChild(actions);
+
+    // Sichqoncha bilan sudrab o'tkazish (tugmalar baribir asosiy yo'l)
+    li.draggable = true;
+    li.addEventListener('dragstart', function (e) {
+      dragId = task.id;
+      dragFrom = status;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', task.id);
+      li.classList.add('is-dragging');
+      document.body.classList.add('dragging-on');
+    });
+    li.addEventListener('dragend', endDrag);
     return li;
   }
 
@@ -249,17 +263,54 @@
     $('f-result').textContent = active ? visible.length + ' / ' + state.tasks.length + ' ta vazifa ko‘rsatilmoqda' : '';
   }
 
+  function renderTabs() {
+    var c = T.counts(state.tasks);
+    T.STATUSES.forEach(function (s) { $('tc-' + s).textContent = c[s]; });
+  }
+
+  function historyText(e) {
+    var t = '“' + e.title + '”';
+    if (e.type === 'add') return t + ' qo‘shildi';
+    if (e.type === 'move') return t + ': ' + T.LABELS[e.from] + ' → ' + T.LABELS[e.to];
+    if (e.type === 'edit') return t + ' tahrirlandi';
+    if (e.type === 'remove') return t + ' o‘chirildi';
+    return 'Taxta tozalandi (' + e.title + ')';
+  }
+
+  function renderHistory() {
+    var ol = $('history-list');
+    ol.innerHTML = '';
+    var items = state.history.slice(0, 20);
+    if (!items.length) {
+      ol.appendChild(el('li', 'empty', 'Hali o‘zgarish yo‘q. Vazifa qo‘shsangiz yoki ko‘chirsangiz, shu yerda ko‘rinadi.'));
+      return;
+    }
+    items.forEach(function (e) {
+      var li = el('li', 'history__item history__item--' + e.type);
+      var time = el('time', 'history__time', fmtTime(e.at));
+      time.dateTime = new Date(e.at).toISOString();
+      li.appendChild(time);
+      li.appendChild(el('span', null, historyText(e)));
+      ol.appendChild(li);
+    });
+  }
+
   function render(highlightId) {
     renderAssignees();
     var visible = T.filterTasks(state.tasks, filter);
     T.STATUSES.forEach(function (s) { renderColumn(s, visible, highlightId); });
     renderStats();
     renderFilterInfo(visible);
+    renderTabs();
+    renderHistory();
   }
 
   function focusTask(id, selector) {
     var t = document.querySelector('.task[data-id="' + id + '"] ' + (selector || '.move'));
-    if (t) t.focus(); else $('title').focus();
+    if (t && t.offsetParent !== null) { t.focus(); return; }
+    // Telefonda vazifa boshqa tabga o'tgan bo'lsa — fokus joriy tabda qoladi
+    var tab = document.querySelector('.tab[aria-selected="true"]');
+    if (tab && tab.offsetParent !== null) tab.focus(); else $('title').focus();
   }
 
   /* ---------------- amallar ---------------- */
@@ -340,6 +391,103 @@
     $('f-q').value = ''; $('f-who').value = ''; $('f-pr').value = '';
     render();
     $('f-q').focus();
+  });
+
+  /* ---------------- sudrab o'tkazish ---------------- */
+
+  function endDrag() {
+    dragId = dragFrom = null;
+    document.body.classList.remove('dragging-on');
+    document.querySelectorAll('.is-dragging').forEach(function (n) { n.classList.remove('is-dragging'); });
+    document.querySelectorAll('.col').forEach(function (c) { c.classList.remove('drop-ok', 'drop-no'); });
+  }
+
+  document.querySelectorAll('.col').forEach(function (col) {
+    var to = col.dataset.status;
+    col.addEventListener('dragover', function (e) {
+      if (!dragId || dragFrom === to) return;
+      var allowed = T.canMove(dragFrom, to);
+      col.classList.toggle('drop-ok', allowed);
+      col.classList.toggle('drop-no', !allowed);
+      if (allowed) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    });
+    col.addEventListener('dragleave', function (e) {
+      if (!col.contains(e.relatedTarget)) col.classList.remove('drop-ok', 'drop-no');
+    });
+    col.addEventListener('drop', function (e) {
+      e.preventDefault();
+      var id = dragId, from = dragFrom;
+      endDrag();
+      if (id && T.canMove(from, to)) onMove(id, to);
+    });
+  });
+
+  /* ---------------- telefon: tablar ---------------- */
+
+  function setTab(s, focus) {
+    $('columns').dataset.tab = s;
+    T.STATUSES.forEach(function (x) {
+      var b = $('tab-' + x);
+      b.setAttribute('aria-selected', x === s ? 'true' : 'false');
+      b.tabIndex = x === s ? 0 : -1;
+    });
+    try { storage && storage.setItem(TAB_KEY, s); } catch (e) { /* majburiy emas */ }
+    if (focus) $('tab-' + s).focus();
+  }
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () { setTab(b.dataset.tab); });
+    b.addEventListener('keydown', function (e) {
+      var i = T.STATUSES.indexOf(b.dataset.tab);
+      if (e.key === 'ArrowRight') { e.preventDefault(); setTab(T.STATUSES[(i + 1) % 3], true); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); setTab(T.STATUSES[(i + 2) % 3], true); }
+    });
+  });
+  var savedTab = null;
+  try { savedTab = storage && storage.getItem(TAB_KEY); } catch (e) { savedTab = null; }
+  setTab(T.STATUSES.indexOf(savedTab) !== -1 ? savedTab : 'new');
+
+  /* ---------------- hisobot ---------------- */
+
+  var reportReturn = null;
+  function openReport() {
+    // Ba'zi brauzerlarda tugma bosilganda fokus olmaydi — unda tugmaning o'ziga qaytamiz
+    var a = document.activeElement;
+    reportReturn = a && a !== document.body ? a : $('report-open');
+    $('report-text').value = T.buildReport(state.tasks, today());
+    $('report-msg').textContent = '';
+    $('report').hidden = false;
+    $('report-copy').focus();
+  }
+  function closeReport() {
+    $('report').hidden = true;
+    if (reportReturn) reportReturn.focus();
+  }
+  $('report-open').addEventListener('click', openReport);
+  $('report-close').addEventListener('click', closeReport);
+  $('report').addEventListener('click', function (e) { if (e.target === $('report')) closeReport(); });
+  $('report').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeReport(); }
+    if (e.key === 'Tab') {   // fokus oyna ichida aylanadi
+      var f = [$('report-close'), $('report-text'), $('report-copy')];
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  $('report-copy').addEventListener('click', function () {
+    var ta = $('report-text');
+    function fallback() {
+      ta.focus();
+      ta.select();
+      $('report-msg').textContent = 'Matn belgilandi — Ctrl+C bilan nusxalang.';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value)
+        .then(function () { $('report-msg').textContent = 'Nusxalandi.'; })
+        .catch(fallback);
+    } else {
+      fallback();
+    }
   });
 
   /* ---------------- taxtani tozalash ---------------- */
