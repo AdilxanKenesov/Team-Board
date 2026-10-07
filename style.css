@@ -58,7 +58,8 @@ body { margin: 0; font-family: var(--font); font-size: 16px; line-height: 1.5; c
 h1 { font-size: clamp(1.5rem, 3.2vw, 2rem); line-height: 1.2; margin: 0 0 6px; letter-spacing: -.02em; }
 .h2 { font-size: 1.35rem; margin: 0 0 14px; letter-spacing: -.01em; }
 .lead { margin: 0; color: var(--muted); max-width: 52ch; }
-.board-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 16px 32px; align-items: end; margin-bottom: 20px; }
+.board-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 16px 32px; align-items: start; margin-bottom: 20px; }
+.board-head > div:first-child { padding-top: 22px; }
 
 /* Shakl */
 .field-label { display: block; font-weight: 700; font-size: .92rem; margin-bottom: 6px; }
@@ -167,6 +168,8 @@ h1 { font-size: clamp(1.5rem, 3.2vw, 2rem); line-height: 1.2; margin: 0 0 6px; l
 .edit__grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
 .edit__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
 .edit__actions .hint { margin: 0; }
+.edit .error:empty, .add .error:empty, .field .error:empty { min-height: 0; margin: 0; }
+.edit .field-label { margin: 6px 0 4px; }
 
 /* Pastki xabar (bekor qilish) */
 .toast {
@@ -176,7 +179,7 @@ h1 { font-size: clamp(1.5rem, 3.2vw, 2rem); line-height: 1.2; margin: 0 0 6px; l
   box-shadow: 0 6px 24px rgba(0, 0, 0, .25); font-weight: 600; font-size: .94rem;
 }
 .toast span { overflow-wrap: anywhere; }
-.toast__btn { flex: none; font: inherit; font-weight: 800; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; background: transparent; color: var(--p-mid); }
+.toast__btn { flex: none; font: inherit; font-weight: 800; border: 1px solid currentColor; border-radius: 8px; padding: 6px 12px; cursor: pointer; background: transparent; color: inherit; }
 .toast__btn:hover { background: rgba(255, 255, 255, .12); }
 
 /* ---------- v2: sudrash, tablar, tarix, hisobot ---------- */
@@ -227,6 +230,7 @@ kbd { font: inherit; font-size: .85em; font-weight: 600; padding: 1px 6px; borde
 /* Planshet */
 @media (max-width: 900px) {
   .board-head { grid-template-columns: 1fr; }
+  .board-head > div:first-child { padding-top: 0; }
   .columns { gap: 10px; }
   .list { padding: 10px; }
   .col__head { padding: 10px 12px; }
@@ -234,8 +238,9 @@ kbd { font: inherit; font-size: .85em; font-weight: 600; padding: 1px 6px; borde
 /* Telefon */
 @media (max-width: 640px) {
   .columns { grid-template-columns: 1fr; }
-  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; position: sticky; top: 100px; z-index: 5; }
-  .tab { font: inherit; font-weight: 700; font-size: .88rem; padding: 9px 4px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  .board-head > div:first-child { padding-top: 0; }
+  .tab { font: inherit; font-weight: 700; font-size: .8rem; white-space: nowrap; padding: 9px 2px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
   .tab span { font-variant-numeric: tabular-nums; margin-left: 2px; }
   .tab[aria-selected="true"] { background: var(--primary); color: var(--on-primary); }
   .columns[data-tab="new"] .col:not(.col--new),
