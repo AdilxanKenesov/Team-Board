@@ -266,3 +266,8 @@ kbd { font: 600 11px/1 var(--font); padding: 3px 6px; color: var(--muted); backg
   .is-ghost { display: none !important; }
 }
 .avatars .avatar--sm + .avatar--sm { margin-left: -3px; }
+.menu__item--rich { align-items: flex-start; padding: 10px 12px; }
+.menu__item--rich .ico { margin-top: 2px; color: var(--primary-ink); }
+.menu__text { display: grid; gap: 1px; }
+.menu__text b { font-weight: 600; white-space: nowrap; }
+.menu__text small { font-size: 12px; color: var(--muted); white-space: normal; }

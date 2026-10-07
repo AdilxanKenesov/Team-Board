@@ -124,12 +124,21 @@ await test('dashboard: KPI raqamlar, diqqat ro‘yxati, menyu soddalashgan', asy
   return js(`
     const c=App.Logic.counts(App.Store.db.tasks, App.today());
     const kpiOk=${$('#kpi-open')}.textContent===String(c.new+c.doing) && ${$('#kpi-done')}.textContent===c.donePercent+'%' && ${$('#kpi-late')}.textContent===String(c.overdue);
-    const noCharts=!document.querySelector('.donut, .cols__svg, #search-trigger');
+    const charts=document.querySelectorAll('.donut__seg').length===3 && document.querySelectorAll('.cols__svg .hit').length===7
+      && document.querySelectorAll('.rank__row').length===6 && document.querySelectorAll('.hbar').length===8 && !document.querySelector('#search-trigger');
+    const top=document.querySelector('.rank__row b').textContent;
+    const bk=App.Logic.dueBuckets(App.Store.db.tasks, App.today());
+    const lateVal=document.querySelector('[data-key="hb-overdue"] .hbar__val').textContent===String(bk.overdue);
+    ${$('#dyn-14')}.click(); ${W}
+    const d14=document.querySelectorAll('.cols__svg .hit').length===14;
+    ${$('#tbl-rank')}.click(); ${W}
+    const tbl=document.querySelectorAll('.chart-table tbody tr').length===6; ${$('#tbl-rank')}.click(); ${$('#dyn-7')}.click(); ${W}
+    const noCharts=charts && lateVal && d14 && tbl && top==='Jasur Toshmatov';
     const att=document.querySelectorAll('.trows .trow').length;
     const navs=[...document.querySelectorAll('.nav a')].map(a=>a.getAttribute('href')).join(',');
     location.hash='#/admin/calendar'; ${W}${W}
     const gone=/topilmadi/.test(document.getElementById('view').textContent);
-    return kpiOk && noCharts && att>0 && navs==='#/admin,#/admin/board,#/admin/users,#/admin/reports' && gone ? true : {kpiOk,noCharts,att,navs,gone};`);
+    return kpiOk && noCharts && att>0 && navs==='#/admin,#/admin/board,#/admin/users,#/admin/reports' && gone ? true : {kpiOk,charts,lateVal,d14,tbl,top,att,navs,gone};`);
 });
 await test('dashboard: "Muddati o‘tgan" KPI taxtani kechikkanlar bilan ochadi', async () => js(`
   location.hash='#/admin'; ${W}${W}
@@ -180,9 +189,9 @@ await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
     const per=${$('#rp-period')}; per.value='7'; per.dispatchEvent(new Event('change')); ${W}
     const week=App.reportTasks().every(t=>t.projectId==='p_sayt' && (t.status!=='done' || t.completedAt>=Date.now()-8*864e5));
     const printCss=[...document.styleSheets].some(s=>s.media && s.media.mediaText==='print' && s.cssRules.length>5);
-    let csv=null; const orig=App.UI.download; App.UI.download=(n,c)=>{csv={n,c}}; ${$('#rp-csv')}.click(); App.UI.download=orig;
+    let csv=null; const orig=App.UI.download; App.UI.download=(n,c)=>{csv={n,c}}; ${$('#rp-export')}.click(); await new Promise(r=>setTimeout(r,100)); const menuOk=['rp-txt','rp-csv','rp-pdf'].every(i=>document.getElementById(i)); let txt=null; document.getElementById('rp-csv').click(); App.UI.download=(n,c)=>{txt={n,c}}; ${$('#rp-export')}.click(); await new Promise(r=>setTimeout(r,100)); document.getElementById('rp-txt').click(); App.UI.download=orig;
     sel.value=''; sel.dispatchEvent(new Event('change')); per.value='30'; per.dispatchEvent(new Event('change'));
-    return all===24 && sayt===7 && inSheet===7 && week && printCss && csv && /\\.csv$/.test(csv.n) && csv.c.split('\\r\\n').length===App.Store.db.tasks.filter(t=>t.projectId==='p_sayt' && (t.status!=='done'||t.completedAt>=Date.now()-8*864e5)).length+1 ? true : {all,sayt,inSheet,week,printCss,csv:csv&&csv.n};`);
+    return menuOk && txt && /\\.txt$/.test(txt.n) && /hisobot/.test(txt.c) && all===24 && sayt===7 && inSheet===7 && week && printCss && csv && /\\.csv$/.test(csv.n) && csv.c.split('\\r\\n').length===App.Store.db.tasks.filter(t=>t.projectId==='p_sayt' && (t.status!=='done'||t.completedAt>=Date.now()-8*864e5)).length+1 ? true : {all,sayt,inSheet,week,printCss,csv:csv&&csv.n};`);
 });
 await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
   await open('#/settings', 'malika');

@@ -250,6 +250,19 @@ test('store: sozlash (birinchi admin)', () => {
   assert.ok(A.login('boss', 'parol1').ok);
 });
 
+test('statistika: muddat guruhlari, muhimlik, o‘rtacha bajarish vaqti', () => {
+  const today = '2026-10-07', day = 86400000;
+  const tk = [
+    { status: 'new', due: '2026-10-05', priority: 'yuqori' }, { status: 'doing', due: '2026-10-07', priority: 'orta' },
+    { status: 'new', due: '2026-10-12', priority: 'orta' }, { status: 'new', due: '2026-11-20', priority: 'past' },
+    { status: 'doing', due: null, priority: 'yuqori' }, { status: 'done', due: '2026-10-01', priority: 'yuqori', createdAt: day, completedAt: 4 * day },
+    { status: 'done', due: null, priority: 'past', createdAt: day, completedAt: 2 * day }];
+  assert.deepStrictEqual(L.dueBuckets(tk, today), { overdue: 1, today: 1, week: 1, later: 1, none: 1 });
+  assert.deepStrictEqual(L.openByPriority(tk), { yuqori: 2, orta: 2, past: 1 });
+  assert.strictEqual(L.avgCompletionDays(tk), 2);
+  assert.strictEqual(L.avgCompletionDays([{ status: 'new' }]), null);
+});
+
 test('i18n: koddagi har bir matnning ruscha tarjimasi bor, o‘rinlar ({x}) mos', () => {
   const fs = require('fs'), vm = require('vm');
   const RU = {};
@@ -261,6 +274,10 @@ test('i18n: koddagi har bir matnning ruscha tarjimasi bor, o‘rinlar ({x}) mos'
   const bad = Object.keys(RU).filter((k) => ph(k) !== ph(RU[k]));
   assert.deepStrictEqual(bad, [], 'o‘rinlar mos emas: ' + bad.join(' | '));
   assert.ok(Object.keys(L.NOTIF_TPL).every((k) => RU[L.NOTIF_TPL[k]]), 'bildirishnoma shablonlari tarjima qilinmagan');
+  const src = fs.readFileSync(__dirname + '/../js/core/i18n-ru.js', 'utf8');
+  const all = [...src.matchAll(/^\s*'((?:[^'\\]|\\.)*)':/gm)].map((m) => m[1]);
+  const dups = all.filter((k, i) => all.indexOf(k) !== i);
+  assert.deepStrictEqual(dups, [], 'lug‘atda takroriy kalit: ' + dups.join(' | '));
 });
 
 console.log('\n' + passed + ' ta test o‘tdi' + (failed ? ', ' + failed + ' ta XATO' : '') + '.');

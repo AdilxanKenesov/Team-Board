@@ -249,6 +249,31 @@
     return out;
   };
 
+  // Ochiq vazifalar muddat bo'yicha: o'tgan, bugun, 7 kun ichida, keyinroq, muddatsiz
+  L.dueBuckets = function (tasks, today) {
+    var b = { overdue: 0, today: 0, week: 0, later: 0, none: 0 };
+    tasks.forEach(function (t) {
+      if (t.status === 'done') return;
+      if (!t.due) { b.none++; return; }
+      var n = daysBetween(today, t.due);
+      if (n < 0) b.overdue++; else if (n === 0) b.today++; else if (n <= 7) b.week++; else b.later++;
+    });
+    return b;
+  };
+  // Ochiq vazifalar muhimlik bo'yicha
+  L.openByPriority = function (tasks) {
+    var c = { yuqori: 0, orta: 0, past: 0 };
+    tasks.forEach(function (t) { if (t.status !== 'done' && c[t.priority] != null) c[t.priority]++; });
+    return c;
+  };
+  // Yaratilishdan tugatilishgacha o'rtacha kun (1 xona aniqlik); tugaganlar yo'q bo'lsa null
+  L.avgCompletionDays = function (tasks) {
+    var d = tasks.filter(function (t) { return t.status === 'done' && t.completedAt && t.createdAt && t.completedAt >= t.createdAt; });
+    if (!d.length) return null;
+    var sum = d.reduce(function (a, t) { return a + (t.completedAt - t.createdAt); }, 0);
+    return Math.round(sum / d.length / 86400000 * 10) / 10;
+  };
+
   /* ---------------- filtr va saralash ---------------- */
   // f: { q, projectId, assigneeId ('__none__' — biriktirilmagan), priority, tag, status, onlyOverdue }
   L.filterTasks = function (tasks, f, users) {

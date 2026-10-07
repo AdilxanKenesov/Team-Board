@@ -85,7 +85,7 @@
           h('div', { class: 'set-actions' },
             h('button', { type: 'button', class: 'btn btn--primary', id: 'st-pdf', onClick: function () {
               R.go('#/admin/reports');
-              setTimeout(function () { var b = U.$('rp-pdf'); if (b) b.click(); }, 300);
+              setTimeout(function () { App.exportReport('pdf'); }, 300);
             } }, U.icon('report'), t('PDF hisobot')),
             h('button', { type: 'button', class: 'btn', id: 'st-csv', onClick: function () {
               U.download('vazifalar-' + App.today() + '.csv', L.toCSV(L.tasksToRows(S.db.tasks, S.db.users, S.db.projects)), 'text/csv;charset=utf-8');

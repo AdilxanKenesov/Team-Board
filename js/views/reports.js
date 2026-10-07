@@ -17,6 +17,23 @@
   }
   App.reportTasks = function () { return pick(App.today()); };
 
+  // Hisobotni tanlangan formatda yuklab olish (joriy filtr bo'yicha)
+  App.exportReport = function (fmt) {
+    var today = App.today(), tasks = pick(today), users = S.db.users, projects = S.db.projects;
+    if (fmt === 'txt') {
+      U.download('hisobot-' + today + '.txt', L.reportText(tasks, users, projects, today));
+      U.toast(t('Matn fayl yuklandi ({n} ta vazifa).', { n: tasks.length }));
+    } else if (fmt === 'csv') {
+      U.download('hisobot-' + today + '.csv', L.toCSV(L.tasksToRows(tasks, users, projects)), 'text/csv;charset=utf-8');
+      U.toast(t('CSV fayl yuklandi ({n} ta vazifa).', { n: tasks.length }));
+    } else {
+      var old = document.title;
+      document.title = 'Hisobot ' + today;                  // PDF fayl nomi
+      root.print();
+      setTimeout(function () { document.title = old; }, 500);
+    }
+  };
+
   function select(id, label, value, options, onChange) {
     var s = h('select', { id: id, class: 'input input--sm', 'aria-label': label, onChange: function () { onChange(s.value); } },
       options.map(function (o) { return h('option', { value: o[0], selected: o[0] === value }, o[1]); }));
@@ -57,22 +74,13 @@
         select('rp-project', t('Loyiha'), f.projectId, [['', t('Barcha loyihalar')]].concat(projects.map(function (p) { return [p.id, p.name + (p.archived ? ' (' + t('arxiv') + ')' : '')]; })), rerender('projectId')),
         select('rp-user', t('Xodim'), f.assigneeId, [['', t('Barcha xodimlar')], ['__none__', t('Biriktirilmagan')]].concat(users.map(function (u) { return [u.id, u.name]; })), rerender('assigneeId'))),
       h('div', { class: 'page-head__actions' },
-        h('button', { type: 'button', class: 'btn', id: 'rp-copy', onClick: function () {
-          var txt = L.reportText(tasks, users, projects, today);
-          var done = function () { U.toast(t('Hisobot matni nusxalandi.')); };
-          if (navigator.clipboard && root.isSecureContext) navigator.clipboard.writeText(txt).then(done, function () { U.download('hisobot-' + today + '.txt', txt); });
-          else { U.download('hisobot-' + today + '.txt', txt); U.toast(t('Hisobot matni fayl sifatida yuklandi.')); }
-        } }, U.icon('copy'), t('Matn')),
-        h('button', { type: 'button', class: 'btn', id: 'rp-csv', onClick: function () {
-          U.download('hisobot-' + today + '.csv', L.toCSV(L.tasksToRows(tasks, users, projects)), 'text/csv;charset=utf-8');
-          U.toast(t('CSV fayl yuklandi ({n} ta vazifa).', { n: tasks.length }));
-        } }, U.icon('download'), 'CSV'),
-        h('button', { type: 'button', class: 'btn btn--primary', id: 'rp-pdf', onClick: function () {
-          var old = document.title;
-          document.title = 'Hisobot ' + today;               // PDF fayl nomi
-          root.print();
-          setTimeout(function () { document.title = old; }, 500);
-        } }, U.icon('report'), t('PDF / Chop etish')))));
+        h('button', { type: 'button', class: 'btn btn--primary', id: 'rp-export', 'aria-haspopup': 'menu', 'aria-expanded': 'false', onClick: function (e) {
+          U.menu(e.currentTarget, [
+            { id: 'rp-txt', icon: 'list', label: t('Matn formatida'), sub: t('.txt — oddiy matn, istalgan joyga yuborish uchun'), onClick: function () { App.exportReport('txt'); } },
+            { id: 'rp-csv', icon: 'download', label: t('CSV formatida'), sub: t('.csv — Excel yoki Google Sheets’da ochiladi'), onClick: function () { App.exportReport('csv'); } },
+            { id: 'rp-pdf', icon: 'report', label: t('PDF formatida'), sub: t('Chiroyli A4 hisobot — “PDF sifatida saqlash”'), onClick: function () { App.exportReport('pdf'); } }
+          ]);
+        } }, U.icon('download'), t('Yuklab olish'), U.icon('down')))));
 
     var per = L.perUser(tasks, users, today).filter(function (p) { return p.total; });
     var perP = L.perProject(tasks, projects, today).filter(function (p) { return p.total; });

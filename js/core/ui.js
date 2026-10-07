@@ -306,8 +306,10 @@
     items.forEach(function (it) {
       if (it.separator) { list.appendChild(U.h('div', { class: 'menu__sep', role: 'separator' })); return; }
       if (it.header) { list.appendChild(it.header); return; }
-      list.appendChild(U.h('button', { type: 'button', role: 'menuitem', class: 'menu__item' + (it.danger ? ' is-danger' : ''), onClick: function () { U.closeMenus(true); it.onClick(); } },
-        it.icon ? U.icon(it.icon) : null, U.h('span', null, it.label), it.hint ? U.h('kbd', null, it.hint) : null));
+      list.appendChild(U.h('button', { type: 'button', role: 'menuitem', id: it.id, class: 'menu__item' + (it.danger ? ' is-danger' : '') + (it.sub ? ' menu__item--rich' : ''), onClick: function () { U.closeMenus(true); it.onClick(); } },
+        it.icon ? U.icon(it.icon) : null,
+        it.sub ? U.h('span', { class: 'menu__text' }, U.h('b', null, it.label), U.h('small', null, it.sub)) : U.h('span', null, it.label),
+        it.hint ? U.h('kbd', null, it.hint) : null));
     });
     document.body.appendChild(list);
     var r = anchor.getBoundingClientRect();
