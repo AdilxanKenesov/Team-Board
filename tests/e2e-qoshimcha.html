@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8"><body><pre id="out">running</pre>
+<iframe id="f" src="../index.html" style="width:1366px;height:900px"></iframe>
+<script>
+const log=[];const ok=(c,m)=>log.push((c?'PASS ':'FAIL ')+m);
+const f=document.getElementById('f'); const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const reload=()=>new Promise(r=>{f.onload=r;f.contentWindow.location.reload();});
+f.onload=async()=>{ try {
+ f.onload=null; localStorage.clear(); await reload();
+ let D=f.contentDocument, W=f.contentWindow; const errs=[]; W.addEventListener('error',e=>errs.push(e.message));
+ const n=s=>+D.getElementById('count-'+s).textContent; const $=id=>D.getElementById(id);
+ const drag=(task,col)=>{ const dt=new DataTransfer();
+   task.dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer:dt}));
+   const over=new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:dt}); col.dispatchEvent(over);
+   const st={ok:col.classList.contains('drop-ok'),no:col.classList.contains('drop-no'),prevented:over.defaultPrevented};
+   col.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt}));
+   task.dispatchEvent(new DragEvent('dragend',{bubbles:true,dataTransfer:dt})); return st; };
+ const t1=$('list-new').querySelector('.task'); const b=[n('new'),n('doing')];
+ let st=drag(t1,$('col-doing'));
+ ok(st.ok&&st.prevented&&n('new')===b[0]-1&&n('doing')===b[1]+1,'sudrab: Yangi→Bajarilmoqda ('+b[0]+'→'+n('new')+', '+b[1]+'→'+n('doing')+')');
+ const t2=$('list-new').querySelector('.task'); const before=n('done');
+ st=drag(t2,$('col-done'));
+ ok(st.no&&!st.prevented&&n('done')===before,'sudrab: Yangi→Tugagan rad, “bu ustunga mumkin emas” ko‘rindi');
+ ok(D.querySelectorAll('.drop-ok,.drop-no,.is-dragging').length===0,'sudrashdan keyin belgilar tozalandi');
+ const hist=[...D.querySelectorAll('#history-list .history__item')].map(li=>li.textContent);
+ ok(hist.length===1&&/Yangi → Bajarilmoqda/.test(hist[0]),'tarix: '+hist[0]);
+ $('report-open').click();
+ ok(!$('report').hidden&&/Jami: 4/.test($('report-text').value)&&D.activeElement===$('report-copy'),'hisobot oynasi ochildi, fokus “Nusxalash”da');
+ ok(/Muddati o‘tgan \(1\)/.test($('report-text').value),'hisobotda muddati o‘tganlar bor');
+ $('report-copy').click(); await wait(200); ok($('report-msg').textContent.length>0,'nusxalash xabari: '+$('report-msg').textContent);
+ $('report').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok($('report').hidden&&D.activeElement===$('report-open'),'Esc: oyna yopildi, fokus tugmaga qaytdi');
+ // mobil tablar
+ f.style.width='390px'; await wait(200);
+ ok(W.getComputedStyle($('col-doing')).display==='none'&&W.getComputedStyle($('col-new')).display!=='none','390px: faqat “Yangi” tabi ko‘rinadi');
+ $('tab-doing').click(); await wait(50);
+ ok(W.getComputedStyle($('col-doing')).display!=='none'&&W.getComputedStyle($('col-new')).display==='none'&&$('tab-doing').getAttribute('aria-selected')==='true','tab “Bajarilmoqda” ochildi');
+ ok($('tc-doing').textContent===String(n('doing')),'tabdagi son: '+$('tc-doing').textContent);
+ const doingBtn=$('list-doing').querySelector('.move--fwd'); doingBtn.click();
+ ok(D.activeElement===$('tab-doing'),'ko‘chirilgan vazifa boshqa tabga o‘tdi — fokus tabda qoldi');
+ $('tab-doing').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
+ ok($('tab-done').getAttribute('aria-selected')==='true'&&D.activeElement===$('tab-done'),'→ tugmasi bilan keyingi tab');
+ ok(D.documentElement.scrollWidth<=390,'390px yonga surish yo‘q');
+ await reload(); D=f.contentDocument; ok(D.getElementById('tab-done').getAttribute('aria-selected')==='true','tanlangan tab eslab qolindi');
+ ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
+ } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
+ document.getElementById('out').textContent=log.join('\n');
+};
+</script>

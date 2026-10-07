@@ -1,0 +1,67 @@
+<!doctype html><meta charset="utf-8"><body><pre id="out">running</pre>
+<iframe id="f" src="../index.html" style="width:1366px;height:900px"></iframe>
+<script>
+const log=[];const ok=(c,m)=>log.push((c?'PASS ':'FAIL ')+m);
+const f=document.getElementById('f');
+const reload=()=>new Promise(r=>{f.onload=r;f.contentWindow.location.reload();});
+const errs=[];
+f.onload=async()=>{ try {
+ f.onload=null; localStorage.clear(); await reload();
+ let D=f.contentDocument, W=f.contentWindow; W.addEventListener('error',e=>errs.push(e.message));
+ const n=s=>+D.getElementById('count-'+s).textContent; const $=id=>D.getElementById(id);
+ ok(n('new')===2&&n('doing')===1&&n('done')===1,'namuna taxta 2/1/1');
+ ok(D.querySelector('.task.is-late')&&/Muddati o‘tgan/.test(D.querySelector('.task.is-late').textContent),'muddati o‘tgan vazifa belgilandi');
+ const add=(t,x={})=>{ $('title').value=t; $('assignee').value=x.a||''; $('priority').value=x.p||'orta'; $('due').value=x.d||''; D.querySelector('#add-form button[type=submit]').click(); };
+ add(''); ok(/yozing/.test($('title-error').textContent),'bo‘sh nom: '+$('title-error').textContent);
+ add('Zal', {a:'A'}); ok(/2–30/.test($('assignee-error').textContent)&&$('more').open,'mas’ul 1 belgi rad, “Batafsil” ochildi');
+ add('Zal', {d:'2020-01-01'}); ok(/oldin/.test($('due-error').textContent),'o‘tgan muddat rad: '+$('due-error').textContent);
+ add('Hisobot tayyorlash', {a:'Sardor Aliyev', p:'yuqori'});
+ ok(n('new')===3 && D.querySelector('#list-new .task .avatar').textContent==='SA','qo‘shildi: mas’ul SA, Yangi = 3');
+ ok(!$('toast').hidden,'pastki xabar chiqdi: '+$('toast-text').textContent);
+ // BILET SINOVI
+ const card=[...D.querySelectorAll('#list-new .task')].find(li=>li.textContent.includes('Hisobot tayyorlash'));
+ const b=card.querySelector('.move'); const before=[n('new'),n('doing')]; b.click(); b.click();
+ ok(n('new')===before[0]-1&&n('doing')===before[1]+1,'BILET SINOVI: Yangi '+before[0]+'→'+n('new')+', Bajarilmoqda '+before[1]+'→'+n('doing'));
+ ok(D.activeElement.closest('#list-doing .task'),'fokus ko‘chgan vazifada');
+ // undo move
+ $('toast-undo').click(); ok(n('new')===before[0]&&n('doing')===before[1],'“Bekor qilish”: ko‘chirish qaytdi');
+ // edit
+ let c2=[...D.querySelectorAll('.task')].find(li=>li.textContent.includes('Hisobot tayyorlash'));
+ c2.querySelector('.icon-btn').click();
+ let ed=D.querySelector('.task--edit'); ok(ed&&D.activeElement.tagName==='INPUT','tahrir shakli ochildi, fokus inputda');
+ ed.querySelector('input[type=text]').value='Afisha matnini yozish'; ed.querySelector('button[type=submit]').click();
+ ok(/allaqachon/.test(D.querySelector('.task--edit [data-err=title]').textContent),'tahrirda takror nom rad');
+ ed=D.querySelector('.task--edit'); ed.querySelector('input[type=text]').value='Yillik hisobot';
+ ed.querySelector('input[type=text]').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok(!D.querySelector('.task--edit')&&[...D.querySelectorAll('.task__title')].some(p=>p.textContent==='Hisobot tayyorlash'),'Esc: tahrir bekor, nom o‘zgarmadi');
+ c2=[...D.querySelectorAll('.task')].find(li=>li.textContent.includes('Hisobot tayyorlash')); c2.querySelector('.icon-btn').click();
+ ed=D.querySelector('.task--edit'); ed.querySelector('input[type=text]').value='Yillik hisobot'; ed.querySelector('button[type=submit]').click();
+ ok([...D.querySelectorAll('.task__title')].some(p=>p.textContent==='Yillik hisobot'),'tahrir saqlandi');
+ // delete + undo
+ const total=n('new')+n('doing')+n('done');
+ [...D.querySelectorAll('.task')].find(li=>li.textContent.includes('Yillik hisobot')).querySelector('.icon-btn--danger').click();
+ ok(n('new')+n('doing')+n('done')===total-1&&D.activeElement!==D.body,'o‘chirildi, fokus body’da emas');
+ $('toast-undo').click(); ok(n('new')+n('doing')+n('done')===total,'o‘chirish bekor qilindi');
+ // filter
+ $('f-q').value='ROʻYXAT'; $('f-q').dispatchEvent(new Event('input'));
+ ok(D.querySelectorAll('.task').length===1&&/1 \/ 5/.test($('f-result').textContent),'qidiruv (apostrof farqsiz): '+$('f-result').textContent);
+ ok(n('new')===3,'filtrda ham ustun sonlari umumiy');
+ ok(/Filtrga mos vazifa yo‘q/.test($('list-new').textContent),'bo‘sh ustunda “Filtrga mos vazifa yo‘q”');
+ $('f-clear').click(); ok(D.querySelectorAll('.task').length===5,'filtr tozalandi');
+ $('f-who').value='__none__'; $('f-who').dispatchEvent(new Event('change')); ok(D.querySelectorAll('.task').length===1,'mas’ulsiz filtr');
+ $('f-clear').click();
+ // reload persistence
+ await reload(); D=f.contentDocument;
+ ok(+D.getElementById('count-new').textContent===3&&D.querySelectorAll('.task').length===5,'yangilangandan keyin saqlangan');
+ // v1 migration
+ localStorage.removeItem('taxta010.v2'); localStorage.setItem('taxta010.tasks',JSON.stringify([{id:'x',title:'Eski vazifa',status:'doing',createdAt:1,updatedAt:1}]));
+ await reload(); D=f.contentDocument; ok(D.querySelectorAll('.task').length===1&&+D.getElementById('count-doing').textContent===1,'v1 ma’lumot avtomatik ko‘chdi');
+ localStorage.setItem('taxta010.v2','{buzuq'); await reload(); D=f.contentDocument;
+ ok(D.querySelectorAll('.task').length===4,'buzilgan v2: namuna taxta, sayt ishladi');
+ ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
+ f.style.width='390px'; await new Promise(r=>setTimeout(r,150));
+ ok(D.documentElement.scrollWidth<=390,'390px yonga surish yo‘q (scrollWidth='+D.documentElement.scrollWidth+')');
+ } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
+ document.getElementById('out').textContent=log.join('\n');
+};
+</script>
