@@ -102,12 +102,24 @@ ignored while typing or when a dialog is open. Add tests; run everything.
 ```
 Natija: 57/57 brauzer tekshiruvi.
 
+### P10 — O‘z kalendari
+Ishtirokchi fikri: “kalendar oynasi yoqmadi, chap tomonga yopishib qolgan”.
+```
+Replace the native date input (cannot be styled, opens at the wrong place on some systems) with a custom
+calendar popover anchored under the "Muddat" field. Keep the value in hidden #due (YYYY-MM-DD) so logic and
+tests stay the same. Uzbek months and Monday-first weekdays; today ring, selected filled; past days disabled
+for new tasks only; quick chips Bugun / Ertaga / 1 haftadan / Tozalash; keyboard: arrows, PageUp/PageDown,
+Enter, Esc (closes only the calendar). Errors focus the calendar button. Add tests.
+```
+Natija: 66/66 brauzer tekshiruvi; sinovda oy almashtirishda kalendar yopilib qolish xatosi topilib tuzatildi.
+
 ## AI natijasida kiritilgan muhim tuzatishlar
-- Sinovda topilgan 10 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
+- Sinovda topilgan 11 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
 - Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.
 
 ## Ishtirokchi qarorlari
 - Qo'shimchalar ro'yxati va har bosqich commit qilinishi — ishtirokchi tanlovi.
 - Repo nomi: Team-Board.
 - Dizayn yo‘nalishi: ilova ko‘rinishi + oq minimal (3 variantdan tanlandi).
+- Brauzer kalendari o‘rniga o‘z kalendari (ishtirokchi talabi).
 - <o'zingiz kiritgan boshqa o'zgarishlar>

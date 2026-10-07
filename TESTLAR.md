@@ -1,6 +1,6 @@
 # TESTLAR — Bilet 010 “Jamoa taxtasi”
 
-Jami: **20 unit test** (`node test.js`) + **57 brauzer tekshiruvi** (`tests/`: 26 + 31). Hammasi o‘tadi.
+Jami: **20 unit test** (`node test.js`) + **66 brauzer tekshiruvi** (`tests/`: 26 + 40). Hammasi o‘tadi.
 
 ## Qanday ishga tushiriladi
 ```
@@ -40,6 +40,8 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | Panel yopilganda fokus | “+ Vazifa” tugmasiga qaytadi | ✅ |
 | Yopilish animatsiyasi | haqiqiy panel/oyna darhol yopiladi, nusxasi 0.3 s ichida o‘chadi, takroriy `id` yo‘q | ✅ |
 | Tezkor tugmalar | `N` panelni ochadi (matn yozilayotganda emas), `/` qidiruvga o‘tadi | ✅ |
+| Kalendar | ochiladi, o‘zbekcha hafta kunlari; yangi vazifada kecha yopiq, tahrirda ochiq; → keyingi kun; oy almashtirish; “Ertaga”; tozalash; Esc faqat kalendarni yopadi | ✅ |
+| O‘tgan muddat xatosi | xabar va qizil chegara kalendar tugmasida | ✅ |
 | Yangi → Tugagan sudrash | rad, “Bu ustunga o‘tkazib bo‘lmaydi” | ✅ |
 | Qidiruv `ROʻYXAT` (boshqa apostrof) | “ro‘yxat” topiladi; “1 / 5 ta vazifa” | ✅ |
 | Filtrda | ustun sonlari umumiy; bo‘sh ustunda “Filtrga mos vazifa yo‘q” | ✅ |
@@ -71,5 +73,6 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | 8 | v3: qidiruv ikonkasi placeholder ustiga tushardi | maydon ichki chegarasi tuzatildi | `febeae3` |
 | 9 | v3: telefonda yuqori menyu ekran balandligigacha cho‘zilardi | grid qatorlari `auto 1fr` | `febeae3` |
 | 10 | v3: 768 px da “Tugatish” tugmasi kartadan chiqib ketardi | karta pastki qatori o‘raladi | `febeae3` |
+| 11 | Kalendar: oy almashtirish tugmasi bosilganda kalendar yopilib qolardi (qayta chizilgan tugma “tashqarida” deb hisoblanardi) | `composedPath()` bilan tekshirish | kalendar commiti |
 
 Sinov jarayonidagi o‘z xatom: test skriptida Esc kartaga yuborilgan edi (shaklga yetmagan) — test tuzatildi, sayt to‘g‘ri ishlagan.

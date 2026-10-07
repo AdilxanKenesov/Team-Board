@@ -225,6 +225,47 @@ input[aria-invalid="true"] { border-color: var(--error); }
 @keyframes slide { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
+/* ---------- Kalendar (muddat tanlash) ---------- */
+.date-field { position: relative; }
+.date-row { display: flex; gap: 4px; }
+.date-btn {
+  flex: 1; min-width: 0; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 10px;
+  font: inherit; color: var(--ink); text-align: left; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+}
+.date-btn:hover { border-color: var(--line-strong); }
+.date-btn[aria-expanded="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.date-btn[aria-invalid="true"] { border-color: var(--error); }
+.date-btn svg { width: 16px; height: 16px; flex: none; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.date-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.date-btn.is-empty span { color: var(--faint); }
+.date-row .icon-btn { width: 34px; height: 34px; flex: none; }
+
+.cal {
+  position: absolute; top: calc(100% - 2px); right: 0; z-index: 10; width: 304px; padding: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+  transform-origin: top right; animation: pop-in .14s ease;
+}
+.cal__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal__title { font-weight: 600; font-size: 14px; }
+.cal__nav { display: flex; gap: 2px; }
+.cal__week, .cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal__week span { height: 28px; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; }
+.cal__day {
+  height: 34px; display: grid; place-items: center; padding: 0; font: inherit; font-size: 13px; font-variant-numeric: tabular-nums;
+  color: var(--ink); background: transparent; border: 0; border-radius: 8px; cursor: pointer;
+}
+.cal__day:hover:not(:disabled) { background: var(--hover); }
+.cal__day.is-other { color: var(--faint); }
+.cal__day.is-today { box-shadow: inset 0 0 0 1px var(--primary); color: var(--primary); font-weight: 600; }
+.cal__day[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); font-weight: 600; box-shadow: none; }
+.cal__day:disabled { color: var(--faint); opacity: .45; cursor: not-allowed; text-decoration: line-through; }
+.cal__quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.chip { height: 28px; padding: 0 10px; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--ink); background: var(--lane); border: 1px solid transparent; border-radius: 14px; cursor: pointer; }
+.chip:hover:not(:disabled) { border-color: var(--line-strong); }
+.chip:disabled { opacity: .45; cursor: not-allowed; }
+.chip--ghost { background: transparent; color: var(--muted); margin-left: auto; }
+
 /* ---------- Hisobot oynasi ---------- */
 .modal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; background: rgba(24, 24, 27, .4); }
 .modal__box { width: min(600px, 100%); max-height: calc(100vh - 32px); overflow: auto; display: grid; gap: 12px; padding: 18px; color: var(--ink); background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); }
@@ -302,7 +343,9 @@ kbd { font: 600 11px/1 var(--font); padding: 2px 5px; color: var(--muted); backg
   .topbar { flex-wrap: wrap; }
   .topbar h1 { display: none; }
   .search { flex: 1 1 auto; width: auto; }
-  input[type="text"], input[type="search"], input[type="date"], select, .btn { height: 40px; }
+  input[type="text"], input[type="search"], input[type="date"], select, .btn, .date-btn { height: 40px; }
+  .date-row .icon-btn { width: 40px; height: 40px; }
+  .cal { left: 0; right: auto; width: 100%; max-width: 320px; }
   /* "+ Vazifa" — pastki o'ng burchakdagi suzuvchi tugma */
   .add-btn {
     position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 50;

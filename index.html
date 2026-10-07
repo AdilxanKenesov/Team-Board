@@ -194,9 +194,20 @@
               <option value="past">Past</option>
             </select>
           </div>
-          <div class="field">
-            <label for="due" class="field-label">Muddat <span class="opt">ixtiyoriy</span></label>
-            <input id="due" type="date" aria-describedby="due-error">
+          <div class="field date-field">
+            <span id="due-label" class="field-label">Muddat <span class="opt">ixtiyoriy</span></span>
+            <input id="due" type="hidden">
+            <div class="date-row">
+              <button type="button" id="due-btn" class="date-btn" aria-haspopup="dialog" aria-expanded="false"
+                      aria-controls="due-pop" aria-labelledby="due-label due-btn-text" aria-describedby="due-error">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 3v3M13 3v3"/></svg>
+                <span id="due-btn-text">Sana tanlang</span>
+              </button>
+              <button type="button" id="due-clear" class="icon-btn" aria-label="Muddatni olib tashlash" hidden>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8"/></svg>
+              </button>
+            </div>
+            <div id="due-pop" class="cal" role="dialog" aria-label="Muddatni tanlash" hidden></div>
             <p id="due-error" class="error" role="alert"></p>
           </div>
         </div>

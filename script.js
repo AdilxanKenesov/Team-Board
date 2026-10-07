@@ -294,14 +294,163 @@
     if (tab && tab.offsetParent !== null) tab.focus(); else $('add-open').focus();
   }
 
+  /* ---------------- kalendar (muddat tanlash) ---------------- */
+
+  // Brauzerning o'z kalendari bezatib bo'lmaydi va ba'zi tizimlarda chetga yopishadi —
+  // shuning uchun o'zimizning kichik kalendar. Qiymat yashirin #due maydonida (YYYY-MM-DD).
+  var MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+  var WEEK = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+  var WEEK_FULL = ['dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba', 'yakshanba'];
+  var dueMin = null;          // yangi vazifada — bugun; tahrirda — cheklov yo'q
+  var calView = null;         // ko'rsatilayotgan oy: { y, m }
+
+  function parseDate(s) { var p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function humanDate(s) {
+    var d = parseDate(s);
+    return d.getDate() + '-' + MONTHS[d.getMonth()] + (d.getFullYear() === new Date().getFullYear() ? '' : ' ' + d.getFullYear());
+  }
+
+  function setDue(value) {
+    $('due').value = value || '';
+    var btn = $('due-btn');
+    $('due-btn-text').textContent = value ? humanDate(value) : 'Sana tanlang';
+    btn.classList.toggle('is-empty', !value);
+    $('due-clear').hidden = !value;
+    $('due-error').textContent = '';
+    btn.removeAttribute('aria-invalid');
+  }
+
+  function renderCalendar(focusDate) {
+    var pop = $('due-pop');
+    var y = calView.y, m = calView.m;
+    var selected = $('due').value, now = today();
+    pop.innerHTML = '';
+
+    var head = el('div', 'cal__head');
+    head.appendChild(el('span', 'cal__title', cap(MONTHS[m]) + ' ' + y));
+    var nav = el('div', 'cal__nav');
+    nav.appendChild(iconButton('icon-btn', ICON.back, 'Oldingi oy', function () { shiftMonth(-1); }));
+    nav.appendChild(iconButton('icon-btn', ICON.fwd, 'Keyingi oy', function () { shiftMonth(1); }));
+    head.appendChild(nav);
+    pop.appendChild(head);
+
+    var week = el('div', 'cal__week');
+    week.setAttribute('aria-hidden', 'true');
+    WEEK.forEach(function (w) { week.appendChild(el('span', null, w)); });
+    pop.appendChild(week);
+
+    var grid = el('div', 'cal__grid');
+    var first = new Date(y, m, 1);
+    var start = new Date(y, m, 1 - ((first.getDay() + 6) % 7));   // dushanbadan boshlanadi
+    var tabbable = null;
+    for (var i = 0; i < 42; i++) {
+      var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+      var iso = T.todayStr(d);
+      var b = el('button', 'cal__day', String(d.getDate()));
+      b.type = 'button';
+      b.dataset.date = iso;
+      b.tabIndex = -1;
+      b.setAttribute('aria-label', d.getDate() + '-' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + WEEK_FULL[(d.getDay() + 6) % 7]);
+      if (d.getMonth() !== m) b.classList.add('is-other');
+      if (iso === now) { b.classList.add('is-today'); b.setAttribute('aria-current', 'date'); }
+      if (iso === selected) b.setAttribute('aria-pressed', 'true');
+      if (dueMin && iso < dueMin) b.disabled = true;
+      b.addEventListener('click', onPickDay);
+      b.addEventListener('keydown', onDayKey);
+      grid.appendChild(b);
+      if (!b.disabled && (iso === focusDate || (!tabbable && d.getMonth() === m))) tabbable = b;
+      if (iso === focusDate && !b.disabled) tabbable = b;
+    }
+    pop.appendChild(grid);
+    if (tabbable) tabbable.tabIndex = 0;
+
+    var quick = el('div', 'cal__quick');
+    [['Bugun', 0], ['Ertaga', 1], ['1 haftadan', 7]].forEach(function (q) {
+      var iso = T.addDays(now, q[1]);
+      var c = el('button', 'chip', q[0]);
+      c.type = 'button';
+      c.disabled = !!(dueMin && iso < dueMin);
+      c.addEventListener('click', function () { pickDate(iso); });
+      quick.appendChild(c);
+    });
+    var clr = el('button', 'chip chip--ghost', 'Tozalash');
+    clr.type = 'button';
+    clr.addEventListener('click', function () { pickDate(''); });
+    quick.appendChild(clr);
+    pop.appendChild(quick);
+    return tabbable;
+  }
+
+  function openCalendar() {
+    var base = $('due').value || dueMin || today();
+    var d = parseDate(base);
+    calView = { y: d.getFullYear(), m: d.getMonth() };
+    $('due-pop').hidden = false;
+    $('due-btn').setAttribute('aria-expanded', 'true');
+    var t = renderCalendar($('due').value || today());
+    if (t) t.focus();
+  }
+  function closeCalendar(returnFocus) {
+    $('due-pop').hidden = true;
+    $('due-btn').setAttribute('aria-expanded', 'false');
+    if (returnFocus) $('due-btn').focus();
+  }
+  function shiftMonth(n) {
+    var d = new Date(calView.y, calView.m + n, 1);
+    calView = { y: d.getFullYear(), m: d.getMonth() };
+    renderCalendar(null);
+    $('due-pop').querySelector('.cal__nav .icon-btn:' + (n < 0 ? 'first-child' : 'last-child')).focus();
+  }
+  function pickDate(iso) {
+    setDue(iso);
+    closeCalendar(true);
+  }
+  function onPickDay(e) { pickDate(e.currentTarget.dataset.date); }
+  function onDayKey(e) {
+    var step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+    var cur = e.currentTarget.dataset.date;
+    var target = null;
+    if (step) target = T.addDays(cur, step);
+    if (e.key === 'PageUp' || e.key === 'PageDown') {
+      var d = parseDate(cur);
+      target = T.todayStr(new Date(d.getFullYear(), d.getMonth() + (e.key === 'PageUp' ? -1 : 1), d.getDate()));
+    }
+    if (!target) return;
+    e.preventDefault();
+    var td = parseDate(target);
+    if (td.getFullYear() !== calView.y || td.getMonth() !== calView.m) calView = { y: td.getFullYear(), m: td.getMonth() };
+    var t = renderCalendar(target);
+    var exact = $('due-pop').querySelector('.cal__day[data-date="' + target + '"]:not(:disabled)');
+    (exact || t).tabIndex = 0;
+    (exact || t).focus();
+  }
+
+  $('due-btn').addEventListener('click', function () {
+    if ($('due-pop').hidden) openCalendar(); else closeCalendar(true);
+  });
+  $('due-clear').addEventListener('click', function () { setDue(''); $('due-btn').focus(); });
+  $('due-pop').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeCalendar(true); }   // panelni emas, faqat kalendarni yopadi
+  });
+  // Tashqariga bosilsa yopiladi. composedPath — bosish paytidagi yo'l: oy almashganda kalendar qayta
+  // chiziladi va bosilgan tugma DOM'dan chiqadi, shunda ham u kalendar ichida deb hisoblanadi.
+  document.addEventListener('click', function (e) {
+    if ($('due-pop').hidden) return;
+    var inside = e.composedPath().some(function (n) { return n.classList && n.classList.contains('date-field'); });
+    if (!inside) closeCalendar(false);
+  });
+
   /* ---------------- panel: qo'shish va tahrirlash ---------------- */
 
   var FIELDS = ['title', 'assignee', 'due'];
+  // Xato bo'lsa fokus va qizil chegara qaysi elementga tushadi (muddat — kalendar tugmasiga)
+  var FIELD_UI = { title: 'title', assignee: 'assignee', due: 'due-btn' };
 
   function clearFieldErrors() {
     FIELDS.forEach(function (k) {
       $(k + '-error').textContent = '';
-      $(k).removeAttribute('aria-invalid');
+      $(FIELD_UI[k]).removeAttribute('aria-invalid');
     });
   }
 
@@ -316,8 +465,9 @@
     $('title').value = task ? task.title : '';
     $('assignee').value = task ? task.assignee || '' : '';
     $('priority').value = task ? task.priority : 'orta';
-    $('due').value = task ? task.due || '' : '';
-    $('due').min = task ? '' : today();   // tahrirda eski muddat saqlanishi mumkin
+    dueMin = task ? null : today();      // tahrirda eski muddat saqlanishi mumkin
+    setDue(task ? task.due : '');
+    closeCalendar(false);
     $('drawer').hidden = false;
     $('title').focus();
     if (task) $('title').select();
@@ -325,6 +475,7 @@
 
   function closeDrawer() {
     if ($('drawer').hidden) return;
+    closeCalendar(false);
     animateOut($('drawer'), 'drawer--ghost');
     $('drawer').hidden = true;
     var id = drawerTaskId;
@@ -338,7 +489,8 @@
   $('drawer').addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { e.preventDefault(); closeDrawer(); return; }
     if (e.key === 'Tab') {   // fokus panel ichida aylanadi
-      var f = Array.prototype.slice.call($('drawer').querySelectorAll('.drawer__panel button, .drawer__panel input, .drawer__panel select'));
+      var f = Array.prototype.slice.call($('drawer').querySelectorAll('.drawer__panel button, .drawer__panel input, .drawer__panel select'))
+        .filter(function (n) { return n.type !== 'hidden' && n.offsetParent !== null && n.tabIndex !== -1; });
       var i = f.indexOf(document.activeElement);
       if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
       else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
@@ -348,9 +500,9 @@
   function showErrors(errors) {
     Object.keys(errors).forEach(function (k) {
       $(k + '-error').textContent = errors[k];
-      $(k).setAttribute('aria-invalid', 'true');
+      $(FIELD_UI[k]).setAttribute('aria-invalid', 'true');
     });
-    $(Object.keys(errors)[0]).focus();
+    $(FIELD_UI[Object.keys(errors)[0]]).focus();
   }
 
   $('add-form').addEventListener('submit', function (e) {
@@ -375,7 +527,7 @@
     highlightClass = 'just-moved';
     closeDrawer();
   });
-  FIELDS.forEach(function (k) {
+  ['title', 'assignee'].forEach(function (k) {
     $(k).addEventListener('input', function () { $(k + '-error').textContent = ''; $(k).removeAttribute('aria-invalid'); });
   });
 

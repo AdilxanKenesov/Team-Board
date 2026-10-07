@@ -31,6 +31,7 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 - **Yig‘ilish uchun hisobot** — bir tugma bilan matnli hisobot, nusxalash.
 - **Animatsiyalar** — panel, oyna, filtr, xabar va yangi karta uchun qisqa (≤0.26 s) animatsiyalar; yopilganda fokus kutmaydi; “harakatni kamaytirish” yoqilgan bo‘lsa — o‘chadi.
 - **Tezkor tugmalar** — `N` yangi vazifa, `/` qidirish, `Esc` yopish.
+- **O‘z kalendari** — brauzerning bezatib bo‘lmaydigan sana oynasi o‘rniga: o‘zbekcha oy va kunlar (dushanbadan), “Bugun / Ertaga / 1 haftadan” tugmalari, o‘tgan kunlar yangi vazifada yopiq, klaviatura bilan (strelkalar, PageUp/PageDown, Esc).
 
 ## Fayllar
 | Fayl | Vazifasi |
@@ -39,7 +40,7 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
 | `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
 | `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
-| `test.js`, `tests/` | 20 unit + 57 brauzer tekshiruvi |
+| `test.js`, `tests/` | 20 unit + 66 brauzer tekshiruvi |
 | `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
 | `dalillar/` | 6 ta skrinshot |
 

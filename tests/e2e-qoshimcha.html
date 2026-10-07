@@ -74,6 +74,27 @@ f.onload=async()=>{ try {
  await wait(320); ok(D.querySelectorAll('.modal--ghost').length===0,'hisobot nusxasi o‘chirildi');
  D.body.dispatchEvent(new KeyboardEvent('keydown',{key:'/',bubbles:true}));
  ok(D.activeElement===g('f-q'),'/ tugmasi: qidiruvga o‘tdi');
+ // --- kalendar ---
+ const C=id=>D.getElementById(id); const FW2=f.contentWindow; const T2=FW2.Taxta; const td=T2.todayStr(); const tm=T2.addDays(td,1), ye=T2.addDays(td,-1);
+ C('add-open').click(); C('due-btn').click();
+ ok(!C('due-pop').hidden&&C('due-btn').getAttribute('aria-expanded')==='true'&&D.activeElement.classList.contains('cal__day'),'kalendar ochildi, fokus kunda');
+ ok(C('due-pop').querySelectorAll('.cal__week span').length===7&&/^Du/.test(C('due-pop').querySelector('.cal__week').textContent),'hafta kunlari o‘zbekcha, dushanbadan');
+ const yb=C('due-pop').querySelector('.cal__day[data-date="'+ye+'"]'); ok(!yb||yb.disabled,'yangi vazifada kechagi kun tanlanmaydi');
+ const f0=D.activeElement.dataset.date; D.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
+ ok(D.activeElement.dataset.date===T2.addDays(f0,1),'→ keyingi kunga o‘tdi');
+ const calT1=C('due-pop').querySelector('.cal__title').textContent; C('due-pop').querySelectorAll('.cal__nav .icon-btn')[1].click();
+ ok(C('due-pop').querySelector('.cal__title').textContent!==calT1&&!C('due-pop').hidden,'keyingi oy (kalendar ochiq qoldi): '+C('due-pop').querySelector('.cal__title').textContent);
+ [...C('due-pop').querySelectorAll('.chip')].find(c=>c.textContent==='Ertaga').click();
+ ok(C('due').value===tm&&C('due-pop').hidden&&D.activeElement===C('due-btn')&&!C('due-clear').hidden,'“Ertaga”: '+C('due-btn-text').textContent);
+ C('due-btn').click(); C('due-pop').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok(C('due-pop').hidden&&!C('drawer').hidden,'Esc faqat kalendarni yopdi, panel ochiq');
+ C('due-clear').click(); ok(C('due').value===''&&/Sana tanlang/.test(C('due-btn-text').textContent),'muddat tozalandi');
+ C('title').value=''; C('due').value='2020-01-01'; C('drawer-submit').click();
+ ok(/oldin/.test(C('due-error').textContent)&&C('due-btn').getAttribute('aria-invalid')==='true','o‘tgan muddat: xato kalendar tugmasida');
+ C('title').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ const late=FW2.TaxtaApp.getState().tasks.find(t=>t.due&&t.due<td);
+ if(late){ D.querySelector('.task[data-id="'+late.id+'"] .icon-btn').click(); C('due-btn').click();
+   const lb=C('due-pop').querySelector('.cal__day[data-date="'+ye+'"]'); ok(!lb||!lb.disabled,'tahrirda o‘tgan kunlar ochiq'); C('title').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); }
  ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
  } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
  document.getElementById('out').textContent=log.join('\n');
