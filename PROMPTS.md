@@ -113,8 +113,19 @@ Enter, Esc (closes only the calendar). Errors focus the calendar button. Add tes
 ```
 Natija: 66/66 brauzer tekshiruvi; sinovda oy almashtirishda kalendar yopilib qolish xatosi topilib tuzatildi.
 
+### P11 — Hisobot (PDF) va tozalash oynasi
+Ishtirokchi talabi: “hisobotni chiroyli qil yoki PDF fayl bo‘lsin (shartga zid bo‘lmasa); Tozalash bosilganda o‘rtada chiroyli dialog chiqsin”.
+```
+Report: render a designed document (header with date, 4 stat tiles, progress, overdue callout, one table per
+column) instead of plain text; keep plain text for "copy". "PDF saqlash" = window.print() with print CSS that
+shows only the report in light colours on A4 and sets the file name via document.title; no libraries.
+Reset: centred alertdialog with icon, task count, safe button focused first, Esc/backdrop close, focus trap;
+empty board → toast instead of dialog. Add tests; generate a real PDF and check it.
+```
+Natija: 76/76 brauzer tekshiruvi; birinchi PDF bo‘sh chiqdi (animatsiya shaffofdan boshlangan) — topilib tuzatildi.
+
 ## AI natijasida kiritilgan muhim tuzatishlar
-- Sinovda topilgan 11 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
+- Sinovda topilgan 12 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
 - Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.
 
 ## Ishtirokchi qarorlari

@@ -43,13 +43,6 @@
         <button type="button" id="reset" class="side-btn">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2M6 6l.8 10h6.4L14 6"/></svg>
           Tozalash</button>
-        <div id="reset-confirm" class="confirm" hidden>
-          <p>Barcha vazifalar o‘chirilsinmi?</p>
-          <div class="confirm__row">
-            <button type="button" id="reset-yes" class="btn btn--danger btn--sm">O‘chirish</button>
-            <button type="button" id="reset-no" class="btn btn--sm">Bekor</button>
-          </div>
-        </div>
       </div>
     </aside>
 
@@ -222,18 +215,40 @@
 
   <!-- Hisobot oynasi -->
   <div id="report" class="modal" hidden>
-    <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="report-title">
+    <div class="modal__box modal__box--report" role="dialog" aria-modal="true" aria-labelledby="report-title">
       <div class="modal__head">
         <h2 id="report-title">Yig‘ilish uchun hisobot</h2>
         <button type="button" id="report-close" class="icon-btn" aria-label="Yopish">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>
         </button>
       </div>
+      <article id="report-view" class="report" aria-label="Hisobot"></article>
       <label for="report-text" class="sr-only">Hisobot matni</label>
-      <textarea id="report-text" readonly rows="14"></textarea>
+      <textarea id="report-text" class="sr-only" readonly tabindex="-1"></textarea>
       <div class="modal__actions">
-        <button type="button" id="report-copy" class="btn btn--primary">Nusxalash</button>
+        <button type="button" id="report-pdf" class="btn btn--primary">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9M6 8l4 4 4-4M4 15h12"/></svg>
+          PDF saqlash</button>
+        <button type="button" id="report-copy" class="btn">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="1.5"/><path d="M4 13V4.5A1.5 1.5 0 0 1 5.5 3H12"/></svg>
+          Matnni nusxalash</button>
         <span id="report-msg" class="muted" role="status" aria-live="polite"></span>
+      </div>
+      <p class="report-hint">PDF: chop etish oynasida “PDF sifatida saqlash”ni tanlang.</p>
+    </div>
+  </div>
+
+  <!-- Tozalash tasdig'i -->
+  <div id="reset-confirm" class="modal" hidden>
+    <div class="modal__box modal__box--sm" role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-desc">
+      <div class="danger-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M7 7l1 12h8l1-12M10 11v5M14 11v5"/></svg>
+      </div>
+      <h2 id="reset-title">Taxtani tozalash</h2>
+      <p id="reset-desc">Barcha vazifalar o‘chiriladi.</p>
+      <div class="modal__actions modal__actions--end">
+        <button type="button" id="reset-no" class="btn">Bekor qilish</button>
+        <button type="button" id="reset-yes" class="btn btn--danger">O‘chirish</button>
       </div>
     </div>
   </div>

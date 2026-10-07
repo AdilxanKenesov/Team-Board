@@ -28,7 +28,8 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 - **Telefonda tablar** — uch ustun o‘rniga “Yangi / Bajarilmoqda / Tugagan” tablari; “+ Vazifa” — suzuvchi tugma.
 - **Namuna banneri** — namuna vazifalarni bir bosishda o‘chirish (o‘zingiz qo‘shganlari qoladi).
 - **Tarix** — oxirgi 10 o‘zgarish vaqti bilan (saqlanadi 50 tagacha).
-- **Yig‘ilish uchun hisobot** — bir tugma bilan matnli hisobot, nusxalash.
+- **Yig‘ilish uchun hisobot** — bezatilgan hujjat (raqamlar, holat chizig‘i, muddati o‘tganlar, har ustun jadvali); **PDF saqlash** (brauzerning chop etish oynasi, faqat hisobot chiqadi, kutubxonasiz) va matnni nusxalash. Namuna: `dalillar/07_hisobot_namuna.pdf`.
+- **Tozalash** — ekran o‘rtasida tasdiq oynasi: nechta vazifa o‘chishi yoziladi, fokus “Bekor qilish”da, Esc yopadi; o‘chirilgandan keyin ham 6 soniya “Bekor qilish”.
 - **Animatsiyalar** — panel, oyna, filtr, xabar va yangi karta uchun qisqa (≤0.26 s) animatsiyalar; yopilganda fokus kutmaydi; “harakatni kamaytirish” yoqilgan bo‘lsa — o‘chadi.
 - **Tezkor tugmalar** — `N` yangi vazifa, `/` qidirish, `Esc` yopish.
 - **O‘z kalendari** — brauzerning bezatib bo‘lmaydigan sana oynasi o‘rniga: o‘zbekcha oy va kunlar (dushanbadan), “Bugun / Ertaga / 1 haftadan” tugmalari, o‘tgan kunlar yangi vazifada yopiq, klaviatura bilan (strelkalar, PageUp/PageDown, Esc).
@@ -40,9 +41,9 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
 | `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
 | `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
-| `test.js`, `tests/` | 20 unit + 66 brauzer tekshiruvi |
+| `test.js`, `tests/` | 20 unit + 76 brauzer tekshiruvi |
 | `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
-| `dalillar/` | 6 ta skrinshot |
+| `dalillar/` | 6 ta skrinshot + namuna PDF hisobot |
 
 ## Sinovlar
 To‘liq jadval — `TESTLAR.md`. Qisqacha: bilet sinovi, bo‘sh/qisqa/uzun/takror nom, noto‘g‘ri va o‘tgan muddat, ikki marta bosish, ruxsat etilmagan sudrash, bekor qilish, filtr, yangilash, buzilgan va eski formatdagi ma’lumot, 390/768/1366 px, klaviatura — hammasi ✅. Topilgan 10 ta kamchilik tuzatilgan (commitlar bilan).

@@ -1,6 +1,6 @@
 # TESTLAR — Bilet 010 “Jamoa taxtasi”
 
-Jami: **20 unit test** (`node test.js`) + **66 brauzer tekshiruvi** (`tests/`: 26 + 40). Hammasi o‘tadi.
+Jami: **20 unit test** (`node test.js`) + **76 brauzer tekshiruvi** (`tests/`: 26 + 50). Hammasi o‘tadi.
 
 ## Qanday ishga tushiriladi
 ```
@@ -46,7 +46,9 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | Qidiruv `ROʻYXAT` (boshqa apostrof) | “ro‘yxat” topiladi; “1 / 5 ta vazifa” | ✅ |
 | Filtrda | ustun sonlari umumiy; bo‘sh ustunda “Filtrga mos vazifa yo‘q” | ✅ |
 | Muddati o‘tgan vazifa | qizil “Muddati o‘tgan” belgisi, hisobotda alohida | ✅ |
-| Hisobot oynasi | matn to‘g‘ri; nusxalash yoki belgilash; Esc yopadi | ✅ |
+| Hisobot oynasi | 4 ta raqam kartasi, 3 ta bo‘lim, sana; jami soni taxta bilan bir xil; nusxalash; Esc yopadi | ✅ |
+| PDF saqlash | chop etish chaqiriladi, fayl nomi “Jamoa taxtasi — hisobot DD.MM.YYYY”, keyin holat tiklanadi; haqiqiy PDF tekshirildi (1 sahifa A4) | ✅ |
+| Tozalash oynasi | o‘rtada chiqadi, fokus “Bekor qilish”da, Esc — hech narsa o‘chmaydi; “O‘chirish” — tozalanadi, bekor qilish mumkin; bo‘sh taxtada oyna chiqmaydi | ✅ |
 | Sahifani yangilash | vazifalar, tarix, tanlangan tab saqlanadi | ✅ |
 | v1 formatdagi ma’lumot | avtomatik ko‘chadi | ✅ |
 | Buzilgan `localStorage` | sayt ishlaydi, namuna taxta | ✅ |
@@ -73,6 +75,7 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | 8 | v3: qidiruv ikonkasi placeholder ustiga tushardi | maydon ichki chegarasi tuzatildi | `febeae3` |
 | 9 | v3: telefonda yuqori menyu ekran balandligigacha cho‘zilardi | grid qatorlari `auto 1fr` | `febeae3` |
 | 10 | v3: 768 px da “Tugatish” tugmasi kartadan chiqib ketardi | karta pastki qatori o‘raladi | `febeae3` |
+| 12 | PDF bo‘sh chiqardi: oynaning ochilish animatsiyasi shaffofdan boshlanadi, chop etishda o‘chirish qoidasi kuchsiz edi | chop etishda barcha animatsiyalar `!important` bilan o‘chiriladi | hisobot commiti |
 | 11 | Kalendar: oy almashtirish tugmasi bosilganda kalendar yopilib qolardi (qayta chizilgan tugma “tashqarida” deb hisoblanardi) | `composedPath()` bilan tekshirish | kalendar commiti |
 
 Sinov jarayonidagi o‘z xatom: test skriptida Esc kartaga yuborilgan edi (shaklga yetmagan) — test tuzatildi, sayt to‘g‘ri ishlagan.

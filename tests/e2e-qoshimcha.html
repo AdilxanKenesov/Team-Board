@@ -24,7 +24,7 @@ f.onload=async()=>{ try {
  const hist=[...D.querySelectorAll('#history-list .history__item')].map(li=>li.textContent);
  ok(hist.length===1&&/Yangi → Bajarilmoqda/.test(hist[0]),'tarix: '+hist[0]);
  $('report-open').click();
- ok(!$('report').hidden&&/Jami: 4/.test($('report-text').value)&&D.activeElement===$('report-copy'),'hisobot oynasi ochildi, fokus “Nusxalash”da');
+ ok(!$('report').hidden&&/Jami: 4/.test($('report-text').value)&&D.activeElement===$('report-pdf'),'hisobot oynasi ochildi, fokus “PDF saqlash”da');
  ok(/Muddati o‘tgan \(1\)/.test($('report-text').value),'hisobotda muddati o‘tganlar bor');
  $('report-copy').click(); await wait(200); ok($('report-msg').textContent.length>0,'nusxalash xabari: '+$('report-msg').textContent);
  $('report').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
@@ -95,6 +95,27 @@ f.onload=async()=>{ try {
  const late=FW2.TaxtaApp.getState().tasks.find(t=>t.due&&t.due<td);
  if(late){ D.querySelector('.task[data-id="'+late.id+'"] .icon-btn').click(); C('due-btn').click();
    const lb=C('due-pop').querySelector('.cal__day[data-date="'+ye+'"]'); ok(!lb||!lb.disabled,'tahrirda o‘tgan kunlar ochiq'); C('title').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); }
+ // --- hisobot hujjati va PDF ---
+ const R=id=>D.getElementById(id); const RW=f.contentWindow; let printed=0; RW.print=()=>{printed++;};
+ R('report-open').click(); const rv=R('report-view');
+ ok(rv.querySelectorAll('.stat').length===4&&rv.querySelectorAll('.report__section').length===3,'hisobot: 4 ta raqam kartasi, 3 ta bo‘lim');
+ ok(rv.querySelector('.report__name').textContent==='Jamoa taxtasi'&&/\d+-[a-z]+ \d{4}/.test(rv.querySelector('.report__date b').textContent),'hisobot sarlavhasi va sanasi: '+rv.querySelector('.report__date b').textContent);
+ const totalNow=RW.TaxtaApp.getState().tasks.length; ok(rv.querySelector('.stat__value').textContent===String(totalNow),'jami soni taxta bilan bir xil: '+totalNow);
+ const oldTitle=D.title; R('report-pdf').click();
+ ok(printed===1&&D.body.classList.contains('printing')&&/hisobot/.test(D.title),'PDF: chop etish chaqirildi, sarlavha: '+D.title);
+ RW.dispatchEvent(new Event('afterprint')); ok(!D.body.classList.contains('printing')&&D.title===oldTitle,'chop etishdan keyin holat tiklandi');
+ R('report').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ // --- tozalash tasdig'i ---
+ const n0=RW.TaxtaApp.getState().tasks.length;
+ R('reset').click();
+ ok(!R('reset-confirm').hidden&&D.activeElement===R('reset-no')&&R('reset-desc').textContent.includes(n0+' ta'),'tozalash: o‘rtada tasdiq oynasi, fokus “Bekor qilish”da');
+ R('reset-confirm').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok(R('reset-confirm').hidden&&D.activeElement===R('reset')&&RW.TaxtaApp.getState().tasks.length===n0,'Esc: hech narsa o‘chmadi, fokus “Tozalash”da');
+ R('reset').click(); R('reset-yes').click();
+ ok(R('reset-confirm').hidden&&RW.TaxtaApp.getState().tasks.length===0&&!R('toast').hidden,'“O‘chirish”: taxta tozalandi, xabar chiqdi');
+ R('toast-undo').click(); ok(RW.TaxtaApp.getState().tasks.length===n0,'tozalash bekor qilindi');
+ R('reset').click(); R('reset-yes').click(); R('reset').click();
+ ok(R('reset-confirm').hidden&&/allaqachon bo‘sh/.test(R('toast-text').textContent),'bo‘sh taxtada oyna chiqmaydi: '+R('toast-text').textContent);
  ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
  } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
  document.getElementById('out').textContent=log.join('\n');

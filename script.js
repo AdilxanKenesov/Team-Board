@@ -643,16 +643,133 @@
     });
   });
 
+  /* ---------------- oynalar uchun umumiy ---------------- */
+
+  // Tab bilan fokus oyna ichida aylanadi
+  function trapFocus(box, e) {
+    var f = Array.prototype.slice.call(box.querySelectorAll('button, input, select, textarea, [tabindex="0"]'))
+      .filter(function (n) { return !n.disabled && n.tabIndex !== -1 && n.offsetParent !== null; });
+    if (!f.length) return;
+    var i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+  }
+
   /* ---------------- hisobot ---------------- */
 
+  var BRAND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="5.5" height="18" rx="1.5" class="m1"/>' +
+    '<rect x="9.25" y="3" width="5.5" height="12" rx="1.5" class="m2"/><rect x="16.5" y="3" width="5.5" height="7" rx="1.5" class="m3"/></svg>';
+
+  function longDate(iso) { var d = parseDate(iso); return d.getDate() + '-' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+
+  // Hisobot hujjati — ekranda ham, PDF'da ham bir xil
+  function buildReportView() {
+    var view = $('report-view');
+    var day = today(), c = T.counts(state.tasks), now = new Date();
+    view.innerHTML = '';
+
+    var head = el('header', 'report__head');
+    var brand = el('div', 'report__brand');
+    brand.insertAdjacentHTML('beforeend', BRAND_SVG);
+    var names = el('div');
+    names.appendChild(el('p', 'report__name', 'Jamoa taxtasi'));
+    names.appendChild(el('p', 'report__sub', 'Yig‘ilish uchun hisobot'));
+    brand.appendChild(names);
+    var date = el('div', 'report__date');
+    date.appendChild(el('b', null, longDate(day)));
+    date.appendChild(document.createTextNode('Tayyorlandi: ' + pad(now.getHours()) + ':' + pad(now.getMinutes())));
+    head.appendChild(brand);
+    head.appendChild(date);
+    view.appendChild(head);
+
+    var stats = el('div', 'report__stats');
+    [['Jami', c.total, null]].concat(T.STATUSES.map(function (s) { return [T.LABELS[s], c[s], s]; })).forEach(function (r) {
+      var box = el('div', 'stat');
+      var lab = el('span', 'stat__label');
+      if (r[2]) { var dot = el('span', 'dot'); dot.style.background = 'var(--' + r[2] + ')'; lab.appendChild(dot); }
+      lab.appendChild(document.createTextNode(r[0]));
+      box.appendChild(lab);
+      box.appendChild(el('b', 'stat__value', String(r[1])));
+      stats.appendChild(box);
+    });
+    view.appendChild(stats);
+
+    var prog = el('div', 'report__progress');
+    var bar = el('div', 'progress__bar');
+    T.STATUSES.forEach(function (s) { var seg = el('span', 'seg seg--' + s); seg.style.flexGrow = c.total ? c[s] : 0; bar.appendChild(seg); });
+    prog.appendChild(bar);
+    prog.appendChild(el('b', null, c.total ? c.donePercent + '% tugadi' : 'Vazifa yo‘q'));
+    view.appendChild(prog);
+
+    var late = state.tasks.filter(function (t) { return T.isOverdue(t, day); });
+    if (late.length) {
+      var al = el('div', 'report__alert');
+      al.appendChild(el('b', null, 'Muddati o‘tgan (' + late.length + ')'));
+      var ul = el('ul');
+      late.forEach(function (t) {
+        ul.appendChild(el('li', null, t.title + (t.assignee ? ' — ' + t.assignee : '') + ', muddat ' + T.fmtDue(t.due)));
+      });
+      al.appendChild(ul);
+      view.appendChild(al);
+    }
+
+    T.STATUSES.forEach(function (s) {
+      var sec = el('section', 'report__section');
+      var h = el('h3');
+      var dot = el('span', 'dot');
+      dot.style.background = 'var(--' + s + ')';
+      h.appendChild(dot);
+      h.appendChild(document.createTextNode(T.LABELS[s] + ' '));
+      h.appendChild(el('span', 'count', String(c[s])));
+      sec.appendChild(h);
+      var list = T.byStatus(state.tasks, s);
+      if (!list.length) {
+        sec.appendChild(el('p', 'report__empty', 'Vazifa yo‘q'));
+      } else {
+        var table = el('table', 'report__table');
+        var thead = el('thead'), tr = el('tr');
+        ['Vazifa', 'Mas’ul', 'Muddat', 'Muhimlik'].forEach(function (x) { tr.appendChild(el('th', null, x)); });
+        thead.appendChild(tr);
+        table.appendChild(thead);
+        var tb = el('tbody');
+        list.forEach(function (t) {
+          var row = el('tr');
+          row.appendChild(el('td', null, t.title));
+          row.appendChild(el('td', null, t.assignee || '—'));
+          row.appendChild(el('td', T.isOverdue(t, day) ? 'late' : null, t.due ? T.fmtDue(t.due) : '—'));
+          row.appendChild(el('td', t.priority === 'yuqori' ? 'hi' : null, T.PRIORITY_LABELS[t.priority]));
+          tb.appendChild(row);
+        });
+        table.appendChild(tb);
+        sec.appendChild(table);
+      }
+      view.appendChild(sec);
+    });
+
+    var foot = el('footer', 'report__foot');
+    foot.appendChild(el('span', null, 'Jamoa taxtasi · Bilet 010'));
+    foot.appendChild(el('span', null, state.tasks.some(function (t) { return t.sample; })
+      ? 'Ro‘yxatda namuna ma’lumotlar bor' : 'Ma’lumotlar shu brauzerdan olindi'));
+    view.appendChild(foot);
+  }
+
+  var savedTitle = null;
+  function endPrint() {
+    document.body.classList.remove('printing');
+    if (savedTitle !== null) { document.title = savedTitle; savedTitle = null; }
+  }
+  window.addEventListener('afterprint', endPrint);
+
   function openReport() {
+    buildReportView();
     $('report-text').value = T.buildReport(state.tasks, today());
     $('report-msg').textContent = '';
     $('report').hidden = false;
-    $('report-copy').focus();
+    $('report-pdf').focus();
   }
   function closeReport() {
     if ($('report').hidden) return;
+    endPrint();
     animateOut($('report'), 'modal--ghost');
     $('report').hidden = true;
     $('report-open').focus();   // fokus har doim ochgan tugmaga qaytadi
@@ -662,13 +779,18 @@
   $('report').addEventListener('click', function (e) { if (e.target === $('report')) closeReport(); });
   $('report').addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { e.preventDefault(); closeReport(); }
-    if (e.key === 'Tab') {   // fokus oyna ichida aylanadi
-      var f = [$('report-close'), $('report-text'), $('report-copy')];
-      var i = f.indexOf(document.activeElement);
-      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
-      else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
-    }
+    if (e.key === 'Tab') trapFocus($('report'), e);
   });
+
+  // PDF: brauzerning chop etish oynasi ("PDF sifatida saqlash"); faqat hisobot chop etiladi,
+  // fayl nomi sarlavhadan olinadi. Kutubxona va internet kerak emas.
+  $('report-pdf').addEventListener('click', function () {
+    savedTitle = document.title;
+    document.title = 'Jamoa taxtasi — hisobot ' + T.fmtDue(today());
+    document.body.classList.add('printing');
+    window.print();
+  });
+
   $('report-copy').addEventListener('click', function () {
     var ta = $('report-text');
     function fallback() {
@@ -678,24 +800,40 @@
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(ta.value)
-        .then(function () { $('report-msg').textContent = 'Nusxalandi.'; })
+        .then(function () { $('report-msg').textContent = 'Matn nusxalandi.'; })
         .catch(fallback);
     } else {
       fallback();
     }
   });
 
-  /* ---------------- tozalash ---------------- */
+  /* ---------------- tozalash (o'rtadagi tasdiq oynasi) ---------------- */
 
-  var resetBtn = $('reset'), confirmBox = $('reset-confirm');
-  resetBtn.addEventListener('click', function () { confirmBox.hidden = false; $('reset-no').focus(); });
-  $('reset-no').addEventListener('click', function () { confirmBox.hidden = true; resetBtn.focus(); });
+  function openReset() {
+    var n = state.tasks.length;
+    if (!n) { undoSnapshot = null; showToast('Taxta allaqachon bo‘sh.'); return; }
+    $('reset-desc').textContent = 'Barcha ' + n + ' ta vazifa o‘chiriladi. Keyin 6 soniya ichida “Bekor qilish” mumkin.';
+    $('reset-confirm').hidden = false;
+    $('reset-no').focus();       // xavfsiz tugma oldindan tanlangan
+  }
+  function closeReset(focusEl) {
+    if ($('reset-confirm').hidden) return;
+    animateOut($('reset-confirm'), 'modal--ghost');
+    $('reset-confirm').hidden = true;
+    (focusEl || $('reset')).focus();
+  }
+  $('reset').addEventListener('click', openReset);
+  $('reset-no').addEventListener('click', function () { closeReset(); });
+  $('reset-confirm').addEventListener('click', function (e) { if (e.target === $('reset-confirm')) closeReset(); });
+  $('reset-confirm').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeReset(); }
+    if (e.key === 'Tab') trapFocus($('reset-confirm'), e);
+  });
   $('reset-yes').addEventListener('click', function () {
     var n = state.tasks.length;
+    closeReset($('add-open'));
     commit([], { type: 'clear', title: n + ' ta vazifa' }, 'Taxta tozalandi (' + n + ' ta vazifa).');
-    confirmBox.hidden = true;
     render();
-    $('add-open').focus();
   });
 
   // Faqat namuna vazifalarni o'chirish (o'zingiz qo'shganlari qoladi)
@@ -714,7 +852,7 @@
     if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
     var t = e.target;
     if (t && (t.isContentEditable || /^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName))) return;
-    if (!$('drawer').hidden || !$('report').hidden) return;
+    if (!$('drawer').hidden || !$('report').hidden || !$('reset-confirm').hidden) return;
     if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openDrawer('add'); }
     else if (e.key === '/') { e.preventDefault(); $('f-q').focus(); }
   });
