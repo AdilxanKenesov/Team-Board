@@ -11,7 +11,7 @@
 @page { size: A4; margin: 14mm 12mm; }
 html, body { background: #fff !important; }
 body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-.side, .topbar, .bottom-nav, .report-tools, .toast, .toasts, .chart-tip, .modal, .drawer, .menu { display: none !important; }
+.side, .topbar, .bottom-nav, .report-tools, .toast, .chart-tip, .modal, .drawer, .menu { display: none !important; }
 .app:not(.app--guest) { display: block !important; }
 .view { padding: 0 !important; }
 .report { max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }

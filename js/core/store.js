@@ -41,7 +41,7 @@
     arr(raw.users).forEach(function (u) {
       if (!u || typeof u !== 'object' || !str(u.id) || ids[u.id] || !str(u.login) || !str(u.passHash) || !str(u.salt)) return;
       ids[u.id] = true;
-      db.users.push({ id: u.id, name: L.clean(u.name) || u.login, login: u.login.toLowerCase(), passHash: u.passHash, salt: u.salt,
+      db.users.push({ id: u.id, name: L.clean(u.name) || u.login, login: u.login.toLowerCase(), passHash: u.passHash, demo: u.demo === true, salt: u.salt,
         role: L.ROLES.indexOf(u.role) !== -1 ? u.role : 'member', position: str(u.position), color: L.COLORS.indexOf(u.color) !== -1 ? u.color : L.COLORS[0],
         active: u.active !== false, createdAt: num(u.createdAt, 0), lastLoginAt: num(u.lastLoginAt, 0), mustChange: u.mustChange === true });
     });
@@ -377,7 +377,7 @@
     return mutate('user-password', function (db) {
       var u = L.byId(db.users, id);
       if (!u) return { ok: false, error: 'Xodim topilmadi.' };
-      u.salt = S.newSalt(); u.passHash = S.hashPassword(password, u.salt); u.mustChange = true;
+      u.salt = S.newSalt(); u.passHash = S.hashPassword(password, u.salt); u.mustChange = true; u.demo = false;
       log(db, actor, 'user-password', null, {}, u.name);
       return { ok: true };
     }, { undoable: false });
@@ -390,7 +390,7 @@
     if (current === next) return { ok: false, errors: { next: 'Yangi parol eskisidan farq qilsin.' } };
     return mutate('own-password', function (db) {
       var x = L.byId(db.users, actor.id);
-      x.salt = S.newSalt(); x.passHash = S.hashPassword(next, x.salt); x.mustChange = false;
+      x.salt = S.newSalt(); x.passHash = S.hashPassword(next, x.salt); x.mustChange = false; x.demo = false;
       return { ok: true };
     }, { undoable: false });
   };
@@ -468,19 +468,21 @@
     db.demo = true;
     db.createdAt = t - 14 * day;
 
+    // Demo hisoblar: kodda ochiq parol yo'q — faqat tuz va SHA-256 xesh (oldindan hisoblangan).
+    // Ular demo rejimida "bir bosishda kirish" orqali ochiladi (A.demoLogin).
     var people = [
-      ['admin', 'Aziza Karimova', 'Loyiha rahbari', 'admin', 'admin123'],
-      ['dilnoza', 'Dilnoza Rahimova', 'Dizayner', 'member', 'demo123'],
-      ['jasur', 'Jasur Toshmatov', 'Kontent muallifi', 'member', 'demo123'],
-      ['malika', 'Malika Yusupova', 'Tadbir koordinatori', 'member', 'demo123'],
-      ['sardor', 'Sardor Aliyev', 'Moliya mutaxassisi', 'member', 'demo123'],
-      ['bekzod', 'Bekzod Nazarov', 'Texnik mutaxassis', 'member', 'demo123'],
-      ['madina', 'Madina Qodirova', 'SMM mutaxassisi', 'member', 'demo123']
+      ['admin', 'Aziza Karimova', 'Loyiha rahbari', 'admin', '86c795330da808260605e67bd14ca289f22481f2b325123aa21b850753294d64'],
+      ['dilnoza', 'Dilnoza Rahimova', 'Dizayner', 'member', '96a658bab7ed1622e106610410e0aa83ce403cf8f747d59ef46eeddf162eede6'],
+      ['jasur', 'Jasur Toshmatov', 'Kontent muallifi', 'member', '6bdd654b4059a8c09402a24b0a856d3efcfbf9346941290502ee97deac1250c2'],
+      ['malika', 'Malika Yusupova', 'Tadbir koordinatori', 'member', '6a7624ec5701f5b15bbb0f19d95a0df28523a1d9c356db6715723c816398de2e'],
+      ['sardor', 'Sardor Aliyev', 'Moliya mutaxassisi', 'member', '32cceba000df53079916d69c7e107a9a757411e4d2465deacdc2ab6730346ac4'],
+      ['bekzod', 'Bekzod Nazarov', 'Texnik mutaxassis', 'member', '8052509b2cc87f96370407e094de524e8cbdd1813573d3e021096d4cdfb8772a'],
+      ['madina', 'Madina Qodirova', 'SMM mutaxassisi', 'member', 'f81250cbd11546c63d7556f0ec1141342a88ce108833a845c7ba3db17ade9a6c']
     ];
     var U = {};
     people.forEach(function (p, i) {
       var salt = 'demo-salt-' + p[0];
-      var u = { id: 'u_' + p[0], name: p[1], login: p[0], passHash: S.hashPassword(p[4], salt), salt: salt, role: p[3], position: p[2],
+      var u = { id: 'u_' + p[0], name: p[1], login: p[0], passHash: p[4], salt: salt, demo: true, role: p[3], position: p[2],
         color: L.COLORS[i % L.COLORS.length], active: true, createdAt: t - 14 * day, lastLoginAt: t - (i + 1) * 3 * hour };
       U[p[0]] = u; db.users.push(u);
     });

@@ -53,10 +53,24 @@
     if (!u.active) return { ok: false, error: 'Hisobingiz faolsizlantirilgan. Administratorga murojaat qiling.' };
 
     write(ATTEMPTS_KEY, null);
+    return startSession(u, remember);
+  };
+
+  function startSession(u, remember) {
     u.lastLoginAt = A.now();
     S.save();
     write(SESSION_KEY, { userId: u.id, expires: A.now() + (remember ? LONG : SHORT), remember: !!remember });
     return { ok: true, user: u };
+  }
+
+  // Demo tashkilotda namuna hisoblarga parolsiz kirish ("bir bosishda kirish").
+  // Faqat demo ma'lumotida va paroli o'zgartirilmagan demo hisob uchun ishlaydi.
+  A.demoLogin = function (login, remember) {
+    if (!S.db || !S.db.demo) return { ok: false, error: 'Ruxsat yo‘q.' };
+    var u = S.db.users.filter(function (x) { return x.login === login && x.demo === true; })[0];
+    if (!u) return { ok: false, error: 'Ruxsat yo‘q.' };
+    if (!u.active) return { ok: false, error: 'Hisobingiz faolsizlantirilgan. Administratorga murojaat qiling.' };
+    return startSession(u, remember);
   };
 
   A.logout = function () { write(SESSION_KEY, null); };

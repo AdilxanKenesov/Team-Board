@@ -150,6 +150,24 @@ test('auth: to‘g‘ri va noto‘g‘ri parol, faolsiz hisob, sessiya', () => {
   assert.match(A.login('jasur', 'demo123').error, /faolsizlantirilgan/);
 });
 
+test('auth: demo hisoblar — kodda ochiq parol yo‘q, bir bosishda kirish faqat demo rejimda', () => {
+  const fs = require('fs');
+  const code = ['js/core/store.js', 'js/core/auth.js', 'js/views/auth.js'].map((f) => fs.readFileSync(__dirname + '/../' + f, 'utf8')).join('\n');
+  assert.ok(!/admin123|demo123/.test(code), 'brauzer kodida ochiq parol bor');
+  freshDemo();
+  assert.ok(A.login('admin', 'admin123').ok, 'xesh oldingi parolga mos');           // sun'iy sinov paroli xesh orqali tekshiriladi
+  A.logout();
+  const d = A.demoLogin('malika', false);
+  assert.ok(d.ok && d.user.id === 'u_malika');
+  A.logout();
+  const mal = S.user('u_malika');
+  assert.ok(S.changeOwnPassword(mal, 'demo123', 'yangi123').ok);
+  assert.ok(!S.user('u_malika').demo);
+  assert.ok(!A.demoLogin('malika').ok, 'paroli o‘zgargan hisobga parolsiz kirib bo‘lmaydi');
+  S.db.demo = false;
+  assert.ok(!A.demoLogin('jasur').ok, 'demo bo‘lmagan ma’lumotda parolsiz kirish yo‘q');
+});
+
 test('auth: 5 ta xato urinishdan keyin 30 soniya blok', () => {
   freshDemo();
   let now = 1e12; A.now = () => now;

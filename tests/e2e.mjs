@@ -209,6 +209,43 @@ await test('kirish sahifasi: mavzu tugmasi ishlaydi', async () => {
     const t2=document.documentElement.getAttribute('data-theme');
     return t1 && t1!==t2 && !!document.getElementById('auth-theme') ? true : {b0,t1,t2};`);
 });
+await test('noto‘g‘ri kiritishlar: bo‘sh, bo‘sh joy, 1 belgi, 121 belgi, takror nom, o‘tgan sana, 7 teg', async () => {
+  await open('#/admin/board', 'admin');
+  return js(`
+    const n0=App.Store.db.tasks.length, res={};
+    async function tryTitle(key, v, extra){
+      App.openTaskForm(); await new Promise(r=>setTimeout(r,250));
+      document.getElementById('tf-title').value=v; if(extra) extra();
+      document.getElementById('tf-submit').click(); await new Promise(r=>setTimeout(r,200));
+      const errs=[...document.querySelectorAll('.modal .field__error')].map(e=>e.textContent).filter(Boolean).join(' | ');
+      res[key]=errs; document.querySelector('.modal .icon-btn').click(); await new Promise(r=>setTimeout(r,200));
+    }
+    await tryTitle('bosh','');
+    await tryTitle('joy','     ');
+    await tryTitle('bir','A');
+    await tryTitle('uzun','x'.repeat(121));
+    await tryTitle('takror','Forum dasturini tuzish', ()=>{ document.getElementById('tf-project').value='p_forum'; });
+    // o'tgan sana: kalendarda o'tgan kunlar yopiq (do'kon darajasidagi tekshiruv — unit testda)
+    App.openTaskForm(); await new Promise(r=>setTimeout(r,250));
+    document.getElementById('tf-due-btn').click(); await new Promise(r=>setTimeout(r,250));
+    const y=App.Logic.addDays(App.today(),-1), past=document.querySelector('.cal__day[data-date="'+y+'"]'), td=document.querySelector('.cal__day[data-date="'+App.today()+'"]');
+    res.sana = past && past.disabled && td && !td.disabled ? 'bugundan oldin yopiq' : 'XATO';
+    document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})); await new Promise(r=>setTimeout(r,150));
+    const m=document.querySelector('.modal .icon-btn'); if(m) m.click(); await new Promise(r=>setTimeout(r,200));
+    await tryTitle('teg','Teglar sinovi', ()=>{ document.getElementById('tf-tags').value='a,b,c,d,e,f,g'; });
+    const ok = /yozing/.test(res.bosh) && /yozing/.test(res.joy) && /kamida 2/.test(res.bir) && /120/.test(res.uzun)
+      && /shunday nomli/.test(res.takror) && /bugundan oldin/.test(res.sana) && /6 ta teg/.test(res.teg) && App.Store.db.tasks.length===n0;
+    return ok ? true : res;`);
+});
+await test('sahifani yangilash: vazifa, holat, sessiya va til saqlanadi', async () => {
+  await open('#/admin/board', 'admin');
+  await js(`App.setPref('lang','ru'); const r=App.Store.createTask(App.me(), {title:'Yangilash sinovi', status:'new', priority:'orta', assigneeId:'u_jasur'});
+    App.Store.moveTask(App.me(), r.task.id, 'doing');`);
+  await send('Page.reload'); await sleep(900);
+  return js(`const t=App.Store.db.tasks.find(x=>x.title==='Yangilash sinovi');
+    const ok = t && t.status==='doing' && App.me() && App.me().login==='admin' && App.I18n.lang==='ru' && /Яңги|Доска/.test(document.getElementById('page-title').textContent);
+    App.setPref('lang','uz'); return ok ? true : {t:!!t, st:t&&t.status, lang:App.I18n.lang, title:document.getElementById('page-title').textContent};`);
+});
 await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
   await open('#/admin/reports', 'admin');
   return js(`

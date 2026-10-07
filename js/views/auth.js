@@ -118,8 +118,8 @@
         }, 250);
       }
     }
-    function doLogin(login, pass) {
-      var r = A.login(login, pass, U.$('li-remember').checked);
+    function doLogin(login, pass, demo) {
+      var r = demo ? A.demoLogin(login, U.$('li-remember').checked) : A.login(login, pass, U.$('li-remember').checked);
       if (!r.ok) {
         U.showErrors(form, {}, {});
         if (r.field) { U.showErrors(form, (function () { var o = {}; o[r.field] = r.error; return o; })(), { login: 'li-login', password: 'li-pass' }); err.hidden = true; }
@@ -134,16 +134,16 @@
 
     var demo = null;
     if (S.db && S.db.demo) {
-      var accounts = S.db.users.filter(function (u) { return u.active && ['admin', 'malika', 'jasur', 'bekzod'].indexOf(u.login) !== -1; });
+      var accounts = S.db.users.filter(function (u) { return u.active && u.demo && ['admin', 'malika', 'jasur', 'bekzod'].indexOf(u.login) !== -1; });
       demo = h('div', { class: 'demo-box' },
         h('p', { class: 'demo-box__title' }, U.icon('sparkle'), t('Demo hisoblar — bir bosishda kirish')),
         h('div', { class: 'demo-box__list' }, accounts.map(function (u) {
           return h('button', { type: 'button', class: 'demo-acc', dataset: { login: u.login }, onClick: function () {
-            U.$('li-login').value = u.login; U.$('li-pass').value = u.role === 'admin' ? 'admin123' : 'demo123';
-            doLogin(u.login, u.role === 'admin' ? 'admin123' : 'demo123');
+            U.$('li-login').value = u.login;
+            doLogin(u.login, null, true);
           } }, U.avatar(u), h('span', null, h('b', null, u.name), h('small', null, t(L.ROLE_LABELS[u.role]) + ' · ' + u.login)));
         })),
-        h('p', { class: 'demo-box__hint' }, t('Parollar: admin — admin123, xodimlar — demo123')));
+        h('p', { class: 'demo-box__hint' }, t('Sun’iy sinov hisoblari — parol kiritish shart emas.')));
     }
 
     var lock = A.lockRemaining();

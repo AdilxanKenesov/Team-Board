@@ -72,7 +72,7 @@
     'Kuting: {n} s': 'Подождите: {n} с',
     'Xush kelibsiz, {name}!': 'Добро пожаловать, {name}!',
     'Demo hisoblar — bir bosishda kirish': 'Демо-аккаунты — вход в один клик',
-    'Parollar: admin — admin123, xodimlar — demo123': 'Пароли: admin — admin123, сотрудники — demo123',
+    'Sun’iy sinov hisoblari — parol kiritish shart emas.': 'Тестовые аккаунты с вымышленными данными — пароль не нужен.',
     'Tizimga kirish': 'Вход в систему',
     'Login va parolingizni kiriting.': 'Введите логин и пароль.',
     'Kanban taxta, ro‘yxat va kalendar': 'Канбан-доска и сроки задач',
