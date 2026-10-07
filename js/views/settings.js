@@ -78,27 +78,19 @@
     if (me.role === 'admin') {
       var raw = ''; try { raw = root.localStorage.getItem(S.KEY) || ''; } catch (e) { raw = ''; }
       var nSamples = S.db.tasks.filter(function (x) { return x.sample; }).length;
-      var file = h('input', { type: 'file', id: 'st-import-file', accept: 'application/json,.json', hidden: true, onChange: function () {
-        var fl = file.files && file.files[0]; if (!fl) return;
-        var rd = new FileReader();
-        rd.onload = function () {
-          U.confirm({ title: t('Zaxiradan tiklash'), text: t('Joriy ma’lumotlar “{x}” fayli bilan almashtiriladi. Davom etasizmi?', { x: fl.name }), okLabel: t('Tiklash'), danger: true }).then(function (ok) {
-            if (!ok) return;
-            var r = S.importJSON(me, String(rd.result));
-            if (!r.ok) { U.toast(t(r.error), { kind: 'error' }); return; }
-            U.toast(t('Tiklandi: {u} xodim, {n} vazifa.', { u: r.counts.users, n: r.counts.tasks }), { undo: true });
-          });
-          file.value = '';
-        };
-        rd.readAsText(fl);
-      } });
       var stats = [[t('Xodimlar'), S.db.users.length], [t('Loyihalar'), S.db.projects.length], [t('Vazifalar'), S.db.tasks.length], [t('Izohlar'), S.db.comments.length], [t('Hajmi'), bytes(new Blob([raw]).size)]];
       grid.appendChild(section('st-h-data', 'archive', t('Ma’lumotlar'), t('Hammasi shu brauzerning xotirasida (localStorage) saqlanadi.'), h('div', { class: 'set-rows' },
         h('div', { class: 'set-stats' }, stats.map(function (s) { return h('div', null, h('b', { class: 'num' }, String(s[1])), h('span', null, s[0])); })),
-        h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Zaxira nusxa')), h('p', { class: 'muted' }, t('Barcha ma’lumotlarni JSON fayl sifatida yuklab oling yoki fayldan tiklang.'))),
+        h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Hisobotni yuklab olish')), h('p', { class: 'muted' }, t('Barcha vazifalar bo‘yicha chiroyli PDF hisobot yoki Excel’da ochiladigan jadval.'))),
           h('div', { class: 'set-actions' },
-            h('button', { type: 'button', class: 'btn', id: 'st-export', onClick: function () { U.download('jamoa-taxtasi-zaxira-' + App.today() + '.json', S.exportJSON(), 'application/json'); U.toast(t('Zaxira fayl yuklandi.')); } }, U.icon('download'), t('Yuklab olish')),
-            h('button', { type: 'button', class: 'btn', id: 'st-import', onClick: function () { file.click(); } }, U.icon('upload'), t('Fayldan tiklash')), file)),
+            h('button', { type: 'button', class: 'btn btn--primary', id: 'st-pdf', onClick: function () {
+              R.go('#/admin/reports');
+              setTimeout(function () { var b = U.$('rp-pdf'); if (b) b.click(); }, 300);
+            } }, U.icon('report'), t('PDF hisobot')),
+            h('button', { type: 'button', class: 'btn', id: 'st-csv', onClick: function () {
+              U.download('vazifalar-' + App.today() + '.csv', L.toCSV(L.tasksToRows(S.db.tasks, S.db.users, S.db.projects)), 'text/csv;charset=utf-8');
+              U.toast(t('Excel (CSV) fayl yuklandi.'));
+            } }, U.icon('download'), t('Excel (CSV)')))),
         h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Namuna vazifalar')), h('p', { class: 'muted' }, nSamples ? t('{n} ta demo vazifa bor. O‘chirsangiz, faqat o‘zingiz yaratganlari qoladi.', { n: nSamples }) : t('Namuna vazifalar yo‘q.'))),
           h('button', { type: 'button', class: 'btn', id: 'st-clear-samples', disabled: !nSamples, onClick: function () {
             U.confirm({ title: t('Namunalarni o‘chirish'), text: t('{n} ta namuna vazifa va ularning izohlari o‘chiriladi.', { n: nSamples }), okLabel: t('O‘chirish'), danger: true }).then(function (ok) {

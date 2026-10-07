@@ -227,11 +227,12 @@ await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
     const ru=App.I18n.lang==='ru'; ${$('#st-lang-uz')}.click(); ${$('#st-theme-system')}.click(); ${W}
     return nameOk && mism && wrongCur && dark && ru && !document.documentElement.hasAttribute('data-theme') && !document.getElementById('st-export') ? true : {nameOk,mism,wrongCur,dark,ru};`);
 });
-await test('sozlamalar (admin): zaxira eksport/import, namunalarni o‘chirish + bekor qilish', async () => {
+await test('sozlamalar (admin): CSV va PDF tugmalari, namunalarni o‘chirish + bekor qilish', async () => {
   await open('#/settings', 'admin');
   return js(`
-    let file=null; const orig=App.UI.download; App.UI.download=(n,c)=>{file={n,c}}; ${$('#st-export')}.click(); App.UI.download=orig;
-    const parsed=JSON.parse(file.c); const expOk=parsed.tasks.length===24 && /\\.json$/.test(file.n);
+    let file=null; const orig=App.UI.download; App.UI.download=(n,c)=>{file={n,c}}; ${$('#st-csv')}.click(); App.UI.download=orig;
+    const expOk=/\\.csv$/.test(file.n) && file.c.split('\\r\\n').length===25 && !!document.getElementById('st-pdf') && !document.getElementById('st-export');
+    const parsed=JSON.parse(App.Store.exportJSON());
     ${$('#st-clear-samples')}.click(); ${W}
     document.querySelector('.modal .btn--danger').click(); ${W}${W}
     const cleared=App.Store.db.tasks.length===0;
