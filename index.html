@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jamoa taxtasi — vazifalarni kuzatish</title>
+  <meta name="description" content="Jamoa vazifalarini Yangi, Bajarilmoqda va Tugagan ustunlarida kuzatish (Bilet 010).">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#taxta">Taxtaga o‘tish</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="#taxta">
+        <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="3" width="5.5" height="18" rx="1.5" class="m1"/>
+          <rect x="9.25" y="3" width="5.5" height="12" rx="1.5" class="m2"/>
+          <rect x="16.5" y="3" width="5.5" height="7" rx="1.5" class="m3"/>
+        </svg>
+        Jamoa taxtasi
+      </a>
+      <nav aria-label="Asosiy menyu">
+        <ul class="nav">
+          <li><a href="#taxta">Taxta</a></li>
+          <li><a href="#qanday">Qanday ishlaydi</a></li>
+          <li><a href="#jamoa">Jamoa uchun</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="taxta" class="section" aria-labelledby="board-title">
+      <div class="wrap">
+        <div class="board-head">
+          <div>
+            <h1 id="board-title">Vazifalar taxtasi</h1>
+            <p class="lead">Vazifani qo‘shing, ish boshlanganda va tugaganda tugma bilan keyingi ustunga o‘tkazing.</p>
+          </div>
+          <form id="add-form" class="add" novalidate>
+            <label for="title" class="add__label">Yangi vazifa nomi</label>
+            <div class="add__row">
+              <input id="title" name="title" type="text" autocomplete="off" maxlength="120"
+                     placeholder="Masalan: Hisobotni tayyorlash" aria-describedby="title-error title-hint">
+              <button type="submit" class="btn btn--primary">Qo‘shish</button>
+            </div>
+            <p id="title-hint" class="add__hint">2–80 ta belgi. Bir xil nomli vazifa ikki marta qo‘shilmaydi.</p>
+            <p id="title-error" class="error" role="alert"></p>
+          </form>
+        </div>
+
+        <div class="progress" aria-labelledby="progress-title">
+          <div class="progress__top">
+            <span id="progress-title" class="progress__title">Jamoa holati</span>
+            <span id="progress-text" class="progress__text">—</span>
+          </div>
+          <div class="progress__bar" aria-hidden="true">
+            <span id="seg-new" class="seg seg--new"></span>
+            <span id="seg-doing" class="seg seg--doing"></span>
+            <span id="seg-done" class="seg seg--done"></span>
+          </div>
+        </div>
+
+        <div class="columns">
+          <section class="col col--new" aria-labelledby="h-new">
+            <header class="col__head">
+              <h2 id="h-new"><span class="dot" aria-hidden="true"></span>Yangi</h2>
+              <span class="col__count" id="count-new" aria-label="Yangi ustunidagi vazifalar soni">0</span>
+            </header>
+            <ul class="list" id="list-new"></ul>
+          </section>
+          <section class="col col--doing" aria-labelledby="h-doing">
+            <header class="col__head">
+              <h2 id="h-doing"><span class="dot" aria-hidden="true"></span>Bajarilmoqda</h2>
+              <span class="col__count" id="count-doing" aria-label="Bajarilmoqda ustunidagi vazifalar soni">0</span>
+            </header>
+            <ul class="list" id="list-doing"></ul>
+          </section>
+          <section class="col col--done" aria-labelledby="h-done">
+            <header class="col__head">
+              <h2 id="h-done"><span class="dot" aria-hidden="true"></span>Tugagan</h2>
+              <span class="col__count" id="count-done" aria-label="Tugagan ustunidagi vazifalar soni">0</span>
+            </header>
+            <ul class="list" id="list-done"></ul>
+          </section>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <div class="tools">
+          <p id="sample-note" class="sample-note" hidden>“Namuna” belgili vazifalar — sinov uchun namunaviy ma’lumot.</p>
+          <div class="reset">
+            <button type="button" id="reset" class="btn btn--ghost">Taxtani tozalash</button>
+            <span id="reset-confirm" class="reset__confirm" hidden>
+              Barcha vazifalar o‘chiriladi.
+              <button type="button" id="reset-yes" class="btn btn--danger btn--sm">Ha, tozalash</button>
+              <button type="button" id="reset-no" class="btn btn--ghost btn--sm">Bekor qilish</button>
+            </span>
+          </div>
+          <p id="storage-warning" class="error" hidden>Brauzer xotirasi ishlamayapti — o‘zgarishlar sahifa yangilanganda saqlanmaydi.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="qanday" class="section section--alt" aria-labelledby="how-title">
+      <div class="wrap">
+        <h2 id="how-title" class="h2">Qanday ishlaydi</h2>
+        <ol class="steps">
+          <li><b>Qo‘shing.</b> Vazifa nomini yozib, “Qo‘shish”ni yoki <kbd>Enter</kbd>ni bosing. U “Yangi” ustuniga tushadi.</li>
+          <li><b>Boshlang.</b> Ish boshlanganda “Boshlash” tugmasi vazifani “Bajarilmoqda”ga o‘tkazadi.</li>
+          <li><b>Tugating.</b> “Tugatish” vazifani “Tugagan”ga o‘tkazadi. Adashsangiz, orqaga qaytarish tugmasi bor.</li>
+          <li><b>Kuzating.</b> Ustunlardagi sonlar va “Jamoa holati” chizig‘i darhol yangilanadi. Hammasi shu brauzerda saqlanadi.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="jamoa" class="section" aria-labelledby="team-title">
+      <div class="wrap">
+        <h2 id="team-title" class="h2">Jamoa uchun</h2>
+        <div class="cards3">
+          <article class="info">
+            <h3>Kim uchun</h3>
+            <p>Maktab to‘garagi, talabalar loyihasi yoki kichik ish jamoasi — kim nima qilayotganini bir qarashda ko‘rmoqchi bo‘lganlar uchun.</p>
+          </article>
+          <article class="info">
+            <h3>Qanday muammo</h3>
+            <p>Vazifalar chat va daftarlarda yo‘qolib ketadi, nima tugagani noaniq qoladi. Taxta har bir ishning qaysi bosqichda ekanini ko‘rsatadi.</p>
+          </article>
+          <article class="info">
+            <h3>Nima beradi</h3>
+            <p>Uchta aniq holat, har ustundagi son va tugaganlar foizi — yig‘ilishda “qayerdamiz?” degan savolga darhol javob.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">Bilet 010 · “Vazifalar taxtasi” · ma’lumotlar faqat shu brauzerda saqlanadi</div>
+  </footer>
+
+  <script src="logic.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
