@@ -41,6 +41,24 @@ f.onload=async()=>{ try {
  ok($('tab-done').getAttribute('aria-selected')==='true'&&D.activeElement===$('tab-done'),'→ tugmasi bilan keyingi tab');
  ok(D.documentElement.scrollWidth<=390,'390px yonga surish yo‘q');
  await reload(); D=f.contentDocument; ok(D.getElementById('tab-done').getAttribute('aria-selected')==='true','tanlangan tab eslab qolindi');
+ // --- v3 dizayn ---
+ f.style.width='1366px'; await wait(150); D=f.contentDocument; const $$=id=>D.getElementById(id);
+ $$('filter-btn').click(); ok(!$$('filter-pop').hidden&&$$('filter-btn').getAttribute('aria-expanded')==='true','filtr paneli ochildi');
+ $$('f-pr').value='yuqori'; $$('f-pr').dispatchEvent(new Event('change'));
+ ok($$('filter-count').textContent==='1'&&!$$('filter-count').hidden,'faol filtrlar soni: 1');
+ $$('filter-pop').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok($$('filter-pop').hidden&&D.activeElement===$$('filter-btn'),'Esc: filtr paneli yopildi, fokus tugmada');
+ $$('f-clear').click();
+ const own=D.querySelectorAll('.task').length; $$('add-open').click(); $$('title').value='O‘zimning vazifam'; $$('drawer-submit').click();
+ const samples=window.frames[0].TaxtaApp.getState().tasks.filter(t=>t.sample).length;
+ $$('sample-clear').click();
+ const left=window.frames[0].TaxtaApp.getState().tasks;
+ ok(left.length===own+1-samples&&left.some(t=>t.title==='O‘zimning vazifam')&&$$('sample-note').hidden,'faqat namuna vazifalar o‘chdi, banner yo‘qoldi');
+ $$('add-open').click(); $$('title').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok($$('drawer').hidden&&D.activeElement===$$('add-open'),'panel Esc bilan yopildi, fokus “+ Vazifa”da');
+ f.style.width='768px'; await wait(150); ok(D.documentElement.scrollWidth<=768,'768px yonga surish yo‘q');
+ f.style.width='390px'; await wait(150);
+ ok(f.contentWindow.getComputedStyle($$('add-open')).position==='fixed','390px: “+ Vazifa” suzuvchi tugma');
  ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
  } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
  document.getElementById('out').textContent=log.join('\n');
