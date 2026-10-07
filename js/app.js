@@ -191,6 +191,7 @@
     App.state.route = r;
     renderView(true);
     if (r.query.task && App.openTask) App.openTask(r.query.task);
+    if (me.mustChange && App.requirePasswordChange) setTimeout(App.requirePasswordChange, 50);
   };
 
   function setActiveNav(key) {

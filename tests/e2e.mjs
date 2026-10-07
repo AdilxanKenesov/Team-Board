@@ -121,6 +121,32 @@ await test('xodimlar: o‘zini faolsizlantira olmaydi (menyuda yo‘q)', async (
     return !items.some(x=>/Faolsizlantirish/.test(x));`);
 });
 
+/* ================= xodim interfeysi ================= */
+await test('admin vazifa beradi → xodim bildirishnoma va vazifani ko‘radi, boshlaydi', async () => {
+  await open('#/admin/board', 'admin');
+  await js(`App.Store.createTask(App.me(), { title: 'Xodim uchun sinov', assigneeId: 'u_bekzod', due: App.today() });`);
+  await js(`App.Auth.logout(); App.Auth.login('bekzod','demo123',true); location.hash='#/me'; ${W}${W}`);
+  return js(`const rows=[...document.querySelectorAll('.trow')]; const row=rows.find(r=>r.textContent.includes('Xodim uchun sinov'));
+    const badge=+document.getElementById('bell-badge').textContent;
+    if(!row) return 'qator yo‘q'; row.querySelector('.move--fwd').click(); ${W}
+    const st=App.Store.db.tasks.find(t=>t.title==='Xodim uchun sinov').status;
+    return badge>=1 && st==='doing' && App.Store.notificationsFor('u_admin').some(n=>n.type==='status') ? true : {badge,st};`);
+});
+await test('bildirishnomalar sahifasi: o‘qilmaganlar va hammasini o‘qildi', async () => js(`
+  location.hash='#/me/notifications'; ${W}${W}
+  const n0=document.querySelectorAll('.nrow.is-unread').length; ${$('#nt-unread')}.click(); ${W}
+  const onlyU=document.querySelectorAll('.nrow').length===n0; ${$('#mark-all')}.click(); ${W}
+  return n0>0 && onlyU && App.Store.unreadCount(App.me().id)===0 && document.getElementById('bell-badge').hidden;`));
+await test('xodim boshqa xodim vazifasini ocholmaydi', async () => js(`
+  App.openTask('t_11'); ${W} return !document.querySelector('.drawer') && /ruxsat/.test(document.getElementById('toast').textContent);`));
+await test('parol tiklangandan keyin birinchi kirishda almashtirish so‘raladi', async () => {
+  await open('#/admin', 'admin');
+  await js(`App.Store.resetPassword(App.me(), 'u_jasur', 'vaqt123'); App.Auth.logout(); App.Auth.login('jasur','vaqt123',true); location.hash='#/me'; ${W}${W}${W}`);
+  return js(`if(!document.getElementById('pc-current')) return 'oyna yo‘q';
+    ${$('#pc-current')}.value='vaqt123'; ${$('#pc-next')}.value='yangi123'; ${$('#pc-submit')}.click(); ${W}
+    App.Auth.logout(); return App.Auth.login('jasur','yangi123').ok && !App.Store.user('u_jasur').mustChange;`);
+});
+
 /* ================= telefon ================= */
 await test('telefon 390px: yonga surish yo‘q, pastki menyu, tablar', async () => {
   await width(390); await open('#/me/board', 'malika');
