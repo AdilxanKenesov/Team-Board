@@ -147,6 +147,30 @@ await test('xodim menyusi: 3 bo‘lim, vazifa yaratish tugmasi yo‘q', async ()
     const r=App.Store.createTask(App.me(), {title:'Xodim yaratmoqchi', status:'new', priority:'orta'});
     return navs===3 && noAdd && noForm && !r.ok ? true : {navs,noAdd,noForm,r:r.ok};`);
 });
+await test('til: Русский — menyu, sarlavha, bildirishnoma, xato xabarlari ruscha; qaytib o‘zbekcha', async () => {
+  await open('#/settings', 'malika');
+  return js(`
+    ${$('#st-lang-ru')}.click(); ${W}${W}
+    const nav=[...document.querySelectorAll('.nav a')].map(a=>a.textContent.trim()).join('|');
+    location.hash='#/me'; ${W}${W}
+    const title=document.getElementById('page-title').textContent, html=document.documentElement.lang;
+    const notif=[...document.querySelectorAll('.nrow__text')].map(n=>n.textContent).join(' ');
+    const skip=document.querySelector('.skip').textContent;
+    const tip=document.querySelector('.trow__due') ? document.querySelector('.trow__due').textContent : '';
+    location.hash='#/settings'; ${W}${W} ${$('#st-lang-uz')}.click(); ${W}${W}
+    const back=[...document.querySelectorAll('.nav a')].map(a=>a.textContent.trim()).join('|');
+    return html==='ru' && nav.replace(/\\d+$/,'')==='Мой день|Моя доска|Уведомления' && title==='Мой день'
+      && /назначил\\(а\\) вам задачу|оставил\\(а\\) комментарий/.test(notif) && skip==='Перейти к содержимому' && /просрочено|сегодня|завтра|\\d/.test(tip)
+      && /^Mening kunim\\|Mening taxtam\\|Bildirishnomalar/.test(back) ? true : {html,nav,title,notif:notif.slice(0,80),skip,tip,back};`);
+});
+await test('til: login xatosi ruscha (shablon + son)', async () => {
+  await open('#/login', null);
+  return js(`
+    localStorage.setItem('tbpro.pref.lang','ru'); App.applyPrefs(null); location.hash='#/welcome'; ${W} location.hash='#/login'; ${W}${W}
+    ${$('#li-login')}.value='admin'; ${$('#li-pass')}.value='xato12'; ${$('#login-form')}.requestSubmit(); ${W}
+    const err=${$('#login-error')}.textContent; localStorage.setItem('tbpro.pref.lang','uz'); App.applyPrefs(null);
+    return /Неверный логин или пароль\\. Осталось попыток: \\d/.test(err) ? true : err;`);
+});
 await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
   await open('#/admin/reports', 'admin');
   return js(`

@@ -120,7 +120,7 @@
       if (!r.ok) {
         U.showErrors(form, {}, {});
         if (r.field) { U.showErrors(form, (function () { var o = {}; o[r.field] = r.error; return o; })(), { login: 'li-login', password: 'li-pass' }); err.hidden = true; }
-        else { showError(t(r.error), r.lockMs); U.$('li-pass').value = ''; U.$('li-pass').focus(); }
+        else { showError(t(r.error, r.params), r.lockMs); U.$('li-pass').value = ''; U.$('li-pass').focus(); }
         return;
       }
       U.toast(t('Xush kelibsiz, {name}!', { name: r.user.name.split(' ')[0] }));

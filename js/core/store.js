@@ -70,7 +70,7 @@
       if (c && str(c.id) && tids[c.taskId] && ids[c.userId] && L.clean(c.text)) db.comments.push({ id: c.id, taskId: c.taskId, userId: c.userId, text: str(c.text), at: num(c.at, 0) });
     });
     arr(raw.notifications).forEach(function (n) {
-      if (n && str(n.id) && ids[n.userId] && str(n.text)) db.notifications.push({ id: n.id, key: str(n.key), userId: n.userId, type: str(n.type), taskId: tids[n.taskId] ? n.taskId : null, text: n.text, at: num(n.at, 0), read: n.read === true });
+      if (n && str(n.id) && ids[n.userId] && str(n.text)) db.notifications.push({ id: n.id, key: str(n.key), userId: n.userId, type: str(n.type), taskId: tids[n.taskId] ? n.taskId : null, text: n.text, p: n.p && typeof n.p === 'object' ? { a: str(n.p.a), x: str(n.p.x), s: str(n.p.s), d: str(n.p.d) } : null, at: num(n.at, 0), read: n.read === true });
     });
     arr(raw.activity).forEach(function (a) {
       if (a && str(a.type) && num(a.at, null) !== null) db.activity.push({ id: str(a.id) || L.uid('a'), at: a.at, userId: ids[a.userId] ? a.userId : null, type: a.type, taskId: tids[a.taskId] ? a.taskId : null, title: str(a.title), detail: a.detail && typeof a.detail === 'object' ? a.detail : {} });
@@ -132,11 +132,12 @@
     db.activity.unshift({ id: L.uid('a'), at: Date.now(), userId: actor ? actor.id : null, type: type, taskId: task ? task.id : null,
       title: title || (task ? task.title : ''), detail: detail || {} });
   }
-  function notify(db, userId, type, task, text, actor) {
+  // p — shablon parametrlari (L.NOTIF_TPL): a = kim, x = vazifa, s = holat
+  function notify(db, userId, type, task, p, actor) {
     if (!userId || (actor && userId === actor.id)) return;
     var u = L.byId(db.users, userId);
     if (!u || !u.active) return;
-    db.notifications.unshift({ id: L.uid('n'), key: '', userId: userId, type: type, taskId: task ? task.id : null, text: text, at: Date.now(), read: false });
+    db.notifications.unshift({ id: L.uid('n'), key: '', userId: userId, type: type, taskId: task ? task.id : null, p: p, text: L.notifText(type, p), at: Date.now(), read: false });
   }
   function admins(db) { return db.users.filter(function (u) { return u.role === 'admin' && u.active; }); }
   S.user = function (id) { return S.db ? L.byId(S.db.users, id) : null; };
@@ -172,7 +173,7 @@
       if (t.status === 'done') t.completedAt = now;
       db.tasks.push(t);
       log(db, actor, 'create', t);
-      if (t.assigneeId) notify(db, t.assigneeId, 'assigned', t, actor.name + ' sizga “' + t.title + '” vazifasini biriktirdi.', actor);
+      if (t.assigneeId) notify(db, t.assigneeId, 'assigned', t, { a: actor.name, x: t.title }, actor);
       return { ok: true, task: t };
     });
   };
@@ -195,7 +196,7 @@
       if (t.status === 'done' && prevStatus !== 'done') t.completedAt = Date.now();
       if (t.status !== 'done') t.completedAt = null;
       log(db, actor, 'update', t, { fields: changed });
-      if (t.assigneeId && t.assigneeId !== prevAssignee) notify(db, t.assigneeId, 'assigned', t, actor.name + ' sizga “' + t.title + '” vazifasini biriktirdi.', actor);
+      if (t.assigneeId && t.assigneeId !== prevAssignee) notify(db, t.assigneeId, 'assigned', t, { a: actor.name, x: t.title }, actor);
       return { ok: true, task: t, changed: true };
     });
   };
@@ -211,7 +212,7 @@
       t.status = to; t.updatedAt = Date.now();
       t.completedAt = to === 'done' ? Date.now() : null;
       log(db, actor, 'move', t, { from: from, to: to });
-      var text = actor.name + ': “' + t.title + '” → ' + L.STATUS_LABELS[to] + '.';
+      var text = { a: actor.name, x: t.title, s: to };
       if (actor.role !== 'admin') admins(db).forEach(function (a) { notify(db, a.id, 'status', t, text, actor); });
       else if (t.assigneeId) notify(db, t.assigneeId, 'status', t, text, actor);
       return { ok: true, task: t, from: from };
@@ -256,7 +257,7 @@
         }
         if (change.assigneeId !== undefined && t.assigneeId !== change.assigneeId) {
           t.assigneeId = change.assigneeId || null; n++;
-          if (t.assigneeId) notify(db, t.assigneeId, 'assigned', t, actor.name + ' sizga “' + t.title + '” vazifasini biriktirdi.', actor);
+          if (t.assigneeId) notify(db, t.assigneeId, 'assigned', t, { a: actor.name, x: t.title }, actor);
         }
         if (change.priority && t.priority !== change.priority) { t.priority = change.priority; n++; }
         t.updatedAt = Date.now();
@@ -294,7 +295,7 @@
       if (t.assigneeId) targets[t.assigneeId] = true;
       if (t.createdBy) targets[t.createdBy] = true;
       db.comments.filter(function (x) { return x.taskId === taskId; }).forEach(function (x) { targets[x.userId] = true; });
-      Object.keys(targets).forEach(function (uid) { notify(db, uid, 'comment', t, actor.name + ' “' + t.title + '” vazifasiga izoh yozdi.', actor); });
+      Object.keys(targets).forEach(function (uid) { notify(db, uid, 'comment', t, { a: actor.name, x: t.title }, actor); });
       return { ok: true, comment: c };
     });
   };
@@ -549,15 +550,17 @@
     });
     db.activity.sort(function (a, b) { return b.at - a.at; });
 
-    [['u_malika', 'assigned', 't_2', 'Aziza Karimova sizga “Forum dasturini tuzish” vazifasini biriktirdi.', 50, true],
-     ['u_malika', 'comment', 't_3', 'Aziza Karimova “Ishtirokchilar ro‘yxatini tuzish” vazifasiga izoh yozdi.', 5, false],
-     ['u_bekzod', 'assigned', 't_7', 'Aziza Karimova sizga “Ovoz va proyektorni sinash” vazifasini biriktirdi.', 8, false],
-     ['u_madina', 'assigned', 't_8', 'Aziza Karimova sizga “Ijtimoiy tarmoqlarda e’lon” vazifasini biriktirdi.', 5, false],
-     ['u_dilnoza', 'comment', 't_11', 'Aziza Karimova “Bosh sahifa maketi” vazifasiga izoh yozdi.', 30, true],
-     ['u_admin', 'status', 't_12', 'Jasur Toshmatov: ““Biz haqimizda” matni” → Tugagan.', 20, false],
-     ['u_admin', 'comment', 't_4', 'Dilnoza Rahimova “Afisha dizayni” vazifasiga izoh yozdi.', 3, false],
-     ['u_admin', 'comment', 't_13', 'Jasur Toshmatov “Yangiliklar bo‘limi uchun 5 ta maqola” vazifasiga izoh yozdi.', 1, false]].forEach(function (n, i) {
-      db.notifications.push({ id: 'n_' + i, key: '', userId: n[0], type: n[1], taskId: n[2], text: n[3], at: t - n[4] * hour, read: n[5] });
+    [['u_malika', 'assigned', 't_2', 'Aziza Karimova', null, 50, true],
+     ['u_malika', 'comment', 't_3', 'Aziza Karimova', null, 5, false],
+     ['u_bekzod', 'assigned', 't_7', 'Aziza Karimova', null, 8, false],
+     ['u_madina', 'assigned', 't_8', 'Aziza Karimova', null, 5, false],
+     ['u_dilnoza', 'comment', 't_11', 'Aziza Karimova', null, 30, true],
+     ['u_admin', 'status', 't_12', 'Jasur Toshmatov', 'done', 20, false],
+     ['u_admin', 'comment', 't_4', 'Dilnoza Rahimova', null, 3, false],
+     ['u_admin', 'comment', 't_13', 'Jasur Toshmatov', null, 1, false]].forEach(function (n, i) {
+      var p = { a: n[3], x: L.byId(db.tasks, n[2]).title };
+      if (n[4]) p.s = n[4];
+      db.notifications.push({ id: 'n_' + i, key: '', userId: n[0], type: n[1], taskId: n[2], p: p, text: L.notifText(n[1], p), at: t - n[5] * hour, read: n[6] });
     });
     db.notifications.sort(function (a, b) { return b.at - a.at; });
     return db;

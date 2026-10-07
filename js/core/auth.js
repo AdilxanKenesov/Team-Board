@@ -34,7 +34,7 @@
   A.login = function (login, password, remember) {
     if (!S.db) return { ok: false, error: 'Tizim hali sozlanmagan.' };
     var lock = A.lockRemaining();
-    if (lock > 0) return { ok: false, error: 'Juda ko‘p urinish. ' + Math.ceil(lock / 1000) + ' soniyadan keyin qayta urinib ko‘ring.', lockMs: lock };
+    if (lock > 0) return { ok: false, error: 'Juda ko‘p urinish. {n} soniyadan keyin qayta urinib ko‘ring.', params: { n: Math.ceil(lock / 1000) }, lockMs: lock };
     var l = String(login || '').trim().toLowerCase();
     if (!l) return { ok: false, field: 'login', error: 'Loginni yozing.' };
     if (!password) return { ok: false, field: 'password', error: 'Parolni yozing.' };
@@ -48,7 +48,7 @@
       write(ATTEMPTS_KEY, a);
       var left = a.lockedUntil ? 0 : MAX_ATTEMPTS - a.count;
       // Login yoki parol qaysi biri noto'g'ri ekani aytilmaydi (xavfsizlik odati)
-      return { ok: false, error: a.lockedUntil ? 'Juda ko‘p urinish. 30 soniyadan keyin qayta urinib ko‘ring.' : 'Login yoki parol noto‘g‘ri. Yana ' + left + ' ta urinish qoldi.', lockMs: a.lockedUntil ? LOCK_MS : 0 };
+      return { ok: false, error: a.lockedUntil ? 'Juda ko‘p urinish. {n} soniyadan keyin qayta urinib ko‘ring.' : 'Login yoki parol noto‘g‘ri. Yana {n} ta urinish qoldi.', params: { n: a.lockedUntil ? LOCK_MS / 1000 : left }, lockMs: a.lockedUntil ? LOCK_MS : 0 };
     }
     if (!u.active) return { ok: false, error: 'Hisobingiz faolsizlantirilgan. Administratorga murojaat qiling.' };
 

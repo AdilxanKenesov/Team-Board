@@ -6,12 +6,20 @@
   var onlyUnread = false;
   var ICON = { assigned: 'user', comment: 'comment', status: 'fwd', 'due-soon': 'clock', overdue: 'alert' };
 
+  // Shablonli bildirishnoma tanlangan tilda; eski (shablonsiz) yozuvlar o'z matni bilan
+  App.notifText = function (n) {
+    if (!n.p || !L.NOTIF_TPL[n.type]) return n.text;
+    var p = Object.assign({}, n.p);
+    if (p.s) p.s = t(L.STATUS_LABELS[p.s] || p.s);
+    return t(L.NOTIF_TPL[n.type], p);
+  };
+
   App.notifItem = function (n, me, compact) {
     return h('li', null, h('button', { type: 'button', class: 'nrow' + (n.read ? '' : ' is-unread') + (compact ? ' nrow--compact' : ''), 'data-key': 'n-' + n.id, onClick: function () {
       if (!n.read) S.markRead(me, n.id);
       if (n.taskId && S.task(n.taskId)) App.openTask(n.taskId);
     } }, h('span', { class: 'nrow__ico nrow__ico--' + n.type }, U.icon(ICON[n.type] || 'bell')),
-      h('span', { class: 'nrow__body' }, h('span', { class: 'nrow__text' }, n.text), h('time', { title: U.fmtDateTime(n.at) }, U.ago(n.at))),
+      h('span', { class: 'nrow__body' }, h('span', { class: 'nrow__text' }, App.notifText(n)), h('time', { title: U.fmtDateTime(n.at) }, U.ago(n.at))),
       n.read ? null : h('span', { class: 'nrow__dot', 'aria-label': t('o‘qilmagan') })));
   };
 

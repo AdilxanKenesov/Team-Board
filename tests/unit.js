@@ -56,7 +56,7 @@ test('vazifa: nom, loyiha ichida takror, xodim, muddat, teglar, checklist', () =
   assert.deepStrictEqual(r.value.tags, ['dizayn', 'sayt']);
   assert.strictEqual(r.value.checklist.length, 1);
   assert.match(L.validateTask({ title: 'Ok', tags: 'a,b,c,d,e,f,g' }, ctxBase()).errors.tags, /6/);
-  assert.match(L.validateTask({ title: 'x'.repeat(121) }, ctxBase()).errors.title, /121/);
+  assert.match(L.validateTask({ title: 'x'.repeat(121) }, ctxBase()).errors.title, /120 ta belgidan oshmasin/);
 });
 
 test('tahrirda eski o‘tgan muddat va faolsiz xodim saqlanadi', () => {
@@ -248,6 +248,19 @@ test('store: sozlash (birinchi admin)', () => {
   const r = S.setup({ name: 'Bosh Admin', login: 'boss', password: 'parol1' });
   assert.ok(r.ok && r.user.role === 'admin');
   assert.ok(A.login('boss', 'parol1').ok);
+});
+
+test('i18n: koddagi har bir matnning ruscha tarjimasi bor, o‘rinlar ({x}) mos', () => {
+  const fs = require('fs'), vm = require('vm');
+  const RU = {};
+  vm.runInNewContext(fs.readFileSync(__dirname + '/../js/core/i18n-ru.js', 'utf8'), { window: { App: { I18n: { add: (d) => Object.assign(RU, d) } } } });
+  const keys = require('./i18n-keys.js')();
+  const missing = keys.filter((k) => !RU[k]);
+  assert.deepStrictEqual(missing, [], 'tarjimasi yo‘q: ' + missing.join(' | '));
+  const ph = (s) => (s.match(/\{\w+\}/g) || []).sort().join();
+  const bad = Object.keys(RU).filter((k) => ph(k) !== ph(RU[k]));
+  assert.deepStrictEqual(bad, [], 'o‘rinlar mos emas: ' + bad.join(' | '));
+  assert.ok(Object.keys(L.NOTIF_TPL).every((k) => RU[L.NOTIF_TPL[k]]), 'bildirishnoma shablonlari tarjima qilinmagan');
 });
 
 console.log('\n' + passed + ' ta test o‘tdi' + (failed ? ', ' + failed + ' ta XATO' : '') + '.');

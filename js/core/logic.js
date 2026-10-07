@@ -13,6 +13,20 @@
   L.PRIORITY_WEIGHT = { yuqori: 0, orta: 1, past: 2 };
   L.ROLES = ['admin', 'member'];
   L.ROLE_LABELS = { admin: 'Administrator', member: 'Xodim' };
+  // Bildirishnoma shablonlari: matn ko'rsatilayotganda tanlangan tilga tarjima qilinadi
+  L.NOTIF_TPL = {
+    assigned: '{a} sizga “{x}” vazifasini biriktirdi.',
+    comment: '{a} “{x}” vazifasiga izoh yozdi.',
+    status: '{a}: “{x}” → {s}.',
+    overdue: '“{x}” muddati o‘tdi ({d}).',
+    'due-soon': '“{x}” muddati yaqin: {d}.'
+  };
+  // O'zbekcha matn (eski yozuvlar va eksport uchun)
+  L.notifText = function (type, p) {
+    var tpl = L.NOTIF_TPL[type] || '';
+    var q = Object.assign({}, p, p && p.s ? { s: L.STATUS_LABELS[p.s] || p.s } : {});
+    return tpl.replace(/\{(\w+)\}/g, function (m, k) { return q[k] != null ? q[k] : m; });
+  };
   // Xodim uchun ish oqimi; admin istalgan holatga o'tkaza oladi
   L.MOVES = { new: ['doing'], doing: ['new', 'done'], done: ['doing'] };
   L.LIMITS = { title: [2, 120], description: 2000, comment: [1, 1000], tag: [1, 24], tags: 6, checklist: 30, checkItem: [1, 120],
@@ -112,7 +126,7 @@
     var title = clean(input.title);
     if (!title) e.title = 'Vazifa nomini yozing.';
     else if (title.length < L.LIMITS.title[0]) e.title = 'Nom kamida 2 ta belgidan iborat bo‘lsin.';
-    else if (title.length > L.LIMITS.title[1]) e.title = 'Nom 120 ta belgidan oshmasin (hozir ' + title.length + ' ta).';
+    else if (title.length > L.LIMITS.title[1]) e.title = 'Nom 120 ta belgidan oshmasin.';
     v.title = title;
 
     v.projectId = input.projectId || null;
@@ -303,7 +317,7 @@
       if (exists) return;
       out.push({
         id: uid('n'), key: key, userId: t.assigneeId, type: type, taskId: t.id, read: false, at: now || Date.now(),
-        text: type === 'overdue' ? '“' + t.title + '” muddati o‘tdi (' + fmtDate(t.due) + ').' : '“' + t.title + '” muddati yaqin: ' + fmtDate(t.due) + '.'
+        p: { x: t.title, d: fmtDate(t.due) }, text: L.notifText(type, { x: t.title, d: fmtDate(t.due) })
       });
     });
     return out;

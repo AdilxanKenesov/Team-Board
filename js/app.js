@@ -18,6 +18,8 @@
     var html = document.documentElement;
     if (s.theme === 'light' || s.theme === 'dark') html.setAttribute('data-theme', s.theme); else html.removeAttribute('data-theme');
     I.setLang(s.lang);
+    var skip = document.querySelector('.skip');
+    if (skip) skip.textContent = t('Asosiy qismga o‘tish');
   };
   function localPref(k) { try { return storage && storage.getItem('tbpro.pref.' + k); } catch (e) { return null; } }
   App.setLocalPref = function (k, v) { try { if (storage) storage.setItem('tbpro.pref.' + k, v); } catch (e) { /* bo'sh */ } };
@@ -136,7 +138,7 @@
       items.push({ header: h('button', { type: 'button', class: 'notif-item' + (n.read ? '' : ' is-unread'), role: 'menuitem', onClick: function () {
         S.markRead(me, n.id); U.closeMenus(false);
         if (n.taskId && App.openTask) App.openTask(n.taskId);
-      } }, h('span', { class: 'notif-item__dot', 'aria-hidden': 'true' }), h('span', { class: 'notif-item__text' }, h('span', null, n.text), h('small', null, U.ago(n.at)))) });
+      } }, h('span', { class: 'notif-item__dot', 'aria-hidden': 'true' }), h('span', { class: 'notif-item__text' }, h('span', null, App.notifText(n)), h('small', null, U.ago(n.at)))) });
     });
     items.push({ separator: true });
     items.push({ label: t('Barcha bildirishnomalar'), icon: 'bell', onClick: function () { R.go(me.role === 'admin' ? '#/admin/notifications' : '#/me/notifications'); } });
