@@ -68,9 +68,9 @@
 
     /* Ko'rinish */
     function savePref(patch) { S.saveSettings(me, patch); U.toast(t('Sozlama saqlandi.')); }
-    grid.appendChild(section('st-h-look', 'sun', t('Ko‘rinish'), t('Har bir foydalanuvchining o‘z sozlamasi saqlanadi.'), h('div', { class: 'set-rows' },
+    grid.appendChild(section('st-h-look', 'monitor', t('Ko‘rinish'), t('Har bir foydalanuvchining o‘z sozlamasi saqlanadi.'), h('div', { class: 'set-rows' },
       h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Mavzu')), h('p', { class: 'muted' }, t('“Tizim” — kompyuter sozlamasiga moslashadi.'))),
-        seg('st-theme-', t('Mavzu'), prefs.theme, [['system', t('Tizim'), 'settings'], ['light', t('Yorug‘'), 'sun'], ['dark', t('Qorong‘i'), 'moon']], function (v) { savePref({ theme: v }); })),
+        seg('st-theme-', t('Mavzu'), prefs.theme, [['system', t('Tizim'), 'monitor'], ['light', t('Yorug‘'), 'sun'], ['dark', t('Qorong‘i'), 'moon']], function (v) { savePref({ theme: v }); })),
       h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Til')), h('p', { class: 'muted' }, t('Interfeys tili.'))),
         seg('st-lang-', t('Til'), prefs.lang, [['uz', 'O‘zbekcha'], ['ru', 'Русский']], function (v) { savePref({ lang: v }); })))));
 

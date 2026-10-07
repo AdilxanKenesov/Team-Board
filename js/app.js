@@ -45,8 +45,8 @@
   } };
 
   /* ---------------- qobiq ---------------- */
-  function brand() {
-    return h('a', { class: 'brand', href: '#/' },
+  function brand(user) {
+    return h('a', { class: 'brand', href: user ? A.homeFor(user) : '#/login', 'aria-label': t('Jamoa taxtasi — bosh sahifa') },
       h('span', { class: 'brand__mark', html: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="5.5" height="18" rx="1.5" class="m1"/><rect x="9.25" y="3" width="5.5" height="12" rx="1.5" class="m2"/><rect x="16.5" y="3" width="5.5" height="7" rx="1.5" class="m3"/></svg>' }),
       h('span', { class: 'brand__text' }, h('b', null, 'Jamoa taxtasi'), h('small', null, 'Pro')));
   }
@@ -64,7 +64,7 @@
     var meCard = h('div', { class: 'side__me' },
       U.avatar(user),
       h('div', { class: 'side__who' }, h('b', null, user.name), h('small', null, user.position || t(L.ROLE_LABELS[user.role]))));
-    var side = h('aside', { class: 'side', id: 'side' }, brand(), nav,
+    var side = h('aside', { class: 'side', id: 'side' }, brand(user), nav,
       h('div', { class: 'side__foot' },
         h('a', { class: 'side__link', href: '#/settings', dataset: { nav: 'settings' } }, U.icon('settings'), h('span', null, t('Sozlamalar'))),
         meCard));
@@ -279,6 +279,15 @@
     if (e.key === 'g' || e.key === 'G') { gPending = Date.now(); return; }
     if ((e.key === 'n' || e.key === 'N') && me.role === 'admin' && App.openTaskForm) { e.preventDefault(); App.openTaskForm(); }
     if (e.key === '?') { e.preventDefault(); App.showShortcuts(); }
+  });
+
+  // "Asosiy qismga o'tish" havolasi: #view hash-router manzili emas — fokusni ko'chiramiz
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.skip');
+    if (!a) return;
+    e.preventDefault();
+    var v = U.$('view') || document.querySelector('.auth__main');
+    if (v) { if (!v.hasAttribute('tabindex')) v.setAttribute('tabindex', '-1'); v.focus(); }
   });
 
   /* ---------------- ishga tushirish ---------------- */
