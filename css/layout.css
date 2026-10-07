@@ -18,20 +18,14 @@
 .brand__text b { font-size: 15px; }
 .brand__text small { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--side-accent); }
 .nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.nav a, .side__link {
+.nav a {
   display: flex; align-items: center; gap: 11px; padding: 8px 10px; border-radius: 8px; color: var(--side-muted);
   text-decoration: none; font-weight: 600; font-size: 13.5px; transition: background .12s, color .12s;
 }
-.nav a:hover, .side__link:hover { background: var(--side-hover); color: var(--side-ink); }
-.nav a[aria-current="page"], .side__link[aria-current="page"] { background: var(--side-active-bg); color: var(--side-active-ink); box-shadow: inset 3px 0 0 var(--side-accent); }
+.nav a:hover { background: var(--side-hover); color: var(--side-ink); }
+.nav a[aria-current="page"] { background: var(--side-active-bg); color: var(--side-active-ink); box-shadow: inset 3px 0 0 var(--side-accent); }
 .nav__label { flex: 1; }
 .nav__badge { min-width: 18px; height: 18px; padding: 0 5px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--side-badge-ink); background: var(--side-accent); border-radius: 9px; }
-.side__foot { margin-top: auto; display: grid; gap: 10px; }
-.side__me { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: var(--side-hover); }
-.side__who { display: grid; min-width: 0; line-height: 1.25; }
-.side__who b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.side__who small { font-size: 11.5px; color: var(--side-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.side-scrim { display: none; }
 
 /* ---------- Yuqori panel ---------- */
 .main { min-width: 0; display: flex; flex-direction: column; }
@@ -39,7 +33,6 @@
   position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 28px;
   background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line);
 }
-.topbar__menu { display: none; }
 .topbar__title { flex: 1; min-width: 0; }
 .topbar__title h1 { font-size: 19px; font-weight: 750; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .topbar__sub { font-size: 12.5px; color: var(--muted); }
@@ -101,25 +94,16 @@
 @media (max-width: 1100px) {
   .app:not(.app--guest) { grid-template-columns: 76px minmax(0, 1fr); }
   .side { padding: 14px 10px; align-items: center; }
-  .brand__text, .nav__label, .side__link span, .side__who { display: none; }
-  .nav a, .side__link { justify-content: center; padding: 10px; position: relative; }
+  .brand__text, .nav__label { display: none; }
+  .nav a { justify-content: center; padding: 10px; position: relative; }
   .nav__badge { position: absolute; top: 2px; right: 2px; }
-  .side__me { padding: 6px; background: none; }
   }
 
 /* ---------- Telefon ---------- */
 @media (max-width: 760px) {
   .app:not(.app--guest) { grid-template-columns: minmax(0, 1fr); }
-  .side { position: fixed; z-index: 80; left: 0; top: 0; bottom: 0; width: 260px; align-items: stretch; transform: translateX(-105%); transition: transform .2s ease; }
-  .brand__text, .nav__label, .side__link span, .side__who { display: revert; }
-  .brand__text { display: grid; }
-  .nav a, .side__link { justify-content: flex-start; }
-  .nav__badge { position: static; }
-  .side__me { background: var(--side-hover); padding: 10px; }
-  body.side-open .side { transform: none; box-shadow: var(--shadow); }
-  body.side-open .side-scrim { display: block; position: fixed; inset: 0; z-index: 70; background: rgba(11, 16, 34, .45); }
+  .side { display: none; }                 /* telefonda pastki menyu yetarli */
   .topbar { padding: 8px 12px; gap: 6px; min-height: 56px; }
-  .topbar__menu { display: inline-grid; }
   .topbar__title h1 { font-size: 16.5px; }
   .topbar__sub { display: none; }
       .user-btn { padding: 0; margin: 0; }

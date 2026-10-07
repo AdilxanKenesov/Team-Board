@@ -35,7 +35,6 @@
         h('p', { class: 'dash-hero__sub' }, c.overdue ? t('{n} ta vazifa muddati o‘tgan — e’tibor bering.', { n: c.overdue }) : t('Muddati o‘tgan vazifa yo‘q.'),
           ' ', t('Jamoada {a} ta ochiq vazifa, bajarilish {p}%.', { a: c.new + c.doing, p: c.donePercent }))),
       h('div', { class: 'dash-hero__actions' },
-        h('a', { class: 'btn', href: '#/admin/reports', id: 'dash-report' }, U.icon('report'), t('Hisobot')),
         h('button', { type: 'button', class: 'btn btn--primary', id: 'dash-add', onClick: function () { App.openTaskForm(null); } }, U.icon('plus'), t('Yangi vazifa')))));
 
     if (!tasks.length) {

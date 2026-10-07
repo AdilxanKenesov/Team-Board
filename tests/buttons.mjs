@@ -87,7 +87,7 @@ const scenes = [
   ['Xodim: vazifa tafsiloti', '#/me/board', 'malika', `App.openTask('t_2'); ${W}${W}`],
   ['Xodim: bildirishnomalar', '#/me/notifications', 'malika'],
   ['Xodim: sozlamalar', '#/settings', 'malika'],
-  ['Telefon: admin', '#/admin', 'admin', `document.querySelector('.topbar__menu').click(); ${W}`, 390],
+  ['Telefon: admin', '#/admin', 'admin', null, 390],
   ['Telefon: xodim taxta', '#/me/board', 'malika', null, 390],
 ];
 for (const [name, hash, user, action, w] of scenes) {

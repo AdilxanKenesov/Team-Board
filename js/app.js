@@ -61,13 +61,7 @@
       return h('li', null, h('a', { href: it[1], dataset: { nav: it[0] } }, U.icon(it[3]), h('span', { class: 'nav__label' }, t(it[2])),
         it[0] === 'notifications' ? h('span', { class: 'nav__badge', id: 'nav-badge', hidden: true }) : null));
     })));
-    var meCard = h('div', { class: 'side__me' },
-      U.avatar(user),
-      h('div', { class: 'side__who' }, h('b', null, user.name), h('small', null, user.position || t(L.ROLE_LABELS[user.role]))));
-    var side = h('aside', { class: 'side', id: 'side' }, brand(user), nav,
-      h('div', { class: 'side__foot' },
-        h('a', { class: 'side__link', href: '#/settings', dataset: { nav: 'settings' } }, U.icon('settings'), h('span', null, t('Sozlamalar'))),
-        meCard));
+    var side = h('aside', { class: 'side', id: 'side' }, brand(user), nav);
 
     var bell = h('button', { type: 'button', class: 'icon-btn icon-btn--lg bell', id: 'bell', 'aria-label': t('Bildirishnomalar'), 'aria-haspopup': 'menu', 'aria-expanded': 'false', onClick: function (e) { openBell(e.currentTarget); } },
       U.icon('bell'), h('span', { class: 'bell__badge', id: 'bell-badge', hidden: true }));
@@ -75,17 +69,15 @@
     var userBtn = h('button', { type: 'button', class: 'user-btn', id: 'user-menu', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': t('Hisob menyusi'), onClick: function (e) { openUserMenu(e.currentTarget); } },
       U.avatar(user), h('span', { class: 'user-btn__name' }, user.name.split(' ')[0]), U.icon('down'));
     var topbar = h('header', { class: 'topbar' },
-      h('button', { type: 'button', class: 'icon-btn icon-btn--lg topbar__menu', 'aria-label': t('Menyu'), onClick: function () { document.body.classList.toggle('side-open'); } }, U.icon('menu')),
       h('div', { class: 'topbar__title' }, h('h1', { id: 'page-title' }, ''), h('p', { id: 'page-sub', class: 'topbar__sub' }, '')),
       h('div', { class: 'topbar__tools' }, theme, bell, userBtn));
 
     var main = h('div', { class: 'main' }, topbar, h('main', { id: 'view', class: 'view', tabindex: '-1' }));
     var bottom = h('nav', { class: 'bottom-nav', 'aria-label': t('Pastki menyu') }, items.slice(0, 4).map(function (it) {
       return h('a', { href: it[1], dataset: { nav: it[0] }, 'aria-label': t(it[2]) }, U.icon(it[3]), h('span', null, t(it[4] || it[2])));
-    }).concat([h('a', { href: '#/settings', dataset: { nav: 'settings' }, 'aria-label': t('Sozlamalar') }, U.icon('settings'), h('span', null, t('Sozlash')))]));
-    var scrim = h('div', { class: 'side-scrim', onClick: function () { document.body.classList.remove('side-open'); } });
+    }));
 
-    app.appendChild(side); app.appendChild(scrim); app.appendChild(main); app.appendChild(bottom);
+    app.appendChild(side); app.appendChild(main); app.appendChild(bottom);
     App.state.shellRole = user.role; App.state.shellUser = user.id; App.state.shellLang = I.lang;
     updateBadges();
     updateThemeIcon();
@@ -163,7 +155,6 @@
   /* ---------------- marshrut ---------------- */
   App.onRoute = function (r) {
     U.closeMenus(false);
-    document.body.classList.remove('side-open');
     if (!S.db) { if (r.path !== '/welcome') return R.go('#/welcome', true); return renderGuest(r); }
     var me = App.me();
     if (r.path === '/') return R.go(me ? A.homeFor(me) : '#/login', true);

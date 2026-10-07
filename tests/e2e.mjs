@@ -164,7 +164,7 @@ await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
   await open('#/settings', 'malika');
   return js(`
     ${$('#st-name')}.value='Malika Yusupova-Ali'; ${$('#profile-form')}.requestSubmit(); ${W}
-    const nameOk=App.Store.user('u_malika').name==='Malika Yusupova-Ali' && /Malika Yusupova-Ali/.test(${$('.side__who b')}.textContent);
+    const nameOk=App.Store.user('u_malika').name==='Malika Yusupova-Ali' && /Malika/.test(${$('#user-menu')}.textContent) && !document.querySelector('.side__me');
     ${$('#st-cur')}.value='demo123'; ${$('#st-new')}.value='yangi123'; ${$('#st-new2')}.value='boshqa123'; ${$('#password-form')}.requestSubmit(); ${W}
     const mism=${$('#st-new2')}.getAttribute('aria-invalid')==='true';
     ${$('#st-cur')}.value='xato'; ${$('#st-new2')}.value='yangi123'; ${$('#password-form')}.requestSubmit(); ${W}

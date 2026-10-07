@@ -39,10 +39,9 @@ h1, h2, h3, h4, .card__title, .kpi__val, .auth__title, .auth__headline, .hero__t
 .brand__mark { background: var(--grad) !important; box-shadow: var(--glow); }
 .brand__mark .m1, .brand__mark .m2, .brand__mark .m3 { fill: #fff; }
 .brand__mark .m2 { opacity: .8; } .brand__mark .m3 { opacity: .6; }
-.nav a, .side__link { padding: 9px 12px; border-radius: 10px; }
-.nav a[aria-current="page"], .side__link[aria-current="page"] { box-shadow: inset 2px 0 0 var(--side-accent), 0 0 0 1px rgba(167, 139, 250, .14); }
+.nav a { padding: 9px 12px; border-radius: 10px; }
+.nav a[aria-current="page"] { box-shadow: inset 2px 0 0 var(--side-accent), 0 0 0 1px rgba(167, 139, 250, .14); }
 .nav a[aria-current="page"] .ico { color: var(--side-accent); }
-.side__me { border: 1px solid rgba(255, 255, 255, .06); }
 .topbar { background: color-mix(in srgb, var(--bg) 82%, transparent) !important; }
 .topbar__tools { margin-left: auto; }
 
@@ -156,3 +155,4 @@ h1, h2, h3, h4, .card__title, .kpi__val, .auth__title, .auth__headline, .hero__t
   .dash-hero__actions { width: 100%; }
   .dash-hero__actions .btn { flex: 1; }
 }
+.kpi__label { padding-right: 48px; }
