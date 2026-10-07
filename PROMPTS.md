@@ -124,6 +124,15 @@ empty board → toast instead of dialog. Add tests; generate a real PDF and chec
 ```
 Natija: 76/76 brauzer tekshiruvi; birinchi PDF bo‘sh chiqdi (animatsiya shaffofdan boshlangan) — topilib tuzatildi.
 
+### P12 — Namuna ma’lumotlar va ranglar
+Ishtirokchi: “ichida bir nechta demo ma’lumot bo‘lsin”, “sayt ranglarining boshqa variantlari?”.
+5 ta rang varianti saytning o‘zida skrinshot qilinib ko‘rsatildi; ishtirokchi **Samarqand** (lojuvard + oltin) ni tanladi.
+```
+Apply the "Samarqand" palette: lapis primary #1e3a8a, gold accent #c8962e, lapis gradient sidebar with a faint
+girih (8-point star) pattern, gold active nav item; matching dark mode; status colours unchanged.
+Expand sample data to 10 tasks + 9 history events; make tests derive counts from sample data.
+```
+
 ## AI natijasida kiritilgan muhim tuzatishlar
 - Sinovda topilgan 12 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
 - Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.
@@ -133,4 +142,5 @@ Natija: 76/76 brauzer tekshiruvi; birinchi PDF bo‘sh chiqdi (animatsiya shaffo
 - Repo nomi: Team-Board.
 - Dizayn yo‘nalishi: ilova ko‘rinishi + oq minimal (3 variantdan tanlandi).
 - Brauzer kalendari o‘rniga o‘z kalendari (ishtirokchi talabi).
+- Rang palitrasi: Samarqand (5 variantdan tanlandi).
 - <o'zingiz kiritgan boshqa o'zgarishlar>

@@ -1,35 +1,44 @@
-/* Jamoa taxtasi — ilova ko'rinishi, oq minimal uslub.
-   Tuzilish: chap menyu | (yuqori panel + taxta). Rang faqat ma'no tashiganda. */
+/* Jamoa taxtasi — ilova ko'rinishi, "Samarqand" palitrasi.
+   Lojuvard (Registon gumbazlari) + oltin urg'u. Tuzilish: chap menyu | (yuqori panel + taxta).
+   Rang faqat ma'no tashiganda: holat nuqtalari, muddati o'tgan, asosiy amal, faol bo'lim. */
 :root {
   --bg: #ffffff;
-  --side: #f7f7f8;
-  --lane: #f4f4f5;
+  --lane: #f3f5fa;
   --surface: #ffffff;
-  --ink: #18181b;
-  --muted: #71717a;
-  --faint: #a1a1aa;
-  --line: #e6e6e9;
-  --line-strong: #d4d4d8;
-  --hover: #f0f0f2;
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-soft: #eef2ff;
+  --ink: #151b2d;
+  --muted: #636b80;
+  --faint: #9aa1b3;
+  --line: #e3e6ee;
+  --line-strong: #cfd4e0;
+  --hover: #eef1f8;
+  --primary: #1e3a8a;          /* lojuvard */
+  --primary-hover: #172e6e;
+  --primary-soft: #e8edfb;
   --on-primary: #ffffff;
+  --gold: #c8962e;             /* oltin urg'u */
+  --gold-soft: #f8efd9;
+  --side-top: #16286a;         /* chap menyu foni */
+  --side-bottom: #0f1c48;
+  --side-ink: #ffffff;
+  --side-muted: #c3cdee;
+  --side-hover: rgba(255, 255, 255, .08);
   --new: #3b82f6;
   --doing: #f59e0b;
   --done: #22c55e;
   --error: #dc2626;
   --error-soft: #fef2f2;
-  --shadow: 0 12px 32px rgba(24, 24, 27, .14);
+  --shadow: 0 12px 32px rgba(21, 27, 45, .16);
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f0f11; --side: #141417; --lane: #151518; --surface: #1c1c20; --ink: #f4f4f5;
-    --muted: #a1a1aa; --faint: #71717a; --line: #27272a; --line-strong: #3f3f46; --hover: #232327;
-    --primary: #818cf8; --primary-hover: #a5b4fc; --primary-soft: #1e1b4b; --on-primary: #0f0f11;
-    --error: #f87171; --error-soft: #2a1215; --shadow: 0 12px 32px rgba(0, 0, 0, .5);
+    --bg: #0c1124; --lane: #111933; --surface: #151e3a; --ink: #eef1fb;
+    --muted: #a3abc6; --faint: #6f789a; --line: #253050; --line-strong: #35416a; --hover: #1b2546;
+    --primary: #93acff; --primary-hover: #b5c6ff; --primary-soft: #1b295a; --on-primary: #0c1124;
+    --gold: #e2b75a; --gold-soft: #3a2e14;
+    --side-top: #0e1840; --side-bottom: #080f2a;
+    --error: #f87171; --error-soft: #2a1215; --shadow: 0 12px 32px rgba(0, 0, 0, .55);
     color-scheme: dark;
   }
 }
@@ -54,10 +63,16 @@ body { margin: 0; font: 14px/1.5 var(--font); color: var(--ink); background: var
 .main { min-width: 0; display: flex; flex-direction: column; }
 
 /* Chap menyu */
+/* Lojuvard menyu: ichida o'z tokenlari, fonda juda xira girih (sakkiz qirrali yulduz) naqshi */
 .side {
+  --ink: var(--side-ink); --muted: var(--side-muted); --hover: var(--side-hover);
   position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 20px;
-  padding: 16px 12px; background: var(--side); border-right: 1px solid var(--line);
+  padding: 16px 12px; color: var(--side-ink);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.06' stroke-width='1'%3E%3Crect x='14' y='14' width='16' height='16'/%3E%3Crect x='14' y='14' width='16' height='16' transform='rotate(45 22 22)'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--side-top), var(--side-bottom));
 }
+.side :focus-visible { outline-color: var(--gold); }
 .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px; font-weight: 700; font-size: 15px; color: var(--ink); text-decoration: none; }
 .brand__mark { width: 22px; height: 22px; flex: none; }
 .brand__mark .m1 { fill: var(--new); } .brand__mark .m2 { fill: var(--doing); } .brand__mark .m3 { fill: var(--done); }
@@ -67,7 +82,7 @@ body { margin: 0; font: 14px/1.5 var(--font); color: var(--ink); background: var
   color: var(--muted); text-decoration: none; font: inherit; font-weight: 500; background: none; border: 0; cursor: pointer; text-align: left;
 }
 .nav a:hover, .side-btn:hover { background: var(--hover); color: var(--ink); }
-.nav a[aria-current="true"] { background: var(--hover); color: var(--ink); }
+.nav a[aria-current="true"] { background: rgba(200, 150, 46, .16); color: #f3d27e; box-shadow: inset 3px 0 0 var(--gold); }
 .nav svg, .side-btn svg { width: 16px; height: 16px; flex: none; }
 .side__foot { margin-top: auto; display: grid; gap: 2px; }
 
@@ -80,7 +95,7 @@ body { margin: 0; font: 14px/1.5 var(--font); color: var(--ink); background: var
 .search { position: relative; width: 260px; }
 .search svg { position: absolute; left: 10px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
 .filter-wrap { position: relative; }
-.count-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; }
+.count-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--gold); color: #fff; font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; }
 .pop {
   position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 240px; display: grid; gap: 12px;
   padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow);
@@ -377,7 +392,7 @@ kbd { font: 600 11px/1 var(--font); padding: 2px 5px; color: var(--muted); backg
   .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .side {
     position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 16px;
-    padding: 8px 16px; border-right: 0; border-bottom: 1px solid var(--line);
+    padding: 8px 16px; border-right: 0; border-bottom: 0;
   }
   .nav ul { display: flex; }
   .side__foot { margin: 0 0 0 auto; display: flex; position: relative; }

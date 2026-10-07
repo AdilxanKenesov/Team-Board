@@ -5,7 +5,7 @@
 
 Jamoaga vazifalar bajarilishini kuzatishga yordam beradigan veb-ilova. Vazifa qo‘shiladi va tugmalar (yoki sichqoncha bilan sudrash) orqali **Yangi → Bajarilmoqda → Tugagan** ustunlari bo‘ylab o‘tkaziladi.
 
-**Ko‘rinish:** ilova uslubi — chapda menyu (Taxta, Tarix, Haqida), tepada qidiruv, filtr va “+ Vazifa”; qo‘shish va tahrir o‘ngdan chiqadigan panelda; kartada faqat nom, mas’ul, muddat va muhimlik belgisi. Oq minimal uslub, tungi rejim, telefonda tablar va suzuvchi tugma.
+**Ko‘rinish:** ilova uslubi — chapda menyu (Taxta, Tarix, Haqida), tepada qidiruv, filtr va “+ Vazifa”; qo‘shish va tahrir o‘ngdan chiqadigan panelda; kartada faqat nom, mas’ul, muddat va muhimlik belgisi. “Samarqand” palitrasi: lojuvard menyu (xira girih naqshi), oltin urg‘u, oq ish maydoni; tungi rejim, telefonda tablar va suzuvchi tugma.
 
 ## Ishga tushirish
 `index.html` ni Chrome yoki Edge’da oching (ikki marta bosish yetarli). Internet, server, o‘rnatish kerak emas.
