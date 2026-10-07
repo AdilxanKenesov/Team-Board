@@ -450,9 +450,8 @@
 
   var reportReturn = null;
   function openReport() {
-    // Ba'zi brauzerlarda tugma bosilganda fokus olmaydi — unda tugmaning o'ziga qaytamiz
-    var a = document.activeElement;
-    reportReturn = a && a !== document.body ? a : $('report-open');
+    // Yopilganda fokus har doim ochgan tugmaga qaytadi (Safari tugmani bosganda fokus bermaydi)
+    reportReturn = $('report-open');
     $('report-text').value = T.buildReport(state.tasks, today());
     $('report-msg').textContent = '';
     $('report').hidden = false;
