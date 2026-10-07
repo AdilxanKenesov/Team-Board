@@ -22,9 +22,9 @@ f.onload=async()=>{ try {
  ok(st.no&&!st.prevented&&n('done')===before,'sudrab: Yangi→Tugagan rad, “bu ustunga mumkin emas” ko‘rindi');
  ok(D.querySelectorAll('.drop-ok,.drop-no,.is-dragging').length===0,'sudrashdan keyin belgilar tozalandi');
  const hist=[...D.querySelectorAll('#history-list .history__item')].map(li=>li.textContent);
- ok(hist.length===1&&/Yangi → Bajarilmoqda/.test(hist[0]),'tarix: '+hist[0]);
+ ok(hist.length>=1&&hist.length<=10&&/Yangi → Bajarilmoqda/.test(hist[0]),'tarix (eng yangisi tepada): '+hist[0]);
  $('report-open').click();
- ok(!$('report').hidden&&/Jami: 4/.test($('report-text').value)&&D.activeElement===$('report-pdf'),'hisobot oynasi ochildi, fokus “PDF saqlash”da');
+ ok(!$('report').hidden&&$('report-text').value.includes('Jami: '+W.TaxtaApp.getState().tasks.length+' ')&&D.activeElement===$('report-pdf'),'hisobot oynasi ochildi, fokus “PDF saqlash”da');
  ok(/Muddati o‘tgan \(1\)/.test($('report-text').value),'hisobotda muddati o‘tganlar bor');
  $('report-copy').click(); await wait(200); ok($('report-msg').textContent.length>0,'nusxalash xabari: '+$('report-msg').textContent);
  $('report').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));

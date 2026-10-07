@@ -59,7 +59,7 @@ test('Nom tekshiruvi: bo‘sh, probel, qisqa, uzun, takror', () => {
 
 test('Ustun sonlari va foiz', () => {
   const s = T.sampleTasks(1e6);
-  assert.deepStrictEqual(T.counts(s), { new: 2, doing: 1, done: 1, total: 4, donePercent: 25 });
+  assert.deepStrictEqual(T.counts(s), { new: 4, doing: 3, done: 3, total: 10, donePercent: 30 });
   assert.strictEqual(T.counts([]).donePercent, 0);
 });
 
@@ -170,22 +170,22 @@ test('v2: muddati o‘tganini aniqlash', () => {
 
 test('v2: filtr — qidiruv (apostrof farqsiz), mas’ul, muhimlik', () => {
   const s = T.sampleTasks(new Date(2026, 9, 7, 10).getTime());
-  assert.deepStrictEqual(T.filterTasks(s, { q: 'RO\'YXAT' }).map((t) => t.id), ['namuna3']);
-  assert.deepStrictEqual(T.filterTasks(s, { q: 'roʻyxat' }).map((t) => t.id), ['namuna3']);
+  assert.deepStrictEqual(T.filterTasks(s, { q: 'RO\'YXAT' }).map((t) => t.id), ['namuna4', 'namuna5']);
+  assert.deepStrictEqual(T.filterTasks(s, { q: 'roʻyxat' }).map((t) => t.id), ['namuna4', 'namuna5']);
   assert.strictEqual(T.filterTasks(s, { q: 'malika' }).length, 1);
-  assert.strictEqual(T.filterTasks(s, { assignee: 'Dilnoza' }).length, 1);
-  assert.strictEqual(T.filterTasks(s, { assignee: '__none__' }).length, 1);
-  assert.strictEqual(T.filterTasks(s, { priority: 'yuqori' }).length, 2);
+  assert.strictEqual(T.filterTasks(s, { assignee: 'Dilnoza' }).length, 2);
+  assert.strictEqual(T.filterTasks(s, { assignee: '__none__' }).length, 2);
+  assert.strictEqual(T.filterTasks(s, { priority: 'yuqori' }).length, 4);
   assert.strictEqual(T.filterTasks(s, { q: 'yoq narsa' }).length, 0);
-  assert.strictEqual(T.filterTasks(s, {}).length, 4);
-  assert.deepStrictEqual(T.assignees(s), ['Dilnoza', 'Jasur', 'Malika']);
+  assert.strictEqual(T.filterTasks(s, {}).length, 10);
+  assert.deepStrictEqual(T.assignees(s), ['Bekzod', 'Dilnoza', 'Jasur', 'Madina', 'Malika', 'Sardor']);
 });
 
 test('v2: hisobot matni', () => {
   const s = T.sampleTasks(new Date(2026, 9, 7, 10).getTime());
   const r = T.buildReport(s, TODAY);
   assert.match(r, /hisobot \(07\.10\.2026\)/);
-  assert.match(r, /Jami: 4 · Yangi: 2 · Bajarilmoqda: 1 · Tugagan: 1 \(25%\)/);
+  assert.match(r, /Jami: 10 · Yangi: 4 · Bajarilmoqda: 3 · Tugagan: 3 \(30%\)/);
   assert.match(r, /Muddati o‘tgan \(1\): Ishtirokchilar ro‘yxatini tuzish/);
   assert.match(T.buildReport([], TODAY), /Muddati o‘tgan vazifa yo‘q/);
 });
@@ -221,6 +221,20 @@ test('v2: saqlash, v1 dan ko‘chirish, buzilgan ma’lumot', () => {
   assert.strictEqual(T.loadState(st), null);
   st.setItem(T.STATE_KEY, JSON.stringify({ tasks: 'yo‘q' }));
   assert.strictEqual(T.loadState(st), null);
+});
+
+test('Namuna ma’lumot: 10 vazifa, 1 tasi muddati o‘tgan, tarix mos', () => {
+  const now = new Date(2026, 9, 7, 10).getTime();
+  const s = T.sampleTasks(now), h = T.sampleHistory(now);
+  assert.strictEqual(s.length, 10);
+  assert.ok(s.every((t) => t.sample));
+  assert.deepStrictEqual(T.sanitize(s).length, 10);                     // saqlash tekshiruvidan o‘tadi
+  assert.strictEqual(s.filter((t) => T.isOverdue(t, '2026-10-07')).length, 1);
+  assert.strictEqual(h.length, 9);
+  assert.deepStrictEqual(T.sanitizeHistory(h).length, 9);
+  assert.ok(h.every((e, i) => i === 0 || h[i - 1].at >= e.at));       // eng yangisi birinchi
+  const titles = new Set(s.map((t) => t.title));
+  assert.ok(h.every((e) => titles.has(e.title)));
 });
 
 console.log('\n' + passed + ' ta test o‘tdi.');

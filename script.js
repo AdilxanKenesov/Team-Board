@@ -10,7 +10,7 @@
   try { storage = window.localStorage; } catch (e) { storage = null; }
 
   // Birinchi ochilish yoki butunlay buzilgan ma'lumot — namuna taxta
-  var state = (storage && T.loadState(storage)) || { tasks: T.sampleTasks(), history: [] };
+  var state = (storage && T.loadState(storage)) || { tasks: T.sampleTasks(), history: T.sampleHistory() };
   var storageOk = storage ? T.saveState(storage, state) : false;
   if (!storageOk) $('storage-warning').hidden = false;
 

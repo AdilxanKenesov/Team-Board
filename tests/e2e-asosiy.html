@@ -9,14 +9,15 @@ f.onload=async()=>{ try {
  f.onload=null; localStorage.clear(); await reload();
  let D=f.contentDocument, W=f.contentWindow; W.addEventListener('error',e=>errs.push(e.message));
  const n=s=>+D.getElementById('count-'+s).textContent; const $=id=>D.getElementById(id);
- ok(n('new')===2&&n('doing')===1&&n('done')===1,'namuna taxta 2/1/1');
+ const TX=W.Taxta, SMP=TX.sampleTasks(), SN=TX.counts(SMP), SNone=SMP.filter(t=>!t.assignee).length, RQ=TX.filterTasks(SMP,{q:'roʻyxat'}).length;
+ ok(n('new')===SN.new&&n('doing')===SN.doing&&n('done')===SN.done&&SN.total>=8,'namuna taxta '+SN.new+'/'+SN.doing+'/'+SN.done);
  ok(D.querySelector('.task.is-late')&&/Muddati o‘tgan/.test(D.querySelector('.task.is-late').textContent),'muddati o‘tgan vazifa belgilandi');
  const add=(t,x={})=>{ if($('drawer').hidden) $('add-open').click(); $('title').value=t; $('assignee').value=x.a||''; $('priority').value=x.p||'orta'; $('due').value=x.d||''; D.querySelector('#add-form button[type=submit]').click(); };
  add(''); ok(/yozing/.test($('title-error').textContent),'bo‘sh nom: '+$('title-error').textContent);
  add('Zal', {a:'A'}); ok(/2–30/.test($('assignee-error').textContent)&&!$('drawer').hidden,'mas’ul 1 belgi rad, panel ochiq qoldi');
  add('Zal', {d:'2020-01-01'}); ok(/oldin/.test($('due-error').textContent),'o‘tgan muddat rad: '+$('due-error').textContent);
  add('Hisobot tayyorlash', {a:'Sardor Aliyev', p:'yuqori'});
- ok(n('new')===3 && D.querySelector('#list-new .task .avatar').textContent==='SA','qo‘shildi: mas’ul SA, Yangi = 3');
+ ok(n('new')===SN.new+1 && D.querySelector('#list-new .task .avatar').textContent==='SA','qo‘shildi: mas’ul SA, Yangi = '+n('new'));
  ok(!$('toast').hidden&&$('drawer').hidden,'pastki xabar chiqdi, panel yopildi: '+$('toast-text').textContent);
  // BILET SINOVI
  const card=[...D.querySelectorAll('#list-new .task')].find(li=>li.textContent.includes('Hisobot tayyorlash'));
@@ -44,20 +45,20 @@ f.onload=async()=>{ try {
  $('toast-undo').click(); ok(n('new')+n('doing')+n('done')===total,'o‘chirish bekor qilindi');
  // filter
  $('f-q').value='ROʻYXAT'; $('f-q').dispatchEvent(new Event('input'));
- ok(D.querySelectorAll('.task').length===1&&/1 \/ 5/.test($('f-result').textContent),'qidiruv (apostrof farqsiz): '+$('f-result').textContent);
- ok(n('new')===3,'filtrda ham ustun sonlari umumiy');
- ok(/Filtrga mos vazifa yo‘q/.test($('list-new').textContent),'bo‘sh ustunda “Filtrga mos vazifa yo‘q”');
- $('f-clear').click(); ok(D.querySelectorAll('.task').length===5,'filtr tozalandi');
- $('f-who').value='__none__'; $('f-who').dispatchEvent(new Event('change')); ok(D.querySelectorAll('.task').length===1,'mas’ulsiz filtr');
+ ok(D.querySelectorAll('.task').length===RQ&&$('f-result').textContent.startsWith(RQ+' / '+(SN.total+1)),'qidiruv (apostrof farqsiz): '+$('f-result').textContent);
+ ok(n('new')===SN.new+1,'filtrda ham ustun sonlari umumiy');
+ ok(/Filtrga mos vazifa yo‘q/.test($('list-done').textContent),'bo‘sh ustunda “Filtrga mos vazifa yo‘q”');
+ $('f-clear').click(); ok(D.querySelectorAll('.task').length===SN.total+1,'filtr tozalandi');
+ $('f-who').value='__none__'; $('f-who').dispatchEvent(new Event('change')); ok(D.querySelectorAll('.task').length===SNone,'mas’ulsiz filtr: '+SNone);
  $('f-clear').click();
  // reload persistence
  await reload(); D=f.contentDocument;
- ok(+D.getElementById('count-new').textContent===3&&D.querySelectorAll('.task').length===5,'yangilangandan keyin saqlangan');
+ ok(+D.getElementById('count-new').textContent===SN.new+1&&D.querySelectorAll('.task').length===SN.total+1,'yangilangandan keyin saqlangan');
  // v1 migration
  localStorage.removeItem('taxta010.v2'); localStorage.setItem('taxta010.tasks',JSON.stringify([{id:'x',title:'Eski vazifa',status:'doing',createdAt:1,updatedAt:1}]));
  await reload(); D=f.contentDocument; ok(D.querySelectorAll('.task').length===1&&+D.getElementById('count-doing').textContent===1,'v1 ma’lumot avtomatik ko‘chdi');
  localStorage.setItem('taxta010.v2','{buzuq'); await reload(); D=f.contentDocument;
- ok(D.querySelectorAll('.task').length===4,'buzilgan v2: namuna taxta, sayt ishladi');
+ ok(D.querySelectorAll('.task').length===SN.total,'buzilgan v2: namuna taxta, sayt ishladi');
  ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
  f.style.width='390px'; await new Promise(r=>setTimeout(r,150));
  ok(D.documentElement.scrollWidth<=390,'390px yonga surish yo‘q (scrollWidth='+D.documentElement.scrollWidth+')');

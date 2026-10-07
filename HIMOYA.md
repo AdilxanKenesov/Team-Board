@@ -21,13 +21,13 @@
 Vazifa qo‘shadi, ish boshlanganda va tugaganda uni keyingi ustunga o‘tkazadi, kim nima qilayotganini va nima kechikkanini ko‘radi.
 
 **Nega shu vosita?**
-Claude Code fayllarni o‘zi yozadi, testlarni ishga tushiradi va brauzerda tekshiradi — reja, kod, 96 ta sinov va hujjatni bir joyda qilish mumkin bo‘ldi. Natija oddiy HTML/CSS/JS — internetsiz, o‘rnatishsiz ochiladi.
+Claude Code fayllarni o‘zi yozadi, testlarni ishga tushiradi va brauzerda tekshiradi — reja, kod, 97 ta sinov va hujjatni bir joyda qilish mumkin bo‘ldi. Natija oddiy HTML/CSS/JS — internetsiz, o‘rnatishsiz ochiladi.
 
 **AI natijasida nima o‘zgartirildi?**
 Qo‘shimchalarni va dizayn yo‘nalishini o‘zim tanladim: birinchi dizaynda matn juda ko‘p edi — ilova ko‘rinishiga o‘tkazib, matnni qisqartirdim (qo‘shish/tahrir alohida panelda, kartada faqat kerakli ma’lumot). Bosqichlarni commitlarga bo‘ldim. Sinovda 12 ta kamchilik topilib tuzatildi: masalan, telefonda vazifa boshqa tabga o‘tganda fokus yo‘qolardi; hisobot oynasi yopilganda fokus noto‘g‘ri joyga qaytardi; tungi rejimda tugma kontrasti past edi. Bir marta commit test natijasini kutmay o‘tib ketdi — shundan keyin commit faqat hamma test o‘tsa bajariladigan qilindi.
 
 **Qaysi xato qanday tekshirildi?**
-`node test.js` (20 test) va `tests/` dagi brauzer testlari (76 tekshiruv). Misol: hisobot oynasi Esc bilan yopilganda fokus qayerga tushishi avtomatik tekshirildi, xato topildi, tuzatildi, qayta tekshirildi (`7dadcee`).
+`node test.js` (21 test) va `tests/` dagi brauzer testlari (76 tekshiruv). Misol: hisobot oynasi Esc bilan yopilganda fokus qayerga tushishi avtomatik tekshirildi, xato topildi, tuzatildi, qayta tekshirildi (`7dadcee`).
 
 **Cheklovlar?**
 Ma’lumot faqat shu brauzerda — jamoa bilan ulashish uchun server kerak. “Bekor qilish” faqat oxirgi amalga. Sudrash faqat sichqonchada (telefonda tugmalar).

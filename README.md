@@ -26,7 +26,7 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 - **Qidiruv va filtr** (mas’ul, muhimlik); o‘zbekcha apostroflar (‘ ' ʻ) farqlanmaydi.
 - **Sudrab o‘tkazish** — faqat ruxsat etilgan ustunga; tugmalar asosiy yo‘l bo‘lib qoladi.
 - **Telefonda tablar** — uch ustun o‘rniga “Yangi / Bajarilmoqda / Tugagan” tablari; “+ Vazifa” — suzuvchi tugma.
-- **Namuna banneri** — namuna vazifalarni bir bosishda o‘chirish (o‘zingiz qo‘shganlari qoladi).
+- **Namuna ma’lumotlar** — birinchi ochilishda 10 ta vazifa (tadbir tayyorlayotgan jamoa: 6 mas’ul, har xil muhimlik, 1 ta muddati o‘tgan) va 9 ta tarix yozuvi; hammasi “Namuna” deb belgilangan, banner orqali bir bosishda o‘chiriladi (o‘zingiz qo‘shganlari qoladi).
 - **Tarix** — oxirgi 10 o‘zgarish vaqti bilan (saqlanadi 50 tagacha).
 - **Yig‘ilish uchun hisobot** — bezatilgan hujjat (raqamlar, holat chizig‘i, muddati o‘tganlar, har ustun jadvali); **PDF saqlash** (brauzerning chop etish oynasi, faqat hisobot chiqadi, kutubxonasiz) va matnni nusxalash. Namuna: `dalillar/07_hisobot_namuna.pdf`.
 - **Tozalash** — ekran o‘rtasida tasdiq oynasi: nechta vazifa o‘chishi yoziladi, fokus “Bekor qilish”da, Esc yopadi; o‘chirilgandan keyin ham 6 soniya “Bekor qilish”.
@@ -41,7 +41,7 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
 | `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
 | `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
-| `test.js`, `tests/` | 20 unit + 76 brauzer tekshiruvi |
+| `test.js`, `tests/` | 21 unit + 76 brauzer tekshiruvi |
 | `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
 | `dalillar/` | 6 ta skrinshot + namuna PDF hisobot |
 

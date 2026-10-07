@@ -1,6 +1,6 @@
 # TESTLAR — Bilet 010 “Jamoa taxtasi”
 
-Jami: **20 unit test** (`node test.js`) + **76 brauzer tekshiruvi** (`tests/`: 26 + 50). Hammasi o‘tadi.
+Jami: **21 unit test** (`node test.js`) + **76 brauzer tekshiruvi** (`tests/`: 26 + 50). Hammasi o‘tadi.
 
 ## Qanday ishga tushiriladi
 ```

@@ -236,22 +236,52 @@
 
   /* ---------- namuna ma'lumot ---------- */
 
+  // Namuna: jamoa yoshlar markazida tadbir tayyorlayapti (barcha ism va ishlar to'qima).
+  // [nom, holat, necha daqiqa oldin o'zgargan, mas'ul, muhimlik, muddat (bugundan necha kun)]
+  var SAMPLE_ROWS = [
+    ['Tadbir uchun zal band qilish', 'new', 200, 'Dilnoza', 'yuqori', 2],
+    ['Afisha matnini yozish', 'new', 190, 'Jasur', 'orta', 5],
+    ['Ijtimoiy tarmoq uchun post tayyorlash', 'new', 10, 'Madina', 'past', 6],
+    ['Mehmonlar ro‘yxatini tasdiqlash', 'new', 170, null, 'orta', null],
+    ['Ishtirokchilar ro‘yxatini tuzish', 'doing', 60, 'Malika', 'yuqori', -1],
+    ['Taqdimot slaydlarini tayyorlash', 'doing', 120, 'Sardor', 'orta', 3],
+    ['Ovoz tizimini sinab ko‘rish', 'doing', 20, 'Bekzod', 'yuqori', 1],
+    ['Jamoa uchrashuvi vaqtini belgilash', 'done', 240, null, 'past', null],
+    ['Homiylarga xat yuborish', 'done', 40, 'Dilnoza', 'orta', -3],
+    ['Byudjet rejasini tasdiqlash', 'done', 90, 'Sardor', 'yuqori', -2]
+  ];
+
   function sampleTasks(now) {
     var t = now || Date.now();
     var day = todayStr(new Date(t));
-    var rows = [
-      ['Tadbir uchun zal band qilish', 'new', 4, 'Dilnoza', 'yuqori', 2],
-      ['Afisha matnini yozish', 'new', 3, 'Jasur', 'orta', 5],
-      ['Ishtirokchilar ro‘yxatini tuzish', 'doing', 2, 'Malika', 'yuqori', -1],
-      ['Jamoa uchrashuvi vaqtini belgilash', 'done', 1, null, 'past', null]
-    ];
-    return rows.map(function (r, i) {
+    return SAMPLE_ROWS.map(function (r, i) {
       var ts = t - r[2] * 60000;
       return {
         id: 'namuna' + (i + 1), title: r[0], status: r[1], createdAt: ts, updatedAt: ts, sample: true,
         assignee: r[3], priority: r[4], due: r[5] === null ? null : addDays(day, r[5])
       };
     });
+  }
+
+  // Namuna tarix — vazifalardagi vaqtlar bilan mos; eng yangisi birinchi
+  function sampleHistory(now) {
+    var t = now || Date.now();
+    var ev = [
+      [180, 'add', 'Byudjet rejasini tasdiqlash', null, 'new'],
+      [150, 'move', 'Byudjet rejasini tasdiqlash', 'new', 'doing'],
+      [140, 'add', 'Homiylarga xat yuborish', null, 'new'],
+      [120, 'move', 'Taqdimot slaydlarini tayyorlash', 'new', 'doing'],
+      [90, 'move', 'Byudjet rejasini tasdiqlash', 'doing', 'done'],
+      [60, 'move', 'Ishtirokchilar ro‘yxatini tuzish', 'new', 'doing'],
+      [40, 'move', 'Homiylarga xat yuborish', 'doing', 'done'],
+      [20, 'move', 'Ovoz tizimini sinab ko‘rish', 'new', 'doing'],
+      [10, 'add', 'Ijtimoiy tarmoq uchun post tayyorlash', null, 'new']
+    ];
+    return ev.map(function (e) {
+      var x = { at: t - e[0] * 60000, type: e[1], title: e[2], to: e[4] };
+      if (e[3]) x.from = e[3];
+      return x;
+    }).reverse();
   }
 
   /* ---------- saqlash ---------- */
@@ -341,7 +371,7 @@
     addTask: addTask, canMove: canMove, moveTask: moveTask, editTask: editTask, removeTask: removeTask,
     logEvent: logEvent, counts: counts, byStatus: byStatus, isOverdue: isOverdue,
     filterTasks: filterTasks, assignees: assignees, fmtDue: fmtDue, buildReport: buildReport,
-    sampleTasks: sampleTasks, sanitize: sanitize, sanitizeHistory: sanitizeHistory,
+    sampleTasks: sampleTasks, sampleHistory: sampleHistory, sanitize: sanitize, sanitizeHistory: sanitizeHistory,
     load: load, save: save, loadState: loadState, saveState: saveState
   };
 
