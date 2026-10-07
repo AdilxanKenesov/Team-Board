@@ -8,7 +8,7 @@
   var TAB_KEY = 'tbpro.tab';
   var drag = null;
 
-  function getFilter(scope) { return App.filters[scope] || (App.filters[scope] = { q: '', projectId: '', assigneeId: '', priority: '', tag: '', onlyOverdue: false }); }
+  function getFilter(scope) { return App.filters[scope] || (App.filters[scope] = { q: '', projectId: '', assigneeId: '', priority: '', tag: '', status: '', onlyOverdue: false }); }
 
   /* ---------------- filtr paneli ---------------- */
   function toolbar(scope, me, tasks, onChange) {
@@ -31,9 +31,10 @@
     var tagsAll = L.allTags(tasks);
     if (tagsAll.length) controls.push(select(scope + '-tag', t('Teg'), [['', t('Barcha teglar')]].concat(tagsAll.map(function (g) { return [g, '#' + g]; })), 'tag'));
     controls.push(h('button', { type: 'button', class: 'chip', id: scope + '-late', 'aria-pressed': String(!!f.onlyOverdue), onClick: function () { f.onlyOverdue = !f.onlyOverdue; onChange(); } }, U.icon('alert'), t('Kechikkanlar')));
-    var active = f.q || f.projectId || f.assigneeId || f.priority || f.tag || f.onlyOverdue;
+    if (scope === 'table') controls.splice(1, 0, select(scope + '-status', t('Holat'), [['', t('Barcha holatlar')]].concat(L.STATUSES.map(function (x) { return [x, t(L.STATUS_LABELS[x])]; })), 'status'));
+    var active = f.q || f.projectId || f.assigneeId || f.priority || f.tag || f.status || f.onlyOverdue;
     if (active) controls.push(h('button', { type: 'button', class: 'btn btn--ghost btn--sm', id: scope + '-clear', onClick: function () {
-      Object.assign(f, { q: '', projectId: '', assigneeId: '', priority: '', tag: '', onlyOverdue: false }); onChange(); U.$(scope + '-q') && U.$(scope + '-q').focus();
+      Object.assign(f, { q: '', projectId: '', assigneeId: '', priority: '', tag: '', status: '', onlyOverdue: false }); onChange(); U.$(scope + '-q') && U.$(scope + '-q').focus();
     } }, t('Tozalash')));
     return h('div', { class: 'toolbar', role: 'search' }, controls);
   }
@@ -196,6 +197,10 @@
     inp.addEventListener('input', function () { err.textContent = ''; inp.removeAttribute('aria-invalid'); });
     return h('div', { class: 'quick-add' }, inp, err);
   }
+
+  // Boshqa sahifalar (jadval) uchun umumiy
+  App.taskToolbar = toolbar;
+  App.getTaskFilter = getFilter;
 
   R.add('/admin/board', { name: 'board', role: 'admin', title: 'Taxta', nav: 'board', render: function (view) { App.renderBoard(view, 'admin'); } });
   R.add('/me/board', { name: 'board', role: 'member', title: 'Mening taxtam', nav: 'myboard', render: function (view) { App.renderBoard(view, 'member'); } });
