@@ -444,7 +444,8 @@
   U.field = function (label, control, opts) {
     var o = opts || {};
     var err = U.h('p', { class: 'field__error', id: o.id + '-error', role: 'alert' });
-    if (control.setAttribute && o.id && !control.id) control.id = o.id;
+    // ID faqat haqiqiy maydonga beriladi (o'ram div'ga emas — takroriy ID bo'lmasin)
+    if (o.id && !control.id && /^(INPUT|SELECT|TEXTAREA)$/.test(control.tagName)) control.id = o.id;
     var target = control.querySelector && control.tagName === 'DIV' ? control.querySelector('button, input, select, textarea') : control;
     if (target && target.setAttribute) target.setAttribute('aria-describedby', (o.id + '-error') + (o.hint ? ' ' + o.id + '-hint' : ''));
     return U.h('div', { class: 'field' + (o.class ? ' ' + o.class : '') },

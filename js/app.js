@@ -25,20 +25,20 @@
   /* ---------------- menyu tuzilmasi ---------------- */
   var NAV = {
     admin: [
-      ['dashboard', '#/admin', 'Boshqaruv paneli', 'dashboard'],
-      ['board', '#/admin/board', 'Taxta', 'board'],
-      ['tasks', '#/admin/tasks', 'Vazifalar', 'list'],
-      ['calendar', '#/admin/calendar', 'Kalendar', 'calendar'],
+      ['dashboard', '#/admin', 'Boshqaruv paneli', 'dashboard', 'Panel'],
+      ['board', '#/admin/board', 'Taxta', 'board', 'Taxta'],
+      ['tasks', '#/admin/tasks', 'Vazifalar', 'list', 'Ro‘yxat'],
+      ['calendar', '#/admin/calendar', 'Kalendar', 'calendar', 'Kalendar'],
       ['projects', '#/admin/projects', 'Loyihalar', 'folder'],
       ['users', '#/admin/users', 'Xodimlar', 'users'],
       ['reports', '#/admin/reports', 'Hisobotlar', 'report'],
       ['activity', '#/admin/activity', 'Faollik', 'activity']
     ],
     member: [
-      ['home', '#/me', 'Mening kunim', 'home'],
-      ['myboard', '#/me/board', 'Mening taxtam', 'board'],
-      ['mycalendar', '#/me/calendar', 'Kalendar', 'calendar'],
-      ['notifications', '#/me/notifications', 'Bildirishnomalar', 'bell']
+      ['home', '#/me', 'Mening kunim', 'home', 'Bugun'],
+      ['myboard', '#/me/board', 'Mening taxtam', 'board', 'Taxta'],
+      ['mycalendar', '#/me/calendar', 'Kalendar', 'calendar', 'Kalendar'],
+      ['notifications', '#/me/notifications', 'Bildirishnomalar', 'bell', 'Xabarlar']
     ]
   };
   App.NAV = NAV;
@@ -88,8 +88,8 @@
 
     var main = h('div', { class: 'main' }, topbar, h('main', { id: 'view', class: 'view', tabindex: '-1' }));
     var bottom = h('nav', { class: 'bottom-nav', 'aria-label': t('Pastki menyu') }, items.slice(0, 4).map(function (it) {
-      return h('a', { href: it[1], dataset: { nav: it[0] } }, U.icon(it[3]), h('span', null, t(it[2])));
-    }).concat([h('a', { href: '#/settings', dataset: { nav: 'settings' } }, U.icon('settings'), h('span', null, t('Sozlamalar')))]));
+      return h('a', { href: it[1], dataset: { nav: it[0] }, 'aria-label': t(it[2]) }, U.icon(it[3]), h('span', null, t(it[4] || it[2])));
+    }).concat([h('a', { href: '#/settings', dataset: { nav: 'settings' }, 'aria-label': t('Sozlamalar') }, U.icon('settings'), h('span', null, t('Sozlash')))]));
     var scrim = h('div', { class: 'side-scrim', onClick: function () { document.body.classList.remove('side-open'); } });
 
     app.appendChild(side); app.appendChild(scrim); app.appendChild(main); app.appendChild(bottom);

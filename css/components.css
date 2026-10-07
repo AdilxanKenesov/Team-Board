@@ -58,7 +58,7 @@ textarea.input { height: auto; min-height: 90px; padding: 9px 11px; resize: vert
 .input-wrap { position: relative; }
 .input-wrap .input { padding-right: 40px; }
 .input-addon { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); }
-.field { display: grid; gap: 6px; min-width: 0; }
+.field { display: grid; gap: 6px; min-width: 0; align-content: start; }
 .field__label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .field__opt { font-weight: 400; color: var(--faint); }
 .field__hint { font-size: 12px; color: var(--muted); }
