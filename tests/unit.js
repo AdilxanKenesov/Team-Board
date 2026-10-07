@@ -57,6 +57,10 @@ test('vazifa: nom, loyiha ichida takror, xodim, muddat, teglar, checklist', () =
   assert.strictEqual(r.value.checklist.length, 1);
   assert.match(L.validateTask({ title: 'Ok', tags: 'a,b,c,d,e,f,g' }, ctxBase()).errors.tags, /6/);
   assert.match(L.validateTask({ title: 'x'.repeat(121) }, ctxBase()).errors.title, /120 ta belgidan oshmasin/);
+  assert.match(L.validateTask({ title: '   ' }, ctxBase()).errors.title, /yozing/);                       // faqat bo'sh joy
+  assert.match(L.validateTask({ title: 'Sana', due: '2026-02-30' }, ctxBase()).errors.due, /noto‘g‘ri sana/);
+  const many = Array.from({ length: 31 }, (_, i) => ({ text: 'band ' + i }));
+  assert.match(L.validateTask({ title: 'Band', checklist: many }, ctxBase()).errors.checklist, /30 ta band/);
 });
 
 test('tahrirda eski o‘tgan muddat va faolsiz xodim saqlanadi', () => {
@@ -223,6 +227,8 @@ test('store: izoh, checklist, ommaviy amal, loyiha, xodim', () => {
   const admin = S.user('u_admin'), mal = S.user('u_malika');
   assert.ok(S.addComment(mal, 't_2', 'Tayyor').ok);
   assert.strictEqual(S.addComment(mal, 't_11', 'Begona').ok, false);
+  assert.match(S.addComment(mal, 't_2', '   ').error, /Izoh yozing/);
+  assert.match(S.addComment(mal, 't_2', 'x'.repeat(1001)).error, /1000/);
   const it = S.task('t_2').checklist[2], wasDone = it.done;
   assert.ok(S.toggleCheck(mal, 't_2', it.id).ok);
   assert.strictEqual(S.task('t_2').checklist[2].done, !wasDone);
