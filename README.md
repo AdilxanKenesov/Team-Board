@@ -1,63 +1,51 @@
 # Jamoa taxtasi — Bilet 010 “Vazifalar taxtasi”
 
 **Bosqich:** tuman · **Ishtirokchi kodi:** KOD · **Bilet:** 010 (B daraja, manbadagi 089) · **Yo‘nalish:** Jamoa va ishni tashkil etish
+**Repo:** https://github.com/AdilxanKenesov/Team-Board
 
-Jamoaga vazifalar bajarilishini kuzatishga yordam beradigan bitta sahifali veb-sayt: vazifa qo‘shiladi va tugmalar bilan **Yangi → Bajarilmoqda → Tugagan** ustunlari bo‘ylab o‘tkaziladi.
+Jamoaga vazifalar bajarilishini kuzatishga yordam beradigan bitta sahifali veb-sayt. Vazifa qo‘shiladi va tugmalar (yoki sichqoncha bilan sudrash) orqali **Yangi → Bajarilmoqda → Tugagan** ustunlari bo‘ylab o‘tkaziladi. Har ustunda son, umumiy holat chizig‘i, mas’ul va muddatlar ko‘rinadi.
 
 ## Ishga tushirish
-`index.html` faylini Chrome yoki Edge’da oching (ikki marta bosish yetarli). Internet, server va o‘rnatish talab qilinmaydi.
-Mantiq testlari: `node test.js` (Node.js 18+).
+`index.html` ni Chrome yoki Edge’da oching (ikki marta bosish yetarli). Internet, server, o‘rnatish kerak emas.
+Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
+
+## Biletning majburiy imkoniyatlari
+| # | Talab | Yechim | Natija |
+|---|---|---|---|
+| 1 | Vazifa nomini qo‘shish | Shakl (label, Enter), 2–80 belgi, takror nom rad etiladi | ✅ |
+| 2 | Yangi, Bajarilmoqda, Tugagan ustunlari | Uch ustun, har birida son | ✅ |
+| 3 | Tugmalar orqali holatni almashtirish | Boshlash →, Tugatish →, ← Qaytarish, ← Qayta ochish | ✅ |
+| 4 | Son va vazifalar saqlansin | `localStorage`, sahifa yangilanganda hammasi joyida | ✅ |
+| Sinov | Yangi → Bajarilmoqda: Yangi −1, Bajarilmoqda +1 | Tugma va sudrash bilan tekshirildi | ✅ |
+
+## Qo‘shimcha imkoniyatlar (asosiy talablar bajarilgandan keyin)
+- **Mas’ul, muhimlik, muddat** — “Batafsil” qismida; muddati o‘tgan vazifa qizil belgi bilan.
+- **Tahrirlash va o‘chirish**; har amaldan keyin **6 soniya “Bekor qilish”**.
+- **Qidiruv va filtr** (mas’ul, muhimlik); o‘zbekcha apostroflar (‘ ' ʻ) farqlanmaydi.
+- **Sudrab o‘tkazish** — faqat ruxsat etilgan ustunga; tugmalar asosiy yo‘l bo‘lib qoladi.
+- **Telefonda tablar** — uch ustun o‘rniga “Yangi / Bajarilmoqda / Tugagan” tablari.
+- **Tarix** — oxirgi 20 o‘zgarish vaqti bilan.
+- **Yig‘ilish uchun hisobot** — bir tugma bilan matnli hisobot, nusxalash.
 
 ## Fayllar
 | Fayl | Vazifasi |
 |---|---|
-| `index.html` | Sahifa: menyu, Taxta, Qanday ishlaydi, Jamoa uchun |
+| `index.html` | Sahifa: Taxta, Tarix, Qanday ishlaydi, Jamoa uchun |
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
-| `logic.js` | Qo‘shish, o‘tkazish, tekshiruv, sanash, saqlash (DOM’siz, test qilinadi) |
-| `script.js` | Sahifa bilan bog‘lash: tugmalar, xabarlar, fokus |
-| `test.js` | Avtomatik sinovlar |
-| `REJA.md` | Ish rejasi va qarorlar |
-| `PROMPTS.md` | AI’ga berilgan asosiy so‘rovlar |
+| `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
+| `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
+| `test.js`, `tests/` | 20 unit + 42 brauzer tekshiruvi |
+| `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
+| `dalillar/` | 5 ta skrinshot |
 
-## Majburiy imkoniyatlar va sinov natijalari
-| # | Talab | Qanday tekshirildi | Natija |
-|---|---|---|---|
-| 1 | Vazifa nomini qo‘shish | “Hisobot tayyorlash” → Yangi ustuni 2 → 3 | ✅ |
-| 2 | Yangi, Bajarilmoqda, Tugagan ustunlari | Uch ustun, har birida son | ✅ |
-| 3 | Tugmalar bilan holatni almashtirish | Boshlash, Tugatish, Qaytarish, Qayta ochish — barcha o‘tishlar | ✅ |
-| 4 | Son va vazifalar saqlanadi | O‘zgarishlardan keyin sahifa yangilandi: 3/1/2 saqlandi | ✅ |
-| **Bilet sinovi** | Yangi → Bajarilmoqda: Yangi −1, Bajarilmoqda +1 | Yangi 4 → 3, Bajarilmoqda 1 → 2 (tugma ikki marta bosilganda ham) | ✅ |
-
-### Noto‘g‘ri kiritish va chekka holatlar
-| Sinov | Kutilgan | Natija |
-|---|---|---|
-| Bo‘sh nom / faqat probel | “Vazifa nomini yozing.” | ✅ |
-| 1 ta belgi | “Nom kamida 2 ta belgidan iborat bo‘lsin.” | ✅ |
-| 81 ta belgi | “Nom 80 ta belgidan oshmasin (hozir 81 ta).” | ✅ |
-| Takror nom (“  HISOBOT   tayyorlash ”) | “Bunday vazifa allaqachon bor: “Yangi” ustunida.” | ✅ |
-| `<img src=x onerror=…>` kabi matn | Oddiy matn sifatida ko‘rinadi | ✅ |
-| O‘tkazish tugmasini tez ikki marta bosish | Faqat bitta o‘tish | ✅ |
-| Taxtani tozalash | Sahifa ichida tasdiq so‘raladi; ustunlarda “Hozircha vazifa yo‘q.” | ✅ |
-| Buzilgan `localStorage` | Sayt ishlaydi, namuna taxta ochiladi | ✅ |
-| 390 / 768 / 1366 px | Yonga surish yo‘q, hamma tugma ko‘rinadi | ✅ |
-| Klaviatura | Tab / Enter bilan hammasi; o‘tkazilgandan keyin fokus vazifaning yangi joyida | ✅ |
-
-Sinov vositalari: `node test.js` — 9/9; Chrome (headless) brauzer sinovi — 21/21.
-
-## Topilgan va tuzatilgan kamchiliklar
-1. Holat xabari bo‘sh turganda ham joy egallab, ustunlar ostida ortiqcha bo‘shliq qoldirardi — bo‘sh holatda yig‘iladigan qilindi.
-2. Planshet (768 px) uchun dastlab ustunlar bitta qatorga tizilgan edi — taxta ko‘rinishi yo‘qolmasligi uchun 3 ustun saqlandi, bitta ustunga faqat 640 px dan tor ekranda o‘tadi.
-
-## O‘ylangan yechimlar
-- **Jamoa holati chizig‘i**: uch rangli bo‘laklar va “Tugagan: N%” — taxtaga qaramasdan ham umumiy holat ko‘rinadi.
-- Birinchi ochilishda **namuna vazifalar** (“Namuna” belgisi bilan) — bo‘sh sahifa o‘rniga ishlab turgan taxta; “Taxtani tozalash” bilan o‘chiriladi.
-- Vazifa o‘tkazilganda **fokus u bilan birga ko‘chadi** — klaviaturada ketma-ket ishlash mumkin.
-- Har kartada oxirgi o‘zgarish vaqti: “Qo‘shildi / Boshlandi / Tugadi”.
+## Sinovlar
+To‘liq jadval — `TESTLAR.md`. Qisqacha: bilet sinovi, bo‘sh/qisqa/uzun/takror nom, noto‘g‘ri va o‘tgan muddat, ikki marta bosish, ruxsat etilmagan sudrash, bekor qilish, filtr, yangilash, buzilgan va eski formatdagi ma’lumot, 390/768/1366 px, klaviatura — hammasi ✅. Topilgan 7 ta kamchilik tuzatilgan (commitlar bilan).
 
 ## Cheklovlar
-- Ma’lumot faqat shu brauzerda saqlanadi (`localStorage`) — jamoa a’zolari o‘rtasida avtomatik ulashilmaydi.
-- Vazifani tahrirlash va alohida o‘chirish yo‘q (biletda talab qilinmagan); faqat butun taxtani tozalash bor.
-- Mas’ul shaxs va muddat maydonlari yo‘q.
+- Ma’lumot faqat shu brauzerda saqlanadi — jamoa a’zolari o‘rtasida avtomatik ulashilmaydi (buning uchun server kerak).
+- Sudrash faqat sichqoncha bilan; telefonda va klaviaturada tugmalar ishlatiladi.
+- “Bekor qilish” faqat oxirgi bitta amalga va 6 soniya ichida.
+- Mas’ul — erkin matn (foydalanuvchilar ro‘yxati yoki hisob yo‘q).
 
 ## Vositalar va manbalar
-Claude Code (AI yordamchi), Google Chrome (sinov), Node.js (testlar). Tashqi kutubxona, shrift va rasm ishlatilmagan; logo — inline SVG.
+Claude Code (AI yordamchi), Google Chrome (sinov), Node.js (testlar), Git va GitHub (versiyalar). Tashqi kutubxona, shrift va rasm ishlatilmagan; logo va ikonkalar — inline SVG. Namuna vazifalar va ismlar to‘qima.

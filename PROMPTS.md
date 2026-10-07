@@ -1,11 +1,83 @@
 # PROMPTS — Bilet 010
 
-| # | Vaqt | So'rov (qisqa) | Natija |
-|---|---|---|---|
-| 1 | 10:42 | Tanlov shartlari (reglament to'liq) va Bilet 010 berildi; Claude bilan ishlashga ruxsat borligi aytildi | REJA.md: talab → yechim jadvali, bo'limlar, ma'lumot tuzilmasi, chekka holatlar, faraz qilingan qarorlar |
-| 2 | 10:43 | (REJA.md bo'yicha) qurish | logic.js + test.js (9/9), keyin index.html, style.css, script.js |
-| 3 | 10:45 | O'zini tekshirish: bilet sinovi, noto'g'ri kiritishlar, yangilash, buzilgan localStorage, 390/768/1366 px | Brauzer sinovi 21/21; 2 ta ko'rinish kamchiligi topilib tuzatildi |
-| 4 | 10:46 | Topshirish | README.md (sinovlar jadvali, tuzatilgan xatolar, cheklovlar) |
+Vosita: Claude Code. Har bosqich alohida commit (qarang: `git log`).
 
-## Ishtirokchi qarorlari (AI natijasiga kiritilgan o'zgarishlar)
-- <shu yerga o'zingiz o'zgartirgan narsalarni yozing — himoyada 5.2 uchun dalil>
+## v1 (60 daqiqalik variant, 10:42–10:46)
+| # | So'rov (qisqa) | Natija |
+|---|---|---|
+| 1 | Tanlov reglamenti va Bilet 010 berildi | REJA.md: talab → yechim, chekka holatlar |
+| 2 | Reja bo'yicha qurish | logic.js + 9 test, sahifa |
+| 3 | O'zini tekshirish | brauzer sinovi 21/21, 2 kamchilik tuzatildi |
+| 4 | Topshirish | README |
+
+## v2 (vaqt 90 daqiqa bo'ldi)
+Ishtirokchi talabi: “professional sayt, promptlarni o'zing professional yozib, reja tuz”. Qo'shimchalarni ishtirokchi tanladi: tahrir/o'chirish/bekor qilish; mas'ul/muhimlik/muddat; tarix va hisobot; sudrash va mobil tablar; har bosqichdan keyin git commit.
+
+### P1 — Reja v2 va git
+```
+Loyiha: Bilet 010 “Vazifalar taxtasi”, v1 ishlaydi. Vaqt 90 daqiqa.
+Maqsad: professional v2. Asosiy 4 talab va bilet sinovi (Yangi→Bajarilmoqda: Yangi −1,
+Bajarilmoqda +1) har bosqichda saqlanishi SHART.
+1) git init, .gitignore, v1 ni "v1: asosiy 4 talab" deb commit qil.
+2) REJA.md ni v2 ga yangila: qo'shimchalar ro'yxati, ma'lumot modeli v2,
+   har qo'shimcha uchun chekka holatlar jadvali, bosqichlar va vaqt.
+Kod yozma. Subagent ishlatma.
+```
+
+### P2 — Mantiq v2 (DOM'siz) + testlar
+```
+logic.js ni kengaytir (eski API saqlansin, v1 ma'lumoti avtomatik ko'chsin):
+- assignee (ixtiyoriy, 2–30 belgi), priority (past|orta|yuqori, default orta),
+  due (ixtiyoriy, YYYY-MM-DD; noto'g'ri va o'tgan sana — yangi vazifada rad).
+- editTask (takror — o'zidan tashqari), removeTask, bekor qilish uchun asl massiv o'zgarmasin.
+- Tarix (oxirgi 50), isOverdue, filterTasks (apostrof farqsiz), buildReport.
+- sanitize v2: noma'lum priority → orta, yaroqsiz due → null.
+test.js ga har funksiya uchun test; eski 9 test o'zgarmasdan o'tsin. Subagent ishlatma.
+```
+
+### P3 — Interfeys: shakl, karta, tahrir, o'chirish, bekor qilish, filtr
+```
+script.js va index.html ni v2 mantiqqa ula (logic.js ni o'zgartirma):
+"Batafsil" (mas'ul, muhimlik, muddat), har maydonda label va xato xabari;
+karta: mas'ul belgisi, muhimlik, muddat, "Muddati o'tgan";
+tahrir: Enter — saqlash, Esc — bekor; o'chirish tasdiqsiz + 6 soniya "Bekor qilish";
+filtr paneli; ustun sonlari doim umumiy; fokus hech qachon body ga tushmasin.
+Bilet sinovini brauzerda qayta tekshir.
+```
+
+### P4 — Sudrash, mobil tablar, tarix, hisobot
+```
+HTML5 DnD faqat canMove ruxsat bergan ustunga, ruxsatsizida "bu yerga mumkin emas";
+tugmalar qoladi. ≤640px: tablar (role=tablist, son, tanlov eslab qolinadi).
+"Tarix" bo'limi (oxirgi 20). "Hisobot" oynasi + "Nusxalash" (clipboard bo'lmasa — belgilash).
+Bilet sinovini qayta tekshir.
+```
+
+### P5 — Dizayn sayqali
+```
+Polish the visual layer only. Do NOT change logic, validation or storage. UI text stays Uzbek.
+Calm, precise team workspace; status colour only where it carries meaning.
+Check 390 / 768 / 1366 and dark mode; list the weakest points, fix them.
+Confirm the ticket test still passes.
+```
+
+### P6 — Hakam kabi sinov
+```
+Hakam kabi sina, jadvalni TESTLAR.md ga yoz; xatolarni tuzat, qayta sina;
+skrinshotlarni dalillar/ ga saqla. Yangi funksiya qo'shma.
+```
+
+### P7 — Topshirish
+```
+README v2, PROMPTS.md, HIMOYA.md; maxfiy kalit tekshiruvi; papka nomi tuman_<KOD>_010.
+Yangi funksiya qo'shma.
+```
+
+## AI natijasida kiritilgan muhim tuzatishlar
+- Sinovda topilgan 7 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
+- Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.
+
+## Ishtirokchi qarorlari
+- Qo'shimchalar ro'yxati va har bosqich commit qilinishi — ishtirokchi tanlovi.
+- Repo nomi: Team-Board.
+- <o'zingiz kiritgan boshqa o'zgarishlar>
