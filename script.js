@@ -59,6 +59,26 @@
   function clone(s) { return JSON.parse(JSON.stringify(s)); }
   function persist() { if (storage) T.saveState(storage, state); }
 
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Yopilish animatsiyasi: haqiqiy element darhol yopiladi (fokus va holat kutmaydi),
+  // uning nusxasi esa 0.2 soniyada chiqib ketadi va o'chiriladi.
+  function animateOut(node, ghostClass) {
+    if (reducedMotion) return;
+    var g = node.cloneNode(true);
+    var from = node.querySelectorAll('input, select, textarea');
+    var to = g.querySelectorAll('input, select, textarea');
+    for (var i = 0; i < from.length; i++) to[i].value = from[i].value;   // nusxada kiritilgan qiymatlar qolsin
+    g.removeAttribute('id');
+    g.querySelectorAll('[id]').forEach(function (n) { n.removeAttribute('id'); });
+    g.hidden = false;
+    g.classList.add(ghostClass);
+    g.setAttribute('aria-hidden', 'true');
+    g.inert = true;
+    document.body.appendChild(g);
+    setTimeout(function () { g.remove(); }, 260);
+  }
+
   /* ---------------- o'zgarish + bekor qilish ---------------- */
 
   // Har o'zgartiruvchi amal shu orqali: oldingi holat saqlanadi, tarixga yoziladi
@@ -174,6 +194,8 @@
 
   /* ---------------- chizish ---------------- */
 
+  var highlightClass = 'just-moved';
+
   function renderColumn(status, visible, highlightId) {
     var list = $('list-' + status);
     var items = T.byStatus(visible, status);
@@ -185,7 +207,7 @@
     }
     items.forEach(function (task) {
       var card = taskCard(task, status);
-      if (task.id === highlightId) card.classList.add('just-moved');
+      if (task.id === highlightId) card.classList.add(highlightClass);
       list.appendChild(card);
     });
   }
@@ -303,6 +325,7 @@
 
   function closeDrawer() {
     if ($('drawer').hidden) return;
+    animateOut($('drawer'), 'drawer--ghost');
     $('drawer').hidden = true;
     var id = drawerTaskId;
     drawerTaskId = null;
@@ -347,7 +370,9 @@
     var r = T.addTask(state.tasks, values.title, null, null, values);
     if (!r.ok) { showErrors(r.errors); return; }
     commit(r.tasks, { type: 'add', title: r.task.title, to: 'new' }, '“' + r.task.title + '” Yangi ustuniga qo‘shildi.');
+    highlightClass = 'just-added';
     render(r.task.id);
+    highlightClass = 'just-moved';
     closeDrawer();
   });
   FIELDS.forEach(function (k) {
@@ -475,6 +500,8 @@
     $('report-copy').focus();
   }
   function closeReport() {
+    if ($('report').hidden) return;
+    animateOut($('report'), 'modal--ghost');
     $('report').hidden = true;
     $('report-open').focus();   // fokus har doim ochgan tugmaga qaytadi
   }
@@ -526,6 +553,18 @@
     commit(rest, { type: 'clear', title: n + ' ta namuna vazifa' }, n + ' ta namuna vazifa o‘chirildi.');
     render();
     $('add-open').focus();
+  });
+
+  /* ---------------- tezkor tugmalar ---------------- */
+
+  // N — yangi vazifa, / — qidirish. Matn yozilayotganda yoki oyna ochiq bo'lsa ishlamaydi.
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName))) return;
+    if (!$('drawer').hidden || !$('report').hidden) return;
+    if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openDrawer('add'); }
+    else if (e.key === '/') { e.preventDefault(); $('f-q').focus(); }
   });
 
   // Boshqa oynada o'zgarsa, shu oyna ham yangilanadi

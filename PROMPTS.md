@@ -92,6 +92,16 @@ Update e2e tests for the drawer (no fewer checks), run all, screenshot 1366/768/
 ```
 Natija: 49/49 brauzer tekshiruvi, 3 ta ko‘rinish xatosi topilib tuzatildi (TESTLAR.md, 8–10).
 
+### P9 — Animatsiyalar (UI/UX)
+```
+Add short, meaningful animations without changing behaviour or the ticket requirements:
+drawer and report close (ghost copy animates out, real element hides instantly so focus/tests never wait),
+modal scale-in, filter popover, toast slide-up, new card fade-in, "not allowed" column shake.
+≤0.26 s, all disabled under prefers-reduced-motion. Add shortcuts N (new task) and / (search),
+ignored while typing or when a dialog is open. Add tests; run everything.
+```
+Natija: 57/57 brauzer tekshiruvi.
+
 ## AI natijasida kiritilgan muhim tuzatishlar
 - Sinovda topilgan 10 kamchilik (TESTLAR.md, “Topilgan va tuzatilgan xatolar”).
 - Commit test natijasini kutmay o'tib ketgan holat bo'ldi (`7a609a3`); keyingi commitlar faqat barcha testlar o'tganda bajariladigan qilindi.

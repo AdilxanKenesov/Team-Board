@@ -1,6 +1,6 @@
 # TESTLAR — Bilet 010 “Jamoa taxtasi”
 
-Jami: **20 unit test** (`node test.js`) + **49 brauzer tekshiruvi** (`tests/`: 26 + 23). Hammasi o‘tadi.
+Jami: **20 unit test** (`node test.js`) + **57 brauzer tekshiruvi** (`tests/`: 26 + 31). Hammasi o‘tadi.
 
 ## Qanday ishga tushiriladi
 ```
@@ -38,6 +38,8 @@ Brauzer testlari sahifaning `localStorage`ini tozalaydi — o‘z ma’lumotingi
 | Filtr paneli | ochiladi, faol filtrlar soni ko‘rinadi, Esc yopadi | ✅ |
 | “Namunalarni o‘chirish” | faqat namuna vazifalar o‘chadi, banner yo‘qoladi | ✅ |
 | Panel yopilganda fokus | “+ Vazifa” tugmasiga qaytadi | ✅ |
+| Yopilish animatsiyasi | haqiqiy panel/oyna darhol yopiladi, nusxasi 0.3 s ichida o‘chadi, takroriy `id` yo‘q | ✅ |
+| Tezkor tugmalar | `N` panelni ochadi (matn yozilayotganda emas), `/` qidiruvga o‘tadi | ✅ |
 | Yangi → Tugagan sudrash | rad, “Bu ustunga o‘tkazib bo‘lmaydi” | ✅ |
 | Qidiruv `ROʻYXAT` (boshqa apostrof) | “ro‘yxat” topiladi; “1 / 5 ta vazifa” | ✅ |
 | Filtrda | ustun sonlari umumiy; bo‘sh ustunda “Filtrga mos vazifa yo‘q” | ✅ |

@@ -243,10 +243,37 @@ input[aria-invalid="true"] { border-color: var(--error); }
 .toast__btn { flex: none; padding: 5px 10px; font: inherit; font-weight: 600; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: 6px; cursor: pointer; opacity: .9; }
 .toast__btn:hover { opacity: 1; }
 
+/* ---------- Animatsiyalar: qisqa, hech narsani kutdirmaydi ---------- */
+/* Yopilish — haqiqiy element darhol yopiladi, uning "soya nusxasi" chiqib ketadi */
+.drawer--ghost, .modal--ghost { pointer-events: none; }
+.drawer--ghost .drawer__panel { animation: slide-out .18s ease forwards; }
+.drawer--ghost .drawer__backdrop { animation: fade-out .18s ease forwards; }
+.modal:not(.modal--ghost) { animation: fade .16s ease; }
+.modal:not(.modal--ghost) .modal__box { animation: modal-in .18s cubic-bezier(.2, .9, .3, 1.2); }
+.modal--ghost { animation: fade-out .16s ease forwards; }
+.modal--ghost .modal__box { animation: modal-out .16s ease forwards; }
+.pop { transform-origin: top right; animation: pop-in .14s ease; }
+.toast { animation: toast-in .2s cubic-bezier(.2, .9, .3, 1.2); }
+.task.just-added { animation: card-in .26s ease, arrive .9s ease; }
+.col.drop-no { animation: shake .26s ease; }
+
+@keyframes slide-out { to { transform: translateX(32px); opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes modal-in { from { transform: translateY(8px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes modal-out { to { transform: translateY(6px) scale(.98); opacity: 0; } }
+@keyframes pop-in { from { transform: translateY(-4px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toast-in { from { transform: translate(-50%, 12px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+@keyframes card-in { from { transform: translateY(-6px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+kbd { font: 600 11px/1 var(--font); padding: 2px 5px; color: var(--muted); background: var(--surface); border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 4px; }
+.shortcuts { margin: 12px 0 0; font-size: 12px; color: var(--faint); }
+
+/* Harakatni kamaytirish yoqilgan bo'lsa — hamma animatsiya o'chadi */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .seg, .col, .task__tools { transition: none; }
-  .task.just-moved, .drawer__panel, .drawer__backdrop { animation: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .drawer--ghost, .modal--ghost { display: none !important; }
 }
 
 /* ---------- Planshet: menyu tepaga ---------- */

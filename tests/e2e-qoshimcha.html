@@ -59,6 +59,21 @@ f.onload=async()=>{ try {
  f.style.width='768px'; await wait(150); ok(D.documentElement.scrollWidth<=768,'768px yonga surish yo‘q');
  f.style.width='390px'; await wait(150);
  ok(f.contentWindow.getComputedStyle($$('add-open')).position==='fixed','390px: “+ Vazifa” suzuvchi tugma');
+ // --- animatsiya va tezkor tugmalar ---
+ f.style.width='1366px'; await wait(150); D=f.contentDocument; const g=id=>D.getElementById(id); const FW=f.contentWindow;
+ D.body.dispatchEvent(new KeyboardEvent('keydown',{key:'n',bubbles:true}));
+ ok(!g('drawer').hidden&&D.activeElement===g('title'),'N tugmasi: yangi vazifa paneli ochildi');
+ g('title').dispatchEvent(new KeyboardEvent('keydown',{key:'n',bubbles:true}));
+ ok(!g('drawer').hidden,'matn yozilayotganda N panelni qayta ochmaydi');
+ g('title').value='Animatsiya sinovi'; g('drawer-submit').click();
+ ok(g('drawer').hidden&&D.querySelector('.task.just-added'),'qo‘shildi: panel darhol yopildi, karta “just-added”');
+ ok(D.querySelectorAll('.drawer--ghost').length<=1&&D.querySelectorAll('[id="title"]').length===1,'yopilish nusxasida takroriy id yo‘q');
+ await wait(320); ok(D.querySelectorAll('.drawer--ghost,.modal--ghost').length===0,'0.3 s dan keyin nusxa o‘chirildi');
+ g('report-open').click(); g('report').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ ok(g('report').hidden&&D.activeElement===g('report-open'),'hisobot: darhol yopildi, fokus tugmada');
+ await wait(320); ok(D.querySelectorAll('.modal--ghost').length===0,'hisobot nusxasi o‘chirildi');
+ D.body.dispatchEvent(new KeyboardEvent('keydown',{key:'/',bubbles:true}));
+ ok(D.activeElement===g('f-q'),'/ tugmasi: qidiruvga o‘tdi');
  ok(errs.length===0,'JS xatolar: '+(errs.join('; ')||'yo‘q'));
  } catch(e){ log.push('EXC '+e.message+' | '+(e.stack||'').split('\n')[1]); }
  document.getElementById('out').textContent=log.join('\n');

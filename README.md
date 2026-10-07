@@ -29,6 +29,8 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 - **Namuna banneri** — namuna vazifalarni bir bosishda o‘chirish (o‘zingiz qo‘shganlari qoladi).
 - **Tarix** — oxirgi 10 o‘zgarish vaqti bilan (saqlanadi 50 tagacha).
 - **Yig‘ilish uchun hisobot** — bir tugma bilan matnli hisobot, nusxalash.
+- **Animatsiyalar** — panel, oyna, filtr, xabar va yangi karta uchun qisqa (≤0.26 s) animatsiyalar; yopilganda fokus kutmaydi; “harakatni kamaytirish” yoqilgan bo‘lsa — o‘chadi.
+- **Tezkor tugmalar** — `N` yangi vazifa, `/` qidirish, `Esc` yopish.
 
 ## Fayllar
 | Fayl | Vazifasi |
@@ -37,7 +39,7 @@ Testlar: `node test.js` va `tests/` (qarang: `TESTLAR.md`).
 | `style.css` | Ko‘rinish; 390 / 768 / 1366 px; kunduzgi va tungi rejim |
 | `logic.js` | Barcha qoidalar: tekshiruv, o‘tishlar, filtr, hisobot, saqlash (DOM’siz) |
 | `script.js` | Sahifa bilan bog‘lash: tugmalar, sudrash, tablar, fokus, “Bekor qilish” |
-| `test.js`, `tests/` | 20 unit + 49 brauzer tekshiruvi |
+| `test.js`, `tests/` | 20 unit + 57 brauzer tekshiruvi |
 | `REJA.md`, `PROMPTS.md`, `TESTLAR.md`, `HIMOYA.md` | Reja, AI so‘rovlari, sinovlar, himoya |
 | `dalillar/` | 6 ta skrinshot |
 
