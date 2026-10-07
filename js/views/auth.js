@@ -32,13 +32,16 @@
   }
 
   function langSwitch() {
-    var cur = App.I18n.lang;
-    return h('div', { class: 'lang-switch', role: 'group', 'aria-label': t('Til') },
+    var cur = App.I18n.lang, dark = App.currentTheme() === 'dark';
+    return h('div', { class: 'auth__prefs' },
+      h('button', { type: 'button', class: 'icon-btn icon-btn--lg', id: 'auth-theme', 'aria-label': dark ? t('Yorug‘ mavzuga o‘tish') : t('Qorong‘i mavzuga o‘tish'),
+        onClick: function () { App.setPref('theme', App.currentTheme() === 'dark' ? 'light' : 'dark'); } }, U.icon(dark ? 'sun' : 'moon')),
+      h('div', { class: 'lang-switch', role: 'group', 'aria-label': t('Til') },
       ['uz', 'ru'].map(function (l) {
         return h('button', { type: 'button', class: 'lang-switch__btn', 'aria-pressed': String(cur === l), onClick: function () {
-          App.setLocalPref('lang', l); App.Router.onChange();
+          App.setPref('lang', l);
         } }, l === 'uz' ? 'O‘zbekcha' : 'Русский');
-      }));
+      })));
   }
 
   /* ---------------- Xush kelibsiz ---------------- */

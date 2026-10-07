@@ -347,7 +347,7 @@
     'Oxirgi kirish: {x}': 'Последний вход: {x}',
     'Sozlama saqlandi.': 'Настройка сохранена.',
     'Ko‘rinish': 'Внешний вид',
-    'Har bir foydalanuvchining o‘z sozlamasi saqlanadi.': 'У каждого пользователя свои настройки.',
+    'Til va mavzu shu qurilmadagi hamma uchun umumiy: kirish sahifasi, administrator va xodimlar.': 'Язык и тема общие для всех на этом устройстве: страница входа, администратор и сотрудники.',
     'Mavzu': 'Тема',
     '“Tizim” — kompyuter sozlamasiga moslashadi.': '«Системная» — как в настройках компьютера.',
     'Tizim': 'Системная',

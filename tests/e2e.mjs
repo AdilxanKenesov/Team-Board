@@ -180,6 +180,35 @@ await test('til: login xatosi ruscha (shablon + son)', async () => {
     const err=${$('#login-error')}.textContent; localStorage.setItem('tbpro.pref.lang','uz'); App.applyPrefs(null);
     return /Неверный логин или пароль\\. Осталось попыток: \\d/.test(err) ? true : err;`);
 });
+await test('til va mavzu umumiy: login’da rus tili → kirgandan keyin ham rus; admin tungi rejim → xodimda ham', async () => {
+  await open('#/login', null);
+  return js(`
+    App.setPref('theme','light'); ${W}
+    document.querySelectorAll('.lang-switch__btn')[1].click(); ${W}
+    const loginRu=/Вход в систему/.test(document.body.textContent);
+    ${$('.demo-acc[data-login="admin"]')}.click(); ${W}${W}
+    const adminRu=document.getElementById('page-title').textContent==='Панель управления' && App.I18n.lang==='ru';
+    ${$('#theme-toggle')}.click(); ${W}
+    const adminDark=document.documentElement.getAttribute('data-theme')==='dark';
+    App.logout(); ${W}${W}
+    const loginStill=/Вход в систему/.test(document.body.textContent) && document.documentElement.getAttribute('data-theme')==='dark';
+    ${$('.demo-acc[data-login="malika"]')}.click(); ${W}${W}
+    const memberSame=document.getElementById('page-title').textContent==='Мой день' && document.documentElement.getAttribute('data-theme')==='dark';
+    ${$('#theme-toggle')}.click(); ${W}
+    App.logout(); ${W}${W} ${$('#auth-theme')} && null;
+    const loginLight=document.documentElement.getAttribute('data-theme')==='light';
+    document.querySelectorAll('.lang-switch__btn')[0].click(); ${W}
+    const backUz=/Tizimga kirish/.test(document.body.textContent);
+    return loginRu && adminRu && adminDark && loginStill && memberSame && loginLight && backUz ? true : {loginRu,adminRu,adminDark,loginStill,memberSame,loginLight,backUz};`);
+});
+await test('kirish sahifasi: mavzu tugmasi ishlaydi', async () => {
+  await open('#/login', null);
+  return js(`
+    const b0=document.documentElement.getAttribute('data-theme'); ${$('#auth-theme')}.click(); ${W}
+    const t1=document.documentElement.getAttribute('data-theme'); ${$('#auth-theme')}.click(); ${W}
+    const t2=document.documentElement.getAttribute('data-theme');
+    return t1 && t1!==t2 && !!document.getElementById('auth-theme') ? true : {b0,t1,t2};`);
+});
 await test('hisobot: filtrlar, varaq, print.css, CSV', async () => {
   await open('#/admin/reports', 'admin');
   return js(`
@@ -203,7 +232,7 @@ await test('sozlamalar: profil, parol xatolari, mavzu va til', async () => {
     ${$('#st-cur')}.value='xato'; ${$('#st-new2')}.value='yangi123'; ${$('#password-form')}.requestSubmit(); ${W}
     const wrongCur=${$('#st-cur')}.getAttribute('aria-invalid')==='true';
     ${$('#st-theme-dark')}.click(); ${W}
-    const dark=document.documentElement.getAttribute('data-theme')==='dark' && App.Store.settingsFor('u_malika').theme==='dark';
+    const dark=document.documentElement.getAttribute('data-theme')==='dark' && localStorage.getItem('tbpro.pref.theme')==='dark';
     ${$('#st-lang-ru')}.click(); ${W}
     const ru=App.I18n.lang==='ru'; ${$('#st-lang-uz')}.click(); ${$('#st-theme-system')}.click(); ${W}
     return nameOk && mism && wrongCur && dark && ru && !document.documentElement.hasAttribute('data-theme') && !document.getElementById('st-export') ? true : {nameOk,mism,wrongCur,dark,ru};`);

@@ -20,7 +20,7 @@
   function bytes(n) { return n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(2) + ' MB'; }
 
   R.add('/settings', { name: 'settings', role: 'user', title: 'Sozlamalar', nav: 'settings', render: function (view) {
-    var me = App.me(), prefs = S.settingsFor(me.id);
+    var me = App.me(), prefs = App.prefs();
     var grid = h('div', { class: 'set-grid' });
 
     /* Profil */
@@ -67,8 +67,8 @@
     grid.appendChild(section('st-h-security', 'lock', t('Xavfsizlik'), me.lastLoginAt ? t('Oxirgi kirish: {x}', { x: U.fmtDateTime(me.lastLoginAt) }) : null, sform));
 
     /* Ko'rinish */
-    function savePref(patch) { S.saveSettings(me, patch); U.toast(t('Sozlama saqlandi.')); }
-    grid.appendChild(section('st-h-look', 'monitor', t('Ko‘rinish'), t('Har bir foydalanuvchining o‘z sozlamasi saqlanadi.'), h('div', { class: 'set-rows' },
+    function savePref(patch) { Object.keys(patch).forEach(function (k) { App.setPref(k, patch[k]); }); App.refresh(); U.toast(t('Sozlama saqlandi.')); }
+    grid.appendChild(section('st-h-look', 'monitor', t('Ko‘rinish'), t('Til va mavzu shu qurilmadagi hamma uchun umumiy: kirish sahifasi, administrator va xodimlar.'), h('div', { class: 'set-rows' },
       h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Mavzu')), h('p', { class: 'muted' }, t('“Tizim” — kompyuter sozlamasiga moslashadi.'))),
         seg('st-theme-', t('Mavzu'), prefs.theme, [['system', t('Tizim'), 'monitor'], ['light', t('Yorug‘'), 'sun'], ['dark', t('Qorong‘i'), 'moon']], function (v) { savePref({ theme: v }); })),
       h('div', { class: 'set-row' }, h('div', null, h('b', null, t('Til')), h('p', { class: 'muted' }, t('Interfeys tili.'))),

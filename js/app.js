@@ -13,8 +13,13 @@
   App.state = { route: null, shellRole: null };
 
   /* ---------------- mavzu va til ---------------- */
-  App.applyPrefs = function (user) {
-    var s = user ? S.settingsFor(user.id) : { theme: localPref('theme') || 'system', lang: localPref('lang') || 'uz' };
+  // Til va mavzu — qurilma bo'yicha umumiy: kirish sahifasi, admin va xodim uchun bir xil
+  App.prefs = function () {
+    var th = localPref('theme'), lg = localPref('lang');
+    return { theme: th === 'light' || th === 'dark' ? th : 'system', lang: lg === 'ru' ? 'ru' : 'uz' };
+  };
+  App.applyPrefs = function () {
+    var s = App.prefs();
     var html = document.documentElement;
     if (s.theme === 'light' || s.theme === 'dark') html.setAttribute('data-theme', s.theme); else html.removeAttribute('data-theme');
     I.setLang(s.lang);
@@ -110,11 +115,18 @@
     b.setAttribute('aria-label', currentTheme() === 'dark' ? t('Yorug‘ mavzuga o‘tish') : t('Qorong‘i mavzuga o‘tish'));
   }
   function toggleTheme() {
-    var me = App.me(); if (!me) return;
-    S.saveSettings(me, { theme: currentTheme() === 'dark' ? 'light' : 'dark' });
-    App.applyPrefs(me);
-    updateThemeIcon();
+    App.setPref('theme', currentTheme() === 'dark' ? 'light' : 'dark');
   }
+  App.currentTheme = currentTheme;
+  // Umumiy sozlamani o'zgartirish va darhol hamma joyga qo'llash
+  App.setPref = function (k, v) {
+    App.setLocalPref(k, v);
+    App.applyPrefs();
+    updateThemeIcon();
+    var me = App.me();
+    if (me && App.state.shellLang !== I.lang) App.rebuildShell();
+    else if (!me) R.onChange();
+  };
 
   function openUserMenu(anchor) {
     var me = App.me();
@@ -247,6 +259,7 @@
   // Boshqa oynada o'zgarsa
   root.addEventListener('storage', function (e) {
     if (e.key === S.KEY) { S.init(storage); R.onChange(); }
+    if (e.key && e.key.indexOf('tbpro.pref.') === 0) { App.applyPrefs(); App.state.shellLang = null; R.onChange(); }   // boshqa oynada o'zgardi
   });
 
   /* ---------------- tezkor tugmalar ---------------- */

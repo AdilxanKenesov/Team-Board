@@ -123,3 +123,4 @@
   .demo-box__list { grid-template-columns: 1fr; }
   .form__row, .form__row--3 { grid-template-columns: 1fr; }
 }
+.auth__prefs { justify-self: end; display: flex; align-items: center; gap: 6px; }
